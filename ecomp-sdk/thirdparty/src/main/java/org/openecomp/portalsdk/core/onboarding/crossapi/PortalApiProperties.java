@@ -1,0 +1,98 @@
+/*-
+ * ================================================================================
+ * eCOMP Portal SDK
+ * ================================================================================
+ * Copyright (C) 2017 AT&T Intellectual Property
+ * ================================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ================================================================================
+ */
+package org.openecomp.portalsdk.core.onboarding.crossapi;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/**
+ * Singleton Class representing portal properties. Searches the classpath for
+ * the file "portal.properties".
+ * 
+ * To put the file "portal.properties" on the classpath, it can be in the same
+ * directory where the first package folder is - 'myClasses' folder in the
+ * following case as an example:
+ * 
+ */
+public class PortalApiProperties {
+
+	private static final Log logger = LogFactory.getLog(PortalApiProperties.class);
+
+	private static Properties properties;
+	private static String propertyFileName = "portal.properties";
+
+	/**
+	 * Constructor is private.
+	 */
+	private PortalApiProperties() {
+	}
+
+	/**
+	 * Gets the property value for the specified key.
+	 *
+	 * @param property
+	 * @return Value for the named property; null if the property file was not
+	 *         loaded or the key was not found.
+	 */
+	public static String getProperty(String property) {
+		if (properties == null) {
+			synchronized (propertyFileName) {
+				try {
+					if (!initialize()) {
+						logger.error("Failed to read property file " + propertyFileName);
+						return null;
+					}
+				} catch (IOException e) {
+					logger.error("Failed to read property file " + propertyFileName, e);
+					return null;
+				}
+			}
+		}
+		return properties.getProperty(property);
+	}
+
+	/**
+	 * Reads properties from a portal.properties file on the classpath.
+	 * 
+	 * Clients DO NOT need to call this method. Clients MAY call this method to
+	 * test whether the properties file can be loaded successfully.
+	 * 
+	 * @return True if properties were successfully loaded, else false.
+	 * @throws IOException
+	 */
+	public static boolean initialize() throws IOException {
+		if (properties != null) 
+			return true;
+		InputStream in = PortalApiProperties.class.getClassLoader().getResourceAsStream(propertyFileName);
+		if (in == null)
+			return false;
+		properties = new Properties();
+		try {
+			properties.load(in);
+		} finally {
+			in.close();
+		}
+		return true;
+	}
+}

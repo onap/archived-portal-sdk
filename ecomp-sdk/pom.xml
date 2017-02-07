@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openecomp.ecompsdkos</groupId>
+	<artifactId>ecompSDK-project</artifactId>
+	<packaging>pom</packaging>
+	<!-- NOTE This value will not be picked from the property tag below, pass it as -Drelease.version="" when doing mvn deploy -->
+	<version>1.0.0</version>
+	<name>Ecomp Portal SDK Project (parent)</name>
+	<url>https://wiki/display/EcompPortal</url>
+	<scm>
+		<connection>scm:git:https://gitlab/scm/st_quantum/quantum.git</connection>
+		<developerConnection>scm:git:ssh://git@gitlab/st_quantum/quantum.git</developerConnection>
+	  <tag>HEAD</tag>
+  </scm>
+
+	<modules>
+		<!-- ecompFW -->
+		<module>thirdparty</module>
+		<!-- ecompSDK-core -->
+		<module>quantum</module>
+		<module>sdk-analytics</module>
+		<module>sdk-workflow</module>
+	</modules>
+
+	<properties>
+		<encoding>UTF-8</encoding>
+		<sdk-internal.version>1610.3.10</sdk-internal.version>
+		<springframework.version>4.2.0.RELEASE</springframework.version>
+		<hibernate.version>4.3.11.Final</hibernate.version>
+		<!-- Tests usually require some setup that maven cannot do, so skip. -->
+		<skiptests>true</skiptests>
+	</properties>
+
+	<reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
+                    <docletArtifact>
+                        <groupId>org.umlgraph</groupId>
+                        <artifactId>umlgraph</artifactId>
+                        <version>5.6</version>
+                    </docletArtifact>
+                    <additionalparam>-views</additionalparam>
+                    <useStandardDocletOptions>true</useStandardDocletOptions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+	<repositories>
+		<repository>
+			<!-- Snapshots repository has ECOMP snapshot artifacts -->
+			<id>nexus-snapshots</id>
+			<name>Nexus Maven Central - Snapshots</name>
+			<url>https://ecomp-nexus:8443/repository/maven-snapshots/</url>
+		</repository>
+		<repository>
+			<!-- Releases repository has ECOMP release artifacts -->
+			<id>nexus</id>
+			<name>Nexus Maven Central - Releases</name>
+			<url>https://ecomp-nexus:8443/repository/maven-releases/</url>
+		</repository>
+		<repository>
+			<id>oss-sonatype</id>
+			<name>oss sonatype Central</name>
+			<url>https://oss.sonatype.org/service/local/repositories/releases/content/</url>
+        </repository>
+		
+	</repositories>
+
+	<profiles>
+		<!-- disable doclint, a new feature in Java 8, when generating javadoc -->
+		<profile>
+			<id>doclint-java8-disable</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+    
+	</profiles>
+
+	<build>
+		<plugins>
+			<plugin>
+			 <groupId>com.blackducksoftware.integration</groupId>
+			 <artifactId>hub-maven-plugin</artifactId>
+			 <version>1.4.0</version>
+			 <inherited>false</inherited>
+			 <configuration>
+			  <hubProjectName>${project.name}</hubProjectName>
+			  <outputDirectory>${project.basedir}</outputDirectory>
+			 </configuration>
+			 <executions>
+			  <execution>
+			   <id>create-bdio-file</id>
+			   <phase>package</phase>
+			   <goals>
+			    <goal>createHubOutput</goal>
+			   </goals>
+			  </execution>
+			 </executions>
+			</plugin>
+			 <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.2</version>
+			</plugin>
+			<plugin>
+                               <groupId>org.apache.maven.plugins</groupId>
+                               <artifactId>maven-site-plugin</artifactId>
+                               <version>3.6</version>
+                               <dependencies>
+                                 <dependency>
+                                   <groupId>org.apache.maven.wagon</groupId>
+                                   <artifactId>wagon-webdav-jackrabbit</artifactId>
+                                   <version>2.10</version>
+                                 </dependency>
+                               </dependencies>
+            </plugin>
+			<!-- Name the "master" branch -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-scm-plugin</artifactId>
+				<version>1.8.1</version>
+				<configuration>
+					<connectionType>developerConnection</connectionType>
+					<scmVersionType>branch</scmVersionType>
+					<scmVersion>feature/BRANCH_OS</scmVersion>
+				</configuration>
+			</plugin>
+
+			<!-- Compile to Java 1.8 class output format -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+			<!-- Link iteration name with jar version -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<archive-version>${project.version}</archive-version>
+							<internal-version>${sdk-internal.version}</internal-version>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<!-- Generate javadoc jar; see profile for Java 8 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Generate source jar -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+	<distributionManagement>
+		<!-- Publish jars to the Nexus Repository - public group -->
+		<!-- The id below must match your .m2/settings.xml/servers/server/id -->
+		<repository>
+			<id>nexus</id>
+			<name>ecompsdk-repository-releases</name>
+			<url>https://ecomp-nexus:8443/repository/maven-releases</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<name>ecompsdk-repository-snapshots</name>
+			<url>https://ecomp-nexus:8443/repository/maven-snapshots</url>
+		</snapshotRepository>
+		
+        <site>
+          <id>nexus</id>
+          <url>dav:https://ecomp-nexus:8443/repository/portalsdk-javadoc/${version}</url>
+        </site>
+	</distributionManagement>
+	<pluginRepositories>
+		<!-- Black Duck plugin dependencies -->
+		<pluginRepository>
+		 <id>JCenter</id>
+		 <name>JCenter Repository</name>
+		 <url>http://jcenter.bintray.com</url>
+		</pluginRepository>
+		 
+		<pluginRepository>
+		 <id>Restlet</id>
+		 <name>Restlet Repository</name>
+		 <url>http://maven.restlet.com</url>
+		</pluginRepository>
+	</pluginRepositories>
+</project>
