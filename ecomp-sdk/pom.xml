@@ -5,7 +5,7 @@
 	<artifactId>ecompSDK-project</artifactId>
 	<packaging>pom</packaging>
 	<!-- NOTE This value will not be picked from the property tag below, pass it as -Drelease.version="" when doing mvn deploy -->
-	<version>1.0.0</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>Ecomp Portal SDK Project (parent)</name>
 	<url>https://wiki/display/EcompPortal</url>
 	<scm>
@@ -55,16 +55,16 @@
 
 	<repositories>
 		<repository>
-			<!-- Snapshots repository has ECOMP snapshot artifacts -->
-			<id>nexus-snapshots</id>
-			<name>Nexus Maven Central - Snapshots</name>
-			<url>https://ecomp-nexus:8443/repository/maven-snapshots/</url>
+			<!-- Releases repository has ECOMP release artifacts -->
+			<id>ecomp-releases</id>
+			<name>OpenECOMP - Release Repository</name>
+			<url>https://nexus.openecomp.org/content/repositories/releases/</url>
 		</repository>
 		<repository>
-			<!-- Releases repository has ECOMP release artifacts -->
-			<id>nexus</id>
-			<name>Nexus Maven Central - Releases</name>
-			<url>https://ecomp-nexus:8443/repository/maven-releases/</url>
+			<!-- Snapshots repository has ECOMP snapshot artifacts -->
+			<id>ecomp-snapshots</id>
+			<name>OpenECOMP - Snapshot Repository</name>
+			<url>https://nexus.openecomp.org/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
 			<id>oss-sonatype</id>
@@ -216,15 +216,14 @@
 		<!-- Publish jars to the Nexus Repository - public group -->
 		<!-- The id below must match your .m2/settings.xml/servers/server/id -->
 		<repository>
-			<id>nexus</id>
-			<name>ecompsdk-repository-releases</name>
-			<url>https://ecomp-nexus:8443/repository/maven-releases</url>
+			<id>ecomp-releases</id>
+			<name>OpenECOMP - Release Repository</name>
+			<url>https://nexus.openecomp.org/content/repositories/releases/</url>
 		</repository>
-
 		<snapshotRepository>
-			<id>nexus-snapshots</id>
-			<name>ecompsdk-repository-snapshots</name>
-			<url>https://ecomp-nexus:8443/repository/maven-snapshots</url>
+			<id>ecomp-snapshots</id>
+			<name>OpenECOMP - Snapshot Repository</name>
+			<url>https://nexus.openecomp.org/content/repositories/snapshots/</url>
 		</snapshotRepository>
 		
         <site>
