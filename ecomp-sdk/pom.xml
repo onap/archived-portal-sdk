@@ -30,6 +30,10 @@
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<!-- Tests usually require some setup that maven cannot do, so skip. -->
 		<skiptests>true</skiptests>
+		<nexusproxy>https://nexus.onap.org</nexusproxy>
+		<snapshotNexusPath>/content/repositories/snapshots/</snapshotNexusPath>
+		<releaseNexusPath>/content/repositories/releases/</releaseNexusPath>
+		<stagingNexusPath>/content/repositories/staging/</stagingNexusPath>
 	</properties>
 
 	<reporting>
@@ -58,13 +62,13 @@
 			<!-- Releases repository has ECOMP release artifacts -->
 			<id>ecomp-releases</id>
 			<name>OpenECOMP - Release Repository</name>
-			<url>https://nexus.openecomp.org/content/repositories/releases/</url>
+			<url>${nexusproxy}/${releaseNexusPath}</url>
 		</repository>
 		<repository>
 			<!-- Snapshots repository has ECOMP snapshot artifacts -->
 			<id>ecomp-snapshots</id>
 			<name>OpenECOMP - Snapshot Repository</name>
-			<url>https://nexus.openecomp.org/content/repositories/snapshots/</url>
+			<url>${nexusproxy}/${snapshotNexusPath}</url>
 		</repository>
 		<repository>
 			<id>oss-sonatype</id>
@@ -104,7 +108,7 @@
 				<version>1.6.7</version>
 				<extensions>true</extensions>
 				<configuration>
-					<nexusUrl>https://nexus.openecomp.org/</nexusUrl>
+					<nexusUrl>${nexusproxy}</nexusUrl>
 					<stagingProfileId>176c31dfe190a</stagingProfileId>
 					<serverId>ecomp-staging</serverId>
 				</configuration>
@@ -210,12 +214,12 @@
 		<repository>
 			<id>ecomp-releases</id>
 			<name>OpenECOMP - Release Repository</name>
-			<url>https://nexus.openecomp.org/content/repositories/releases/</url>
+			<url>${nexusproxy}/${releaseNexusPath}</url>
 		</repository>
 		<snapshotRepository>
 			<id>ecomp-snapshots</id>
 			<name>OpenECOMP - Snapshot Repository</name>
-			<url>https://nexus.openecomp.org/content/repositories/snapshots/</url>
+			<url>${nexusproxy}/${snapshotNexusPath}</url>
 		</snapshotRepository>
 		
         <site>
