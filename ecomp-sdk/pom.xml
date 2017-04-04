@@ -30,6 +30,8 @@
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<!-- Tests usually require some setup that maven cannot do, so skip. -->
 		<skiptests>true</skiptests>
+		<nexusproxy>https://nexus.onap.org</nexusproxy>
+		<sitePath>/content/sites/site/org/openecomp/ecompsdkos/${project.version}</sitePath>
 	</properties>
 
 	<reporting>
@@ -219,8 +221,8 @@
 		</snapshotRepository>
 		
         <site>
-          <id>nexus</id>
-          <url>dav:https://ecomp-nexus:8443/repository/portalsdk-javadoc/${version}</url>
+			<id>ecomp-site</id>
+			<url>dav:${nexusproxy}${sitePath}</url>
         </site>
 	</distributionManagement>
 </project>
