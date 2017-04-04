@@ -34,6 +34,7 @@
 		<snapshotNexusPath>/content/repositories/snapshots/</snapshotNexusPath>
 		<releaseNexusPath>/content/repositories/releases/</releaseNexusPath>
 		<stagingNexusPath>/content/repositories/staging/</stagingNexusPath>
+		<sitePath>/content/sites/site/org/openecomp/ecompsdkos/${project.version}</sitePath>
 	</properties>
 
 	<reporting>
@@ -221,10 +222,10 @@
 			<name>OpenECOMP - Snapshot Repository</name>
 			<url>${nexusproxy}/${snapshotNexusPath}</url>
 		</snapshotRepository>
-		
-        <site>
-          <id>nexus</id>
-          <url>dav:https://ecomp-nexus:8443/repository/portalsdk-javadoc/${version}</url>
-        </site>
+
+		<site>
+			<id>ecomp-site</id>
+			<url>dav:${nexusproxy}${sitePath}</url>
+		</site>
 	</distributionManagement>
 </project>
