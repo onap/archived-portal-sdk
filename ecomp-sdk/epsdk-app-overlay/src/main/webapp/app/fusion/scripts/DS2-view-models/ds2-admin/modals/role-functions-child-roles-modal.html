@@ -1,0 +1,34 @@
+<div>
+	<div class="b2b-modal-header">
+	<br/>
+		<h1 class="heading-medium" id="SelectRole">Select Child Roles</h1>
+	</div>
+	<br/>
+	<div class="b2b-modal-body"  tabindex="0" aria-label="Modal header text content" role="region">
+		<table class="striped">
+						<thead>
+							<tr>
+								<th></th>						
+								<th>Role</th>
+							</tr>
+						</thead>
+						<tbody type="body" ng-repeat="role in role.childRoles">
+							<tr>
+								<td>
+									<label ng-click="activateRoleChildConfirmPopUp(roleFunction.selected,roleFunction);" class="btn-switch-label" tabindex="0" role="option">
+										<input type="checkbox" ddh-switches ng-model="roleFunction.selected"
+											size-class="modal-small modal-alert" >
+							    </label>
+								</td>
+								<td>{{ roleFunction.name }}</td>								
+							</tr>			  
+						</tbody>
+			</table>
+	</div>
+	<div class="b2b-modal-footer">
+		<div class="cta-button-group in">
+			<button style="float: right; margin-right: 20px;" class="btn btn-alt btn-small" ng-click="$dismiss('cancel')">Close</button>
+		</div>
+		<br/>
+	</div>
+</div>

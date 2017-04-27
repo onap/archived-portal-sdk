@@ -1,0 +1,36 @@
+<div>
+	<div class="b2b-modal-header ng-scope in">
+		<h1 class="heading-medium" id="SelectRole">Select Role Functions</h1>
+
+	</div>
+
+	<div class="b2b-modal-body ng-scope ng-isolate-scope in" tabindex="0" 	aria-label="Modal header text content" role="region">
+		<table class="striped">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Role Function</th>
+				</tr>
+			</thead>
+			<tbody type="body"ng-repeat="roleFunction in msg.availableRoleFunctions">
+				<tr>
+					<td>
+						<label class="btn-switch-label" tabindex="0" role="option"> 
+							<input 	type="checkbox" b2b-switches ng-model="roleFunction.selected" ng-click="activateRoleConfirmPopUp(roleFunction.selected,roleFunction);" size-class="modal-small modal-alert">
+						</label>
+					</td>
+					<td>{{roleFunction.name}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="b2b-modal-footer ng-scope ng-isolate-scope in">
+		<div class="cta-button-group in">
+			<button style="float: right; margin-right: 20px;"
+				class="btn btn-alt btn-small"
+				ng-click="$dismiss('cancel')">Close</button>
+		</div>
+		<br />
+	</div>
+</div>

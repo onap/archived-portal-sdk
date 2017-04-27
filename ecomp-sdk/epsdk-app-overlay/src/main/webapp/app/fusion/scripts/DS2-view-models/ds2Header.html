@@ -1,0 +1,69 @@
+<div style="position:relative;width: 100%;top: 0px;left: 0;background-color: #222;z-index:9999">
+    <header class="b2b-header-tabs" b2b-header-responsive ng-show="{{showHeader}}">
+        <ul class="header__items" role="navigation">
+            <li class="header__item icon__item" tabindex="0">
+								
+								<!--
+									 -TODO: needs to be this icon but is not availble
+									 -->
+               
+                <span class="globe-text">ECOMP Portal</span>
+            </li>
+            <li b2b-header-menu class="header__item b2b-headermenu" ng-repeat="item in menuItems" role="presentation">
+                <a href="#" class="menu__item" role="menuitem"></a>
+                <div class="header-secondary-wrapper">
+                    <ul class="header-secondary" role="menu">
+                        <li class="header-subitem" b2b-header-submenu ng-repeat="i in item.subitems" role="presentation">
+                            <a href="#" class="menu__item" aria-haspopup="{{i.links ? true:false}}" role="menuitem">{{i.value}}</a>
+                            <div class="header-tertiary-wrapper" ng-if="i.links">
+                            <ul class="header-tertiary" role="menu">
+                                <li b2b-header-tertiarymenu ng-repeat="link in i.links" role="presentation">
+                                    <label>{{link.title}}</label>
+                                    <div b2b-tertiary-link ng-repeat="title in link.value">
+                                    <a href="{{link.href}}" class="header-tertiaryitem" ng-if="!title.subitems" aria-haspopup="false" role="menuitem"><span class="b2b-label-hide">{{link.title}}</span>{{title.title}}</a>
+                                    <a href="{{link.href}}" class="header-tertiaryitem" b2b-header-togglemenu ng-if="title.subitems" aria-haspopup="true" role="menuitem"><span class="b2b-label-hide">{{link.title}}</span>{{title.title}}</a>
+                                    <ul class="header-quarternary" role="menu"  ng-if="title.subitems">
+                                            <li b2b-header-quarternarymenu role="presentation">
+                                                <a href="{{nav.href}}" ng-repeat="nav in title.subitems" role="menuitem" aria-haspopup="true">
+                                                    {{nav.title}}
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </li>           
+            <!--<li class="header__item profile" b2b-header-responsive>-->
+            <li class="header__item profile">
+            
+				<label	ng-click="showInfo = !showInfo" class="headerUserName" tabindex="0" ddh-accessibility-click="13,32">
+				<!--  Temporarily copied the font file from DS1 to local directory(as DS2 component is not working yet) -->
+					<!-- <div class="icon-user-small login-snippet-icon"></div> -->
+					<i class="icon-user" style="color:#FFFFFF;"></i>
+					<span class="header_profile">{{userFirstName}}</span>
+				</label>
+				
+				<div class="profile-info" ng-class="{'open': showInfo,'': !showInfo}">
+					<h6 id="example_source_john-smith">{{userProfile.fullName}}</h6>
+					<label for='email'>Email</label> <span id='email'>{{userProfile.email}}</span>
+					<label for='profileId'>Organization User ID</label> <span id='profileId'>{{userProfile.orgUserId}}</span>
+					<!-- <label for='comp'>Company</label> <span id='comp'>{{userProfile.serviceProviderName}}</span> -->
+					<i class="caret"></i>
+					<!-- <p>
+						<a href="{{userProfile.userProfileUrl}}" style="float: left">My Profile</a> 
+						<a href="{{userProfile.companyProfileUrl}}" style="float: right">Company Profile</a>
+					</p> -->
+					<p>
+						<a class="btn btn-alt" style="float: right" href="logout.htm">Log Out</a>
+					</p>
+				</div> 
+				<div style="width:250px;"></div>
+            </li>
+       </ul>
+    </header>
+  
+   </div>

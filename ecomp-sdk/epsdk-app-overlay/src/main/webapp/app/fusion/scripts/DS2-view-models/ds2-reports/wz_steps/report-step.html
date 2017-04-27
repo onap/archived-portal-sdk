@@ -1,0 +1,101 @@
+<!-- <link rel="stylesheet" type="text/css" href="static/fusion/raptor/css/raptor.css"> -->
+<style>
+#stepView table tbody td {
+    border: none;
+}
+
+#stepView table tbody tr {
+    border: none;
+}
+
+
+.selectWrap {
+	width: 300px;
+}
+.tdLeftColumn {
+	text-align: right;
+	vertical-align:middle;
+}
+</style>
+
+<div id="page-content">
+<h1 class="heading-page">Report Wizard</h1>
+
+
+
+<!-- <h1 id="tabs---promo">Tabs - Promo</h1>
+<button class="btn btn-secondary btn-small" ng-click="gTabs[3].disabled = !gTabs[3].disabled">{{gTabs[3].disabled?'Enable':'Disable'}}</button> - Toggle 4th (Features) Tab
+<br><br> -->
+ <b2b-tabset tab-id-selected="activeTabsId">
+     <b2b-tab ng-repeat="tab in gTabs" tab-item="tab" 
+              id="{{tab.uniqueId}}" aria-controls="{{tab.tabPanelId}}"
+              ng-disabled="tab.disabled">
+         {{tab.title}}
+     </b2b-tab>
+ </b2b-tabset>
+<br><br>
+<!-- <select ng-model="prj" 
+        ng-options="item.projectName for item in allProjects track by item.id" data-ng-init="getAllProjects()" 
+        ng-change="selectAction();">
+    <option value="">Select project</option>
+</select>
+
+<a ng-click="createAction()" class="pointer">Create Project</a> -->
+
+<input type="hidden" name="project_id" ng-model="project_id" value = ""/>
+
+<div id="stepViewColumn" ng-show = "isColumnStep">
+	<h1>Step 3 : Columns</h1>
+    <table class="striped">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Column Name</th>
+                <th>ID</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat = "rowData in colTableRowData">
+                <td>{{$index+1}}</td>
+                <td>{{rowData.name}}</td>
+                <td>{{rowData.id}}</td>
+                <td><a ng-click="openColumnPopup(rowData)" class="icon-misc-pen"></a></td>
+            </tr>
+        </tbody>
+    </table>    
+</div>
+
+<div id="stepViewFormField" ng-show = "isFormFieldStep">
+	<h1>Step 4 : Form Fields</h1>
+    <table class="striped">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Field Name</th>
+                <th>Edit</th>
+                <th>Delete</th>                
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat = "rowData in formFieldData">
+                <td>{{$index+1}}</td>
+                <td>{{rowData.name}}[{{rowData.id}}]</td>
+<!--                 <td>id</td> -->
+                <td><a ng-click="openFormFieldPopup(rowData)" class="icon-misc-pen"></a></td>
+                <td><a ng-click="deleteFormField(rowData)" class="icon-misc-trash"></a></td>
+            </tr>
+        </tbody>
+    </table>    
+</div>
+
+<div id="stepView">
+<!--     <step-form ng-model="jsonSrcName" renderForm="changeme"></step-form> -->
+</div>
+
+
+<!-- <select id="dropdown1" name="dropdown1" b2b-dropdown placeholder-text="Select" ng-model="selectedReportType.value">
+    <option b2b-dropdown-list option-repeat="d in reportTypes" value="{{d.value}}">{{d.text}}</option>
+</select>
+<h1>{{selectedReportType.value}}</h1> -->
+</div>

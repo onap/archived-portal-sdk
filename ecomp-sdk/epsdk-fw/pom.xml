@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openecomp.ecompsdkos</groupId>
+		<artifactId>epsdk-project</artifactId>
+		<version>1.1.0-SNAPSHOT</version>
+	</parent>
+
+	<!-- GroupId is inherited from parent -->
+	<artifactId>epsdk-fw</artifactId>
+	<!-- Version is inherited from parent -->
+	<packaging>jar</packaging>
+	<name>ECOMP Portal SDK Framework</name>
+
+	<!-- properties are inherited from parent -->
+
+	<!-- repositories are inherited from parent -->
+
+	<!-- profiles are inherited from parent -->
+
+	<build>
+
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/portal*.properties</include>
+				</includes>
+			</resource>
+		</resources>
+
+		<plugins>
+
+			<!-- some plugins inherited from parent -->
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<archive-version>${project.version}</archive-version>
+							<internal-version>${sdk-internal.version}</internal-version>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+	<dependencies>
+
+		<!-- publicly available -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.10</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		
+	</dependencies>
+
+</project>

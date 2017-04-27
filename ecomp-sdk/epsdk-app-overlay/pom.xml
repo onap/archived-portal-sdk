@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openecomp.ecompsdkos</groupId>
+		<artifactId>epsdk-project</artifactId>
+		<version>1.1.0-SNAPSHOT</version>
+	</parent>
+
+	<!-- GroupId is inherited from parent -->
+	<artifactId>epsdk-app-overlay</artifactId>
+	<!-- Version is inherited from parent -->
+	<packaging>war</packaging>
+	<name>ECOMP Portal SDK Webapp Overlay Files</name>
+	<description>ECOMP Portal SDK Web Application overlay project</description>
+	<url>https://wiki.onap.org/display/DW/Portal</url>
+
+	<properties>
+		<encoding>UTF-8</encoding>
+	</properties>
+
+	<build>
+		<plugins>
+			<!-- Silence Eclipse warnings by declaring Java 1.8 class output format -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!-- Silence Eclipse warning on JSPs by declaring dependencies -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+	</dependencies>
+
+</project>

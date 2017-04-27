@@ -1,0 +1,209 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>org.openecomp.ecompsdkos</groupId>
+		<artifactId>epsdk-project</artifactId>
+		<version>1.1.0-SNAPSHOT</version>
+	</parent>
+	
+	<!-- GroupId is inherited from parent -->
+	<artifactId>epsdk-analytics</artifactId>
+	<!-- Version is inherited from parent -->
+	<packaging>jar</packaging>
+	<name>ECOMP Portal SDK Analytics</name>
+	<description>Provides analytics features for SDK applications</description>
+	<url>https://wiki.onap.org/display/DW/Portal</url>
+
+	<!-- repositories are inherited from parent -->
+	
+	<build>
+	<plugins>
+	<!--  
+	<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>license-maven-plugin</artifactId>
+			    <version>1.10</version>
+			    <configuration>
+		              <encoding>UTF-8</encoding>
+			        <licenseName>my_license</licenseName>
+			        <licenseResolver>${project.baseUri}/license</licenseResolver>
+			        <inceptionYear>2017</inceptionYear>
+				<organizationName>AT&amp;T Intellectual Property</organizationName>
+				<projectName>eCOMP Portal SDK</projectName> 
+				<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage> 
+     				<processStartTag>================================================================================</processStartTag>
+     				<sectionDelimiter>================================================================================</sectionDelimiter>
+     				<processEndTag>================================================================================</processEndTag> 
+			    	<roots>
+					<root>src/main</root>
+				</roots>
+				<excludes>
+					<exclude>*.png</exclude>
+					<exclude>*.drl</exclude>
+					<exclude>*.gif</exclude>
+					<exclude>*.jpeg</exclude>
+					<exclude>*.jpg</exclude>
+					<exclude>*.bmp</exclude>
+					<exclude>*.ico</exclude>
+					<exclude>*.svg</exclude>
+				</excludes>
+			    </configuration>
+			    <executions>
+			        <execution>
+			            <id>first</id>
+			            <goals>
+			                <goal>update-file-header</goal>
+			            </goals>
+			            <phase>process-sources</phase>
+			        </execution>
+			    </executions>
+			</plugin>
+			-->
+	</plugins>
+	</build>
+
+	<dependencies>
+	
+		<!-- sdk-core -->
+		<dependency>
+			<groupId>org.openecomp.ecompsdkos</groupId>
+			<artifactId>epsdk-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<!-- Raptor required Libraries -->
+		<!-- for static charts -->
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.10</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<!-- for generating PDF -->
+		<dependency>
+			<groupId>com.lowagie</groupId>
+			<artifactId>itext</artifactId>
+			<version>2.0.8</version>
+		</dependency>
+		<!-- bridge to implement commons-logging using slf4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${springframework.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+		<!-- for generating excel/csv/excelx -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.5-FINAL</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.5-FINAL</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-scratchpad</artifactId>
+			<version>3.5-FINAL</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-contrib</artifactId>
+			<version>3.5-FINAL</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+</project>
