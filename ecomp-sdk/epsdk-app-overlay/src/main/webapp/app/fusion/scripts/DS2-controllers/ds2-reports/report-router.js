@@ -17,6 +17,10 @@ appDS2.config(['$routeProvider',
                         templateUrl: 'static/fusion/raptor/ebz/report_chart_wizard.html',
                         controller: 'ChartController'
                       		}).
+                    when('/report_chart/:reportId', {
+                        templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-reports/report-chart-wizard.html',
+                        controller: 'reportChartController'
+                      		}).                      		
                     when("/report_wizard", {
               	        templateUrl : "app/fusion/scripts/DS2-view-models/ds2-reports/wz_steps/report-step.html",
               	        controller: "reportStepController"

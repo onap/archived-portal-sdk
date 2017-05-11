@@ -33,6 +33,22 @@ Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_profile_import
 Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_tab','Sample Tab Menu');
 Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('view_reports','View Raptor reports');
 
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_itracker_admin','Itracker Admin/Support menu');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('quantum_bd','Big Data Function');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('1','test role function');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_hiveconfig','Hive Configuration');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_mapreduce_create','Map Reduce Configuration Create');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_mapreduce_search','Map Reduce Configuration Search');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_hiveconfig_search','Hive Configuration Search');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_hiveconfig_create','Hive Configuration Create');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_test','Test Menu');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_doclib','Document Library Menu');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('doclib','Document Library');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('doclib_admin','Document Library Admin');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_concept','CoNCEPT');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_itracker','iTracker Menu');
+Insert into fn_function (FUNCTION_CD,FUNCTION_NAME) values ('menu_mapreduce','Map Reduce Configuration');
+
 -- fn_lu_activity
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('add_role','add_role');
 Insert into fn_lu_activity (ACTIVITY_CD,ACTIVITY) values ('remove_role','remove_role');

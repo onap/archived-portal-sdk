@@ -55,23 +55,28 @@ body {
 }
 </style>
 
-<div id="page-content">
-	<!-- <h1 class="heading2">{{reportData.reportName}}  -->  
-	<h1 class="heading-page">{{reportData.reportHeading}}
-	<a ng-href="{{reportEditURL}}" ng-show="reportData.allowEdit" class="icon-edit" style="font-size:20px;"></a>
-	
-	&nbsp;&nbsp;&nbsp;<a ng-href="{{reportChartURL}}" ng-show="reportData.allowEdit && reportData.chartWizardAvailable" class="icon-bar-chart-vertical" style="font-size:20px;"></a>
-	&nbsp;&nbsp;&nbsp;<span  ng-show="reportData.allowEdit && showFormFields" ><input type="checkbox" ng-model="showFormFieldIds" ng-true-value="Hide_IDs" ng-false-value="Show_IDs" att-toggle-main></span>
-	
-	<!-- &nbsp;&nbsp;&nbsp;<a ng-href="{{reportChartURLNew}}" ng-show="reportData.allowEdit" class="icon-bar-chart-horizontal" style="font-size:20px;"></a> -->
-	</h1>
-	
+<div id="page-content">	
+	<div style="width:100%; overflow:hidden;">
+		<div style="float:left;"><h1 class="heading-page">{{reportData.reportHeading}}</h1></div>
+		<div style="float:left; margin-left: 10px; margin-right: 10px;">
+			<a style="font-size:180%;" ng-href="report#/report_wizard/{{reportData.reportID}}" class="icon-misc-pen" ng-show="reportData.allowEdit"></a>
+		</div>
+		<div style="float:left; margin-left: 5px; margin-right: 10px;">
+			<a style="font-size:180%;" ng-href="report#/report_chart/{{reportData.reportID}}" class="icon-misc-piechart" ng-show="reportData.allowEdit"></a>
+		</div>
+
+	    <div ng-show ="reportData.allowEdit && showFormFields" style="margin-top:5px;">
+	        <label for="checkbox1" class="checkbox">
+	            <input id="checkbox1" type="checkbox" ng-model="showFormFieldId.value" /><i class="skin"></i><span>show IDs</span>
+	        </label>
+	    </div>
+	</div>
 	<h3 class="heading3">{{reportData.reportSubTitle}} </h3>
 	  
 	  <div ng-show="isInProgress" style="font-size:50px;color:#2ca02c">Loading...</div>
 	  
 	  <form ng-show="showFormFields" class="row section-row" style="margin: 10px">
-	    <form-builder ng-form-fields="reportData.formFieldList" ng-show-field-id="showFormFieldIds" ng-num-form-cols="reportData.numFormCols" ng-model="formFieldSelectedValues" ng-trigger-method="triggerOtherFormFields"></form-builder>
+	    <form-builder ng-form-fields="reportData.formFieldList" ng-show-field-id="showFormFieldId.value" ng-num-form-cols="reportData.numFormCols" ng-model="formFieldSelectedValues" ng-trigger-method="triggerOtherFormFields"></form-builder>
 	    <br><br>
 	    <button type="submit" style="width: 90px; height:35px;margin-top:20px; margin-left:5px;" class="btn btn-alt btn-small" ng-click="runReport()">Run</button>
 	  </form>

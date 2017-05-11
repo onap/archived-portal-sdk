@@ -1,6 +1,6 @@
 /*-
  * ================================================================================
- * eCOMP Portal SDK
+ * ECOMP Portal SDK
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property
  * ================================================================================
@@ -34,9 +34,23 @@ public class ColumnEditJSON implements WizardJSON {
 	private String drilldownURL;
 	private String drilldownParams;
 	private String drilldownType;
+	private String errorMessage;
+	private String errorStackTrace;
 	
 	public String getTabId() {
 		return tabId;
+	}
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+	public String getErrorStackTrace() {
+		return errorStackTrace;
+	}
+	public void setErrorStackTrace(String errorStackTrace) {
+		this.errorStackTrace = errorStackTrace;
 	}
 	public void setTabId(String tabId) {
 		this.tabId = tabId;
@@ -101,10 +115,5 @@ public class ColumnEditJSON implements WizardJSON {
 	public void setDrilldownType(String drilldownType) {
 		this.drilldownType = drilldownType;
 	}
-	
-	
-	
-	
-	
-	
+
 }

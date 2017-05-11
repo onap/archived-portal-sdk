@@ -3,7 +3,22 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
 		getDefinitionByReportId: function(reportId) {
 			return $http({
 				method: "GET",
-                url: "report/wizard/retrieve_tab_wise_data/Def/"+reportId,			
+                url: "report/wizard/retrieve_def_tab_wise_data/"+reportId,			
+			}).then(function(response) {
+				if (typeof response.data === 'object') {
+					return response.data;
+				} else {
+					return $q.reject("raptorReportFactory: getDefinitionByReportId did not return a valid JSON object.");
+				}
+			}, function(response) {
+				// something went wrong
+				return $q.reject("raptorReportFactory: getDefinitionByReportId callback failed");
+			});			
+		},			
+		getDefinitionByReportId: function(reportId) {
+			return $http({
+				method: "GET",
+                url: "report/wizard/retrieve_def_tab_wise_data/"+reportId,			
 			}).then(function(response) {
 				if (typeof response.data === 'object') {
 					return response.data;
@@ -18,7 +33,7 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
 		getDefinitionInSession: function() {
 			return $http({
 				method: "GET",
-                url: "report/wizard/retrieve_tab_wise_data/Def/InSession",			
+                url: "report/wizard/retrieve_def_tab_wise_data/InSession",			
 			}).then(function(response) {
 				if (typeof response.data === 'object') {
 					return response.data;
@@ -34,7 +49,7 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
 		createNewDefinition: function() {
 			return $http({
 				method: "GET",
-                url: "report/wizard/retrieve_tab_wise_data/Def/Create",			
+                url: "report/wizard/retrieve_def_tab_wise_data/Create",			
 			}).then(function(response) {
 				if (typeof response.data === 'object') {
 					return response.data;
@@ -82,7 +97,7 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
 		getSqlInSession: function() {
 			return $http({
 				method: "GET",
-                url: "report/wizard/retrieve_tab_wise_data/Sql/InSession",			
+                url: "report/wizard/retrieve_sql_tab_wise_data/InSession",			
 			}).then(function(response) {
 				if (typeof response.data === 'object') {
 					return response.data;
@@ -100,8 +115,8 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
                 url: "report/wizard/retrieve_data/true",
                 data: queryJSON			
 			}).then(function(response) {
-				if (typeof response.data === 'object') {
-					return response.data;
+				if (typeof response.data === 'object') {					
+					return JSON.parse(response.data.data.elements);
 				} else {
 					return $q.reject("raptorReportFactory: testRunSQL did not return a valid JSON object.");
 				}
@@ -118,7 +133,7 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
                 data: queryJSON			
 			}).then(function(response) {
 				if (typeof response.data === 'object') {
-					return response.data;
+					return JSON.parse(response.data.data.elements);
 				} else {
 					return $q.reject("raptorReportFactory: formFieldVerifySQL did not return a valid JSON object.");
 				}
@@ -144,11 +159,58 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
 				return $q.reject("raptorReportFactory: getColumnList callback failed");				
 			});
 		},
-		
+		getDrillDownReportList: function() {
+			return $http({
+				method: "GET",
+                url: "report/wizard/list_drilldown_reports",
+			}).then(function(response) {
+				if (typeof response.data === 'object') {
+					return response.data;
+				} else {
+					return $q.reject("raptorReportFactory: getDrillDownReportList did not return a valid JSON object.");
+				}
+				return response.data;
+			}, function(response) {
+				// something went wrong
+				return $q.reject("raptorReportFactory: getDrillDownReportList callback failed");				
+			});
+		},
+		getChildReportFormField: function(reportId) {
+			return $http({
+				method: "GET",
+                url: "report/wizard/list_child_report_ff/"+reportId,
+			}).then(function(response) {
+				if (typeof response.data === 'object') {
+					return response.data;
+				} else {
+					return $q.reject("raptorReportFactory: getDrillDownReportList did not return a valid JSON object.");
+				}
+				return response.data;
+			}, function(response) {
+				// something went wrong
+				return $q.reject("raptorReportFactory: getDrillDownReportList callback failed");				
+			});
+		},		
+		getChildReportColumn: function(reportId) {
+			return $http({
+				method: "GET",
+                url: "report/wizard/list_child_report_col/"+reportId,
+			}).then(function(response) {
+				if (typeof response.data === 'object') {
+					return response.data;
+				} else {
+					return $q.reject("raptorReportFactory: getChildReportColumn did not return a valid JSON object.");
+				}
+				return response.data;
+			}, function(response) {
+				// something went wrong
+				return $q.reject("raptorReportFactory: getChildReportColumn callback failed");				
+			});
+		},		
 		getColumnEditInfoById: function(columnId){
 			return $http({
 				method: "GET",
-                url: "report/wizard/retrieve_tab_wise_data/ColEdit/"+columnId,
+                url: "report/wizard/retrieve_col_tab_wise_data/"+columnId,
 			}).then(function(response) {
 				if (typeof response.data === 'object') {
 					return response.data;
@@ -241,7 +303,7 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
 		getFormFieldEditInfoById: function(fieldId){
 			return $http({
 				method: "GET",
-                url: "report/wizard/retrieve_tab_wise_data/FormEdit/"+fieldId,
+                url: "report/wizard/retrieve_form_tab_wise_data/"+fieldId,
 			}).then(function(response) {
 				if (typeof response.data === 'object') {
 					return response.data;
@@ -257,7 +319,7 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
 		deleteFormFieldById: function(fieldId){
 			return $http({
 				method: "GET",
-                url: "report/wizard/retrieve_tab_wise_data/FormEdit/delete/"+fieldId,
+                url: "report/wizard/retrieve_form_tab_wise_data/"+fieldId+"/delete",
 			}).then(function(response) {
 				if (typeof response.data === 'object') {
 					return response.data;
@@ -314,6 +376,9 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
 						return $q.reject("raptorReportFactory: getSearchDataAtPage callback failed");				
 					});
 		},
+		setDrillDownPopupOptions: function(drillDownPopupOptions) {
+			this.drillDownPopupOptions = drillDownPopupOptions;
+		},	
 		getReportDeleteStatus : function(deleteUrl) {
 			return $http.get(deleteUrl).then(function(response) {
 				if (typeof response.data === 'object') {

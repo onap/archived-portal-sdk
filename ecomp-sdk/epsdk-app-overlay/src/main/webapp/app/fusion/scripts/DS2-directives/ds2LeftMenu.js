@@ -64,23 +64,7 @@ appDS2.directive('ds2Menu', function () {
         	},function(error){
         		console.log("error happened while calling getAppName "+error);
         	});
-            	
-        	$scope.adjustHeader=function() {
-        		$scope.showHeader = ($cookies.show_app_header == undefined ? true : $cookies.show_app_header);
-        		if ($scope.showHeader == true) {
-        			$scope.drawer_margin_top = 50;
-        			$scope.drawer_custom_top = 54;
-        			$scope.toggle_drawer_top = 55;
-            	}
-        		else  {			
-        			$scope.drawer_margin_top = 40;
-        			$scope.drawer_custom_top = 0;
-        			$scope.toggle_drawer_top = 10;
-        		}   		
-        	}; // adjustHeader
-
-        	
-        	$scope.adjustHeader();
+            
         	$scope.drawerOpen = true;
         	
         	

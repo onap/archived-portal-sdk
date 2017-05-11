@@ -1,6 +1,6 @@
 /*-
  * ================================================================================
- * eCOMP Portal SDK
+ * ECOMP Portal SDK
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property
  * ================================================================================
@@ -35,8 +35,29 @@ public class FormEditJSON implements WizardJSON {
 	private String fieldSQL;
 	private String validationType;
 	private List<IdNameBooleanJSON> predefinedValueList;
+	private String message;
+	private String errorMessage;
+	private String errorStackTrace;
 	
 	
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+	public String getErrorStackTrace() {
+		return errorStackTrace;
+	}
+	public void setErrorStackTrace(String errorStackTrace) {
+		this.errorStackTrace = errorStackTrace;
+	}
 	public String getTabId() {
 		return tabId;
 	}
@@ -106,8 +127,5 @@ public class FormEditJSON implements WizardJSON {
 	public void setFieldSQL(String fieldSQL) {
 		this.fieldSQL = fieldSQL;
 	}
-	
-	
-	
-	
+
 }

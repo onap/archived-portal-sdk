@@ -70,22 +70,9 @@ window.onscroll = function (e) {
 	adjustLeftMenuHeight();
 } 
 
-function adjustHeader() {
-	var showHeader = getCookie("show_app_header");
-	if(showHeader==''){
-		$(".menu-container").css({
-			"margin-top" : 45,
-		});
-	}else{
-		$(".menu-container").css({
-			"margin-top" : 0,
-		});
-	}
-};
 /* adjust left menu height on page load */
 $(function() {
 	adjustLeftMenuHeight();
-	adjustHeader();
 });
 
 

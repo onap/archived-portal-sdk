@@ -10,7 +10,9 @@ appDS2.controller("reportRunController", ['$scope','$rootScope','$routeParams','
 	$scope.reportData.allowEdit = false;
 	$scope.formFieldSelectedValues = {};
 	$scope.showFormFieldIds = false;
-	
+    $scope.showFormFieldId = {
+            value: false
+        };
 	$scope.isInProgress = true;
 	
 	if($routeParams.reportUrlParams.indexOf("parent___params===")>-1) {
@@ -20,7 +22,7 @@ appDS2.controller("reportRunController", ['$scope','$rootScope','$routeParams','
 	} else {
 		$scope.currentReportUrlParams = $routeParams.reportUrlParams;
 	}
-	console.log($routeParams.reportUrlParams);
+	// console.log($routeParams.reportUrlParams);
 	var parseQueryString = function( queryString ) {
 	    var params = {}, queries, temp, i, l;
 	    // Split into key/value pairs
@@ -60,10 +62,10 @@ appDS2.controller("reportRunController", ['$scope','$rootScope','$routeParams','
 	
 	$http.get('raptor.htm?action=report.run.container&'+$scope.currentReportUrlParams).then(
 		function(response){
-			console.log(response);
+			// console.log(response);
 			$scope.isInProgress = false;
 			$scope.reportData = response.data;
-			console.log('reportData report run container response',$scope.reportData);
+			// console.log('reportData report run container response',$scope.reportData);
 			if ($scope.reportData.reportTitle) {
 				$scope.reportData.reportHeading = $scope.reportData.reportTitle;
 				if ($scope.reportData.reportSubTitle) {
@@ -73,7 +75,7 @@ appDS2.controller("reportRunController", ['$scope','$rootScope','$routeParams','
 			else
 				$scope.reportData.reportHeading = $scope.reportData.reportName;
 			if(!$scope.urlParams.hideChart && $scope.reportData.chartAvailable && $scope.reportData.totalRows>1){
-	      		console.log('raptor.htm?action=chart.run&'+convertQueryString($scope.urlParams));
+	      		// console.log('raptor.htm?action=chart.run&'+convertQueryString($scope.urlParams));
 		    	$http.get('raptor.htm?action=chart.run&'+convertQueryString($scope.urlParams)).then(
 		      		 	function(response){
 		      		 	  $scope.showChart =  true;
@@ -120,7 +122,7 @@ appDS2.controller("reportRunController", ['$scope','$rootScope','$routeParams','
 		else
 			$scope.reportData.reportHeading = $scope.reportData.reportName;*/
 			
-    	console.log("pagination");
+    	// console.log("pagination");
     	if(!pagination) {
     		//console.log("refreshed ...");
     		$scope.gridOptions.pageNumber = 1;
@@ -141,7 +143,7 @@ appDS2.controller("reportRunController", ['$scope','$rootScope','$routeParams','
 
     	}
         $scope.currentReportUrlParams = 'c_master='+$scope.urlParams.c_master+'&'+formFieldsUrl+'&display_content=Y&r_page='+(paginationOptions.pageNumber-1);
-    	console.log('raptor.htm?action=report.run.container&c_master='+$scope.urlParams.c_master+'&'+formFieldsUrl+'refresh=Y&display_content=Y&r_page='+(paginationOptions.pageNumber-1));
+    	// console.log('raptor.htm?action=report.run.container&c_master='+$scope.urlParams.c_master+'&'+formFieldsUrl+'refresh=Y&display_content=Y&r_page='+(paginationOptions.pageNumber-1));
     	  $http.get('raptor.htm?action=report.run.container&c_master='+$scope.urlParams.c_master+'&'+formFieldsUrl+'refresh=Y&display_content=Y&r_page='+(paginationOptions.pageNumber-1)).then(
     		function(response){
 		    	$scope.reportData = response.data;
@@ -163,12 +165,12 @@ appDS2.controller("reportRunController", ['$scope','$rootScope','$routeParams','
 		    	}		   
 		    if(!pagination) {	
 		      if(!$scope.urlParams.hideChart && $scope.reportData.chartAvailable && $scope.reportData.totalRows>1){
-		      		console.log('raptor.htm?action=chart.run&c_master='+$scope.urlParams.c_master+'&'+formFieldsUrl+'display_content=Y&r_page='+(paginationOptions.pageNumber-1));
+		      		// console.log('raptor.htm?action=chart.run&c_master='+$scope.urlParams.c_master+'&'+formFieldsUrl+'display_content=Y&r_page='+(paginationOptions.pageNumber-1));
 			    	$http.get('raptor.htm?action=chart.run&c_master='+$scope.urlParams.c_master+'&'+formFieldsUrl+'display_content=Y&r_page='+(paginationOptions.pageNumber-1)).then(
 			      		 	function(response) {
-			      		 		console.log(response.data);
+			      		 		// console.log(response.data);
 			      		 		$scope.showChart =  true;
-			      		 		console.log('response.data',response.data);
+			      		 		// console.log('response.data',response.data);
 			      		 		document.getElementById('chartiframe').contentWindow.document.write(response.data);
 			      		 		document.getElementById('chartiframe').contentWindow.document.close();
 			      			});
@@ -313,7 +315,7 @@ appDS2.controller("reportRunController", ['$scope','$rootScope','$routeParams','
 		});
 
 		$scope.triggerOtherFormFields = function(){
-  			console.log("report_run");
+  			// console.log("report_run");
 	    	var formFieldsUrl = $scope.getFormFieldSelectedValuesAsURL();
 	    	$http.get('raptor.htm?action=report.formfields.run.container&c_master='+$scope.reportData.reportID+'&'+formFieldsUrl).then(
 	      		 	function(response){

@@ -1,6 +1,7 @@
 -- ---------------------------------------------------------------------------------------------------------------
 -- This rollback script is for the OpenSource ECOMP SDK App database from version 1707 to 1610.2.
 -- change size on 3 name columns from fn_user for the Opensource version
+--
 -- changed DS1 icon names to DS2 icon names
 -- removed unnecessary fn_menu entries, updated fn_menu actions
 -- ---------------------------------------------------------------------------------------------------------------
@@ -38,6 +39,10 @@ where menu_id = 150038 and label = 'Notebook';
 update fn_menu
 set action = 'admin'
 where menu_id = 101 and label = 'Roles';
+
+update fn_menu
+set action = 'report_wizard.htm?r_action=report.create'
+where menu_id = 87 and label = 'Create Reports';
 
 delete from fn_menu 
 where menu_id = 150022 and label = 'Menus';

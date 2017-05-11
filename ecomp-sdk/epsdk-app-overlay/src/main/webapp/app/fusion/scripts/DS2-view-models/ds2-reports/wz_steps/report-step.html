@@ -22,7 +22,6 @@
 <h1 class="heading-page">Report Wizard</h1>
 
 
-
 <!-- <h1 id="tabs---promo">Tabs - Promo</h1>
 <button class="btn btn-secondary btn-small" ng-click="gTabs[3].disabled = !gTabs[3].disabled">{{gTabs[3].disabled?'Enable':'Disable'}}</button> - Toggle 4th (Features) Tab
 <br><br> -->
@@ -34,6 +33,13 @@
      </b2b-tab>
  </b2b-tabset>
 <br><br>
+<div ng-show="showLoader" class="span loader-container">
+	<i class="icon-primary-spinner" role="img"
+		aria-label="Please wait while we load your content"></i>
+</div>
+
+<div ng-hide="showLoader">
+
 <!-- <select ng-model="prj" 
         ng-options="item.projectName for item in allProjects track by item.id" data-ng-init="getAllProjects()" 
         ng-change="selectAction();">
@@ -92,7 +98,7 @@
 <div id="stepView">
 <!--     <step-form ng-model="jsonSrcName" renderForm="changeme"></step-form> -->
 </div>
-
+</div>
 
 <!-- <select id="dropdown1" name="dropdown1" b2b-dropdown placeholder-text="Select" ng-model="selectedReportType.value">
     <option b2b-dropdown-list option-repeat="d in reportTypes" value="{{d.value}}">{{d.text}}</option>

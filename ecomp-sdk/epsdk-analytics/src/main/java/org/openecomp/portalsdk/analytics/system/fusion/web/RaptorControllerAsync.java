@@ -1,6 +1,6 @@
 /*-
  * ================================================================================
- * eCOMP Portal SDK
+ * ECOMP Portal SDK
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property
  * ================================================================================
@@ -32,19 +32,21 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.openecomp.portalsdk.analytics.controller.Action; 
+import org.openecomp.portalsdk.analytics.controller.Action;
 import org.openecomp.portalsdk.analytics.controller.ErrorHandler;
 import org.openecomp.portalsdk.analytics.error.RaptorException;
 import org.openecomp.portalsdk.analytics.error.RaptorRuntimeException;
 import org.openecomp.portalsdk.analytics.error.ReportSQLException;
-import org.openecomp.portalsdk.analytics.error.UserDefinedException;
+import org.openecomp.portalsdk.analytics.model.DataCache;
 import org.openecomp.portalsdk.analytics.model.ReportHandler;
+import org.openecomp.portalsdk.analytics.model.base.IdNameValue;
 import org.openecomp.portalsdk.analytics.model.definition.ReportDefinition;
 import org.openecomp.portalsdk.analytics.model.definition.wizard.ColumnEditJSON;
 import org.openecomp.portalsdk.analytics.model.definition.wizard.ColumnJSON;
@@ -56,18 +58,17 @@ import org.openecomp.portalsdk.analytics.model.definition.wizard.MessageJSON;
 import org.openecomp.portalsdk.analytics.model.definition.wizard.NameBooleanJSON;
 import org.openecomp.portalsdk.analytics.model.definition.wizard.QueryJSON;
 import org.openecomp.portalsdk.analytics.model.definition.wizard.QueryResultJSON;
+import org.openecomp.portalsdk.analytics.model.definition.wizard.RaptorResponse;
 import org.openecomp.portalsdk.analytics.model.definition.wizard.SearchFieldJSON;
 import org.openecomp.portalsdk.analytics.model.definition.wizard.WizardJSON;
 import org.openecomp.portalsdk.analytics.model.pdf.PdfReportHandler;
 import org.openecomp.portalsdk.analytics.model.runtime.CategoryAxisJSON;
 import org.openecomp.portalsdk.analytics.model.runtime.ChartJSON;
-
 import org.openecomp.portalsdk.analytics.model.runtime.ErrorJSONRuntime;
 import org.openecomp.portalsdk.analytics.model.runtime.FormField;
 import org.openecomp.portalsdk.analytics.model.runtime.RangeAxisJSON;
 import org.openecomp.portalsdk.analytics.model.runtime.ReportFormFields;
 import org.openecomp.portalsdk.analytics.model.runtime.ReportRuntime;
-
 import org.openecomp.portalsdk.analytics.system.AppUtils;
 import org.openecomp.portalsdk.analytics.system.ConnectionUtils;
 import org.openecomp.portalsdk.analytics.system.Globals;
@@ -77,11 +78,10 @@ import org.openecomp.portalsdk.analytics.util.Utils;
 import org.openecomp.portalsdk.analytics.util.XSSFilter;
 import org.openecomp.portalsdk.analytics.view.ReportData;
 import org.openecomp.portalsdk.analytics.xmlobj.DataColumnType;
-import org.openecomp.portalsdk.analytics.xmlobj.FormFieldList;
 import org.openecomp.portalsdk.analytics.xmlobj.FormFieldType;
 import org.openecomp.portalsdk.analytics.xmlobj.ObjectFactory;
 import org.openecomp.portalsdk.analytics.xmlobj.PredefinedValueList;
-import org.openecomp.portalsdk.core.controller.UnRestrictedBaseController;
+import org.openecomp.portalsdk.core.controller.RestrictedBaseController;
 import org.openecomp.portalsdk.core.domain.User;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
@@ -91,36 +91,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.async.DeferredResult;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Controller
 @RequestMapping("/")
-public class RaptorControllerAsync extends UnRestrictedBaseController {
-	String viewName;
+public class RaptorControllerAsync extends RestrictedBaseController {
+	
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RaptorControllerAsync.class);
+
+	private String viewName;
 
 	@RequestMapping(value = { "/raptor.htm" }, method = RequestMethod.GET)
 	public void RaptorSearch(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, RaptorException {
-		// System.out.println("Inside RAPTOR run ");
-		/*
-		 * List items = null; int reportId =
-		 * ServletRequestUtils.getIntParameter(request, "report_id", 0);
-		 * //String task = ServletRequestUtils.getStringParameter(request,
-		 * "task", TASK_GET);
-		 * 
-		 * HashMap additionalParams = new HashMap();
-		 * additionalParams.put(Parameters.PARAM_HTTP_REQUEST, request);
-		 * 
-		 * return new ModelAndView(getViewName(), "model", null);
-		 * 
-		 * //return new ModelAndView(getViewName(), "model", null);
-		 * //System.out.println("Fill with proper code"); //return null;
-		 */
+
 		viewName = "";
 		String actionKey = nvl(request.getParameter(AppConstants.RI_ACTION), request.getParameter("action"));
 		actionKey = nvl(actionKey, "report.run");
@@ -193,9 +184,8 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 																													// whole
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
-					// Log.write("Fatal error [report_download_xlsx.jsp]:
-					// "+e.getMessage());
+					logger.error(EELFLoggerDelegate.errorLogger, "[Controller.processRequest]Invalid raptor action ["
+							+ actionKey + "].", e);
 				}
 			} else {
 				response.sendRedirect("login.htm");
@@ -212,12 +202,8 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 					if (action == null)
 						throw new RaptorRuntimeException("Action not found");
 				} catch (RaptorException e) {
-					logger.debug(EELFLoggerDelegate.debugLogger, ("[Controller.processRequest]Invalid raptor action ["
-							+ actionKey + "]. RaptorException: " + e.getMessage()));
-					// if (actionKey.equals("system_upgrade")) // System
-					// override
-					// return
-					// att.raptor.util.upgrade.SystemUpgrade.upgradeDB(request);
+					logger.error(EELFLoggerDelegate.errorLogger, "[Controller.processRequest]Invalid raptor action ["
+							+ actionKey + "].", e);
 
 					viewName = (new ErrorHandler()).processFatalErrorJSON(request,
 							new RaptorRuntimeException("[Controller.processRequest]Invalid raptor action [" + actionKey
@@ -239,7 +225,6 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 					;
 
 					viewName = (String) handlerMethod.invoke(handler, paramValues);
-					// ObjectMapper mapper = new ObjectMapper();
 					if (!actionKey.equals("chart.run"))
 						response.setContentType("application/json");
 					else
@@ -274,7 +259,6 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 									"[Controller.processRequest] Unable to instantiate and invoke action handler. Exception: "
 											+ e.getMessage()));
 				} catch (InvocationTargetException e) {
-					e.printStackTrace();
 					logger.debug(EELFLoggerDelegate.debugLogger, ("[Controller.processRequest]Invalid raptor action ["
 							+ actionKey + "]. InvocationTargetException: " + e.getMessage()));
 					viewName = (new ErrorHandler()).processFatalErrorJSON(request,
@@ -284,9 +268,7 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 				} finally {
 					PrintWriter out = response.getWriter();
 					out.write(viewName);
-					// System.out.println("******Viewname******"+viewName);
 				}
-				// return new ModelAndView(getViewName(), "model", null);
 			} else {
 				PrintWriter out = response.getWriter();
 				out.write("session has timed out for user");
@@ -295,10 +277,9 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 		}
 	}
 
-	@RequestMapping(value = "/report/wizard/list_columns", method = RequestMethod.GET, produces="application/json")
+	@RequestMapping(value = "/report/wizard/list_columns", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody ArrayList<ColumnJSON> listColumns(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, RaptorException {
-		//PrintWriter out = response.getWriter();
 		ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
 		List<DataColumnType> reportColumnList = rdef.getAllColumns();
 		ArrayList<ColumnJSON> listJSON = new ArrayList<ColumnJSON>();
@@ -310,26 +291,60 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 			columnJSON.setName(reportColumnType.getColName());
 			listJSON.add(columnJSON);
 		}
-/*		String jsonInString = "";
-		ObjectMapper mapper = new ObjectMapper();
-		// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-		// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        
-		try {
-			jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(listJSON);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-*/
 		return listJSON;
 	}
 
-	@RequestMapping(value = "/report/wizard/list_formfields", method = RequestMethod.GET, produces="application/json")
-	public @ResponseBody ArrayList<SearchFieldJSON> listFormFields(HttpServletRequest request, HttpServletResponse response)
-			throws IOException, RaptorException {
-		//PrintWriter out = response.getWriter();
+	@RequestMapping(value = "/report/wizard/list_drilldown_reports", method = RequestMethod.GET, produces = "application/json")
+	public @ResponseBody ArrayList<ColumnJSON> list_drilldown_reports(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, RaptorException {
+		ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+		Vector<IdNameValue> publicReportIdNames = DataCache.getPublicReportIdNames();
+		Vector groupReportIdNames = DataCache.getGroupAccessibleReportIdNames(AppUtils.getUserID(request),
+				AppUtils.getUserRoles(request));
+		Vector privateReportIdNames = DataCache.getPrivateAccessibleReportIdNames(AppUtils.getUserID(request),
+				AppUtils.getUserRoles(request));
+
+		ArrayList<ColumnJSON> listJSON = new ArrayList<ColumnJSON>();
+		ColumnJSON columnJSON = new ColumnJSON();
+
+		ServletContext servletContext = request.getSession().getServletContext();
+		if (!Globals.isSystemInitialized()) {
+			Globals.initializeSystem(servletContext);
+		}
+
+		for (int i = 0; i < publicReportIdNames.size(); i++) {
+			IdNameValue reportIdName = (IdNameValue) publicReportIdNames.get(i);
+			columnJSON = new ColumnJSON();
+			columnJSON.setId(reportIdName.getId());
+			columnJSON.setName("Public Report: " + reportIdName.getName());
+			if (!rdef.getReportID().equals(reportIdName.getId()))
+				listJSON.add(columnJSON);
+		}
+
+		for (int i = 0; i < groupReportIdNames.size(); i++) {
+			IdNameValue reportIdName = (IdNameValue) groupReportIdNames.get(i);
+			columnJSON = new ColumnJSON();
+			columnJSON.setId(reportIdName.getId());
+			columnJSON.setName("Group Report: " + reportIdName.getName());
+			if (!rdef.getReportID().equals(reportIdName.getId()))
+				listJSON.add(columnJSON);
+		}
+
+		for (int i = 0; i < privateReportIdNames.size(); i++) {
+			IdNameValue reportIdName = (IdNameValue) privateReportIdNames.get(i);
+			columnJSON = new ColumnJSON();
+			columnJSON.setId(reportIdName.getId());
+			columnJSON.setName("Private Report: " + reportIdName.getName());
+			if (!rdef.getReportID().equals(reportIdName.getId()))
+				listJSON.add(columnJSON);
+		}
+
+		return listJSON;
+	}
+
+	@RequestMapping(value = "/report/wizard/list_formfields", method = RequestMethod.GET, produces = "application/json")
+	public @ResponseBody ArrayList<SearchFieldJSON> listFormFields(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, RaptorException {
 		ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
 		ArrayList<SearchFieldJSON> listJSON = new ArrayList<SearchFieldJSON>();
 		SearchFieldJSON fieldJSON = new SearchFieldJSON();
@@ -345,28 +360,30 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 			}
 		}
 
-/*		String jsonInString = "";
-		ObjectMapper mapper = new ObjectMapper();
-		// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-		// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-		try {
-			jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(listJSON);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		out.write(jsonInString);
-*/	
 		return listJSON;
 	}
 
-	@RequestMapping(value = "/report/wizard/list_child_report_ff/{reportID}", method = RequestMethod.GET, produces="application/json")
-	public @ResponseBody ArrayList<SearchFieldJSON> listChildReportFormFields(@PathVariable("reportID") String reportID, HttpServletRequest request,
-			HttpServletResponse response) throws IOException, RaptorException {
-		//PrintWriter out = response.getWriter();
+	@RequestMapping(value = "/report/wizard/list_child_report_col/{reportID}", method = RequestMethod.GET, produces = "application/json")
+	public @ResponseBody ArrayList<ColumnJSON> listChildReportCols(@PathVariable("reportID") String reportID,
+			HttpServletRequest request, HttpServletResponse response) throws IOException, RaptorException {
+		ReportRuntime ddRr = (new ReportHandler()).loadReportRuntime(request, reportID, false);
+
+		List<DataColumnType> reportColumnList = ddRr.getAllColumns();
+		ArrayList<ColumnJSON> listJSON = new ArrayList<ColumnJSON>();
+		ColumnJSON columnJSON = new ColumnJSON();
+
+		for (DataColumnType reportColumnType : reportColumnList) {
+			columnJSON = new ColumnJSON();
+			columnJSON.setId(reportColumnType.getColId());
+			columnJSON.setName(reportColumnType.getColName());
+			listJSON.add(columnJSON);
+		}
+		return listJSON;
+	}
+
+	@RequestMapping(value = "/report/wizard/list_child_report_ff/{reportID}", method = RequestMethod.GET, produces = "application/json")
+	public @ResponseBody ArrayList<SearchFieldJSON> listChildReportFormFields(@PathVariable("reportID") String reportID,
+			HttpServletRequest request, HttpServletResponse response) throws IOException, RaptorException {
 		ReportRuntime ddRr = (new ReportHandler()).loadReportRuntime(request, reportID, false);
 		ArrayList<SearchFieldJSON> listJSON = new ArrayList<SearchFieldJSON>();
 		SearchFieldJSON fieldJSON = new SearchFieldJSON();
@@ -383,29 +400,12 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 				}
 			}
 		}
-/*		String jsonInString = "";
-		ObjectMapper mapper = new ObjectMapper();
-		// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-		// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-		try {
-			jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(listJSON);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		out.write(jsonInString);
-*/	
 		return listJSON;
 	}
-	
-	@RequestMapping(value = "report/wizard/copy_report/{reportID}", method = RequestMethod.GET, produces="application/json")
+
+	@RequestMapping(value = "report/wizard/copy_report/{reportID}", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody MessageJSON copyReport(@PathVariable("reportID") String reportID, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, RaptorException {
-		//PrintWriter out = response.getWriter();
-		//String jsonInString = "";		
 		MessageJSON messageJSON = new MessageJSON();
 		try {
 
@@ -416,50 +416,22 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 			messageJSON.setMessage("Success- Report Copied.");
 			messageJSON.setAnyStacktrace(rdef.getReportID() + " is Modified and added to session and DB.");
 
-/*			ObjectMapper mapper = new ObjectMapper();
-			// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-			// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			try {
-				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageJSON);
-			} catch (Exception ex1) {
-				ex1.printStackTrace();
-			}
-*/			
 		} catch (RaptorException e) {
 			request.setAttribute("error_extra_msg", "While copying report " + reportID);
 			messageJSON.setMessage("Failed - While copying report " + reportID);
 			messageJSON.setAnyStacktrace(getStackTrace(e));
-//			ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
-//			errorJSONRuntime.setErrormessage("While copying report " + reportID);
-//			errorJSONRuntime.setStacktrace(getStackTrace(e));
-
-/*			ObjectMapper mapper = new ObjectMapper();
-			// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-			// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			try {
-				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
-			} catch (Exception ex1) {
-				ex1.printStackTrace();
-			}			
-*/		
+			logger.debug(EELFLoggerDelegate.debugLogger,
+					("[Controller.processRequest]Invalid raptor action [copyReport]. RaptorException: "
+							+ e.getMessage()));
 			return messageJSON;
 		}
 
-		return 	messageJSON;
+		return messageJSON;
 	}
-	
 
-	@RequestMapping(value = "report/wizard/import_report", method = RequestMethod.POST, consumes="application/json")
-	public MessageJSON importReport(@RequestBody ImportJSON importJSON, HttpServletRequest request,
+	@RequestMapping(value = "report/wizard/import_report", method = RequestMethod.POST, consumes = "application/json")
+	public @ResponseBody MessageJSON importReport(@RequestBody ImportJSON importJSON, HttpServletRequest request,
 			HttpServletResponse response) throws IOException, RaptorException {
-		//PrintWriter out = response.getWriter();
-		//String jsonInString = "";
 		MessageJSON messageJSON = new MessageJSON();
 		try {
 			String reportXML = importJSON.getReportXML();
@@ -472,43 +444,15 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 			rdef.clearAllDrillDowns();
 
 			request.getSession().setAttribute(AppConstants.SI_REPORT_DEFINITION, rdef);
-			
+
 			messageJSON.setMessage("Success- Report imported.");
 			messageJSON.setAnyStacktrace(rdef.getReportID() + " is Modified and added to session and DB.");
 
-/*			ObjectMapper mapper = new ObjectMapper();
-			// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-			// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			try {
-				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageJSON);
-			} catch (Exception ex1) {
-				ex1.printStackTrace();
-			}
-*/			
-			
 		} catch (RaptorException e) {
 			request.setAttribute("error_extra_msg", "Unable to parse XML. Nested error: ");
 			messageJSON.setMessage("Unable to parse XML. Nested error: ");
 			messageJSON.setAnyStacktrace(getStackTrace(e));
-/*			ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
-			errorJSONRuntime.setErrormessage("Unable to parse XML. Nested error: ");
-			errorJSONRuntime.setStacktrace(getStackTrace(e));
-*/
-/*			ObjectMapper mapper = new ObjectMapper();
-			// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-			// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-			try {
-				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
-			} catch (Exception ex1) {
-				ex1.printStackTrace();
-			}
-*/		
 			return messageJSON;
 		}
 
@@ -517,105 +461,61 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 	}
 
 	@RequestMapping(value = "report/wizard/save_formfield_tab_data", method = RequestMethod.POST)
-	public MessageJSON saveFFTabWiseData(@RequestBody FormEditJSON formEditJSON, HttpServletRequest request,
-			HttpServletResponse response) throws IOException, RaptorException {
+	public @ResponseBody MessageJSON saveFFTabWiseData(@RequestBody FormEditJSON formEditJSON,
+			HttpServletRequest request, HttpServletResponse response) throws IOException, RaptorException {
 		ReportDefinition rdef = null;
 		rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
 
-		String tabId = formEditJSON.getTabId();
-		//String errorString = "";
 		MessageJSON messageJSON = new MessageJSON();
-
-		//PrintWriter out = response.getWriter();
-		//String jsonInString = "";
 		try {
 			if (rdef != null) {
 
-					String fieldId = formEditJSON.getFieldId();
+				String fieldId = formEditJSON.getFieldId();
 
-					if (rdef.getFormFieldList() != null) {
-						for (FormFieldType fft : rdef.getFormFieldList().getFormField()) {
-							if (fft.getFieldId().equals(fieldId)) {
-								fft.setFieldName(formEditJSON.getFieldName());
-								fft.setFieldType(formEditJSON.getFieldType());
-								fft.setVisible(formEditJSON.isVisible() ? "Y" : "N");
-								fft.setDefaultValue(formEditJSON.getDefaultValue());
-								fft.setFieldDefaultSQL(formEditJSON.getFieldDefaultSQL());
-								fft.setFieldSQL(formEditJSON.getFieldSQL());
-								fft.setValidationType(formEditJSON.getValidationType());
+				if (rdef.getFormFieldList() != null) {
+					for (FormFieldType fft : rdef.getFormFieldList().getFormField()) {
+						if (fft.getFieldId().equals(fieldId)) {
+							fft.setFieldName(formEditJSON.getFieldName());
+							fft.setFieldType(formEditJSON.getFieldType());
+							fft.setVisible(formEditJSON.isVisible() ? "Y" : "N");
+							fft.setDefaultValue(formEditJSON.getDefaultValue());
+							fft.setFieldDefaultSQL(formEditJSON.getFieldDefaultSQL());
+							fft.setFieldSQL(formEditJSON.getFieldSQL());
+							fft.setValidationType(formEditJSON.getValidationType());
 
-								// clear predefined value
-								if (fft.getPredefinedValueList() != null) {
-									for (Iterator iter = fft.getPredefinedValueList().getPredefinedValue()
-											.iterator(); iter.hasNext();)
-										iter.remove();
-								}
+							// clear predefined value
+							if (fft.getPredefinedValueList() != null) {
+								for (Iterator<String> iter = fft.getPredefinedValueList().getPredefinedValue().iterator(); iter
+										.hasNext();)
+									iter.remove();
+							}
 
-								List<IdNameBooleanJSON> predefList = formEditJSON.getPredefinedValueList();
+							List<IdNameBooleanJSON> predefList = formEditJSON.getPredefinedValueList();
+							if (predefList != null && predefList.size() > 0) {
 								for (IdNameBooleanJSON item : predefList) {
 									PredefinedValueList predefinedValueList = new ObjectFactory()
 											.createPredefinedValueList();
 									fft.setPredefinedValueList(predefinedValueList);
 									fft.getPredefinedValueList().getPredefinedValue().add(item.getId());
 								}
-
 							}
+
 						}
 					}
-
+				}
 
 				persistReportDefinition(request, rdef);
 				messageJSON.setMessage("Success formfield Details of given report is saved in session.");
 				messageJSON.setAnyStacktrace(rdef.getReportID() + " is Modified and added to session and DB.");
 
-/*				ObjectMapper mapper = new ObjectMapper();
-				// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-				// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-				mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-				try {
-					jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageJSON);
-				} catch (Exception ex1) {
-					ex1.printStackTrace();
-				}
-*/			} else {
+			} else {
 				messageJSON.setMessage("Report Definition is not in session");
 				messageJSON.setAnyStacktrace("Report Definition is not in session");
 
-/*				ObjectMapper mapper = new ObjectMapper();
-				// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-				// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-				mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-				try {
-					jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
-				} catch (Exception ex1) {
-					ex1.printStackTrace();
-				}
-*/			}
+			}
 		} catch (Exception ex) {
-
 			messageJSON.setMessage("Error occured while formfield details Tab");
 			messageJSON.setAnyStacktrace(getStackTrace(ex));
-			
-/*			ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
-			errorJSONRuntime.setErrormessage("Error occured while formfield column details Tab");
-			errorJSONRuntime.setStacktrace(getStackTrace(ex));
-
-			ObjectMapper mapper = new ObjectMapper();
-			// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-			// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			try {
-				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
-			} catch (Exception ex1) {
-				ex1.printStackTrace();
-			}
-*/
 			return messageJSON;
 		}
 
@@ -623,92 +523,46 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 	}
 
 	@RequestMapping(value = "report/wizard/save_col_tab_data", method = RequestMethod.POST)
-	public MessageJSON saveColTabWiseData(@RequestBody ColumnEditJSON columnEditJSON, HttpServletRequest request,
-			HttpServletResponse response) throws IOException, RaptorException {
+	public @ResponseBody MessageJSON saveColTabWiseData(@RequestBody ColumnEditJSON columnEditJSON,
+			HttpServletRequest request, HttpServletResponse response) throws IOException, RaptorException {
 		ReportDefinition rdef = null;
 		rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
 
-		//String errorString = "";
-		//String jsonInString = "";
-		//PrintWriter out = response.getWriter();
 		MessageJSON messageJSON = new MessageJSON();
 
 		try {
 			if (rdef != null) {
-					String colId = columnEditJSON.getColId();
-					List<DataColumnType> reportColumnList = rdef.getAllColumns();
+				String colId = columnEditJSON.getColId();
+				List<DataColumnType> reportColumnList = rdef.getAllColumns();
 
-					for (DataColumnType reportColumnType : reportColumnList) {
-						// columnJSON = new ColumnJSON();
-						if (reportColumnType.getColId().equals(colId)) {
-							reportColumnType.setColName(columnEditJSON.getColName());
-							reportColumnType.setDisplayAlignment(columnEditJSON.getDisplayAlignment());
-							reportColumnType.setDisplayHeaderAlignment(columnEditJSON.getDisplayHeaderAlignment());
-							reportColumnType.setIsSortable(columnEditJSON.isSortable());
-							reportColumnType.setVisible(columnEditJSON.isVisible());
-							reportColumnType.setDrillDownURL(columnEditJSON.getDrilldownURL());
-							reportColumnType.setDrillDownParams(columnEditJSON.getDrilldownParams());
-							reportColumnType.setDrillDownType(columnEditJSON.getDrilldownType());
-
-						}
+				for (DataColumnType reportColumnType : reportColumnList) {
+					// columnJSON = new ColumnJSON();
+					if (reportColumnType.getColId().equals(colId)) {
+						reportColumnType.setColName(columnEditJSON.getColName());
+						reportColumnType.setDisplayAlignment(columnEditJSON.getDisplayAlignment());
+						reportColumnType.setDisplayHeaderAlignment(columnEditJSON.getDisplayHeaderAlignment());
+						reportColumnType.setIsSortable(columnEditJSON.isSortable());
+						reportColumnType.setVisible(columnEditJSON.isVisible());
+						reportColumnType.setDrillDownURL(columnEditJSON.getDrilldownURL());
+						reportColumnType.setDrillDownParams(columnEditJSON.getDrilldownParams());
+						reportColumnType.setDrillDownType(columnEditJSON.getDrilldownType());
 
 					}
+
+				}
 				persistReportDefinition(request, rdef);
 				messageJSON.setMessage("Success Column Details of given report is saved in session.");
 				messageJSON.setAnyStacktrace(rdef.getReportID() + " is Modified and added to session and DB.");
 
-/*				ObjectMapper mapper = new ObjectMapper();
-				// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-				// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-				mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-				try {
-					jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageJSON);
-				} catch (Exception ex1) {
-					ex1.printStackTrace();
-				}
-*/
 			} else {
 				messageJSON.setMessage("Report Definition is not in session");
 				messageJSON.setAnyStacktrace("");
-				
-/*				ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
-				errorJSONRuntime.setErrormessage("Report Definition is not in session;");
-				errorJSONRuntime.setStacktrace("");
 
-				ObjectMapper mapper = new ObjectMapper();
-				// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-				// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-				mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-				try {
-					jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
-				} catch (Exception ex1) {
-					ex1.printStackTrace();
-				}
-*/			}
+			}
 		} catch (Exception ex) {
 			messageJSON.setMessage("Error occured while saving column details Tab");
 			messageJSON.setAnyStacktrace(getStackTrace(ex));
-			
-/*			ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
-			errorJSONRuntime.setErrormessage("Error occured while saving column details Tab");
-			errorJSONRuntime.setStacktrace(getStackTrace(ex));
 
-			ObjectMapper mapper = new ObjectMapper();
-			// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-			// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			try {
-				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
-			} catch (Exception ex1) {
-				ex1.printStackTrace();
-			}
-*/		
 			return messageJSON;
 		}
 
@@ -716,24 +570,14 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 	}
 
 	@RequestMapping(value = "report/wizard/save_def_tab_data/{id}", method = RequestMethod.POST)
-	public MessageJSON saveDefTabWiseData(@PathVariable("id") String id, @RequestBody DefinitionJSON definitionJSON,
-			HttpServletRequest request, HttpServletResponse response) throws IOException, RaptorException {
+	public @ResponseBody MessageJSON saveDefTabWiseData(@PathVariable("id") String id,
+			@RequestBody DefinitionJSON definitionJSON, HttpServletRequest request, HttpServletResponse response)
+			throws IOException, RaptorException {
 		ReportDefinition rdef = null;
 		ReportRuntime rr = null;
-		String tabId = definitionJSON.getTabId();
-		String errorString = "";
 		boolean newReport = false;
-		//String jsonInString = "";
-		//PrintWriter out = response.getWriter();
 		MessageJSON messageJSON = new MessageJSON();
 
-
-
-		/*
-		 * rdef = (ReportDefinition) request.getSession().getAttribute(
-		 * AppConstants.SI_REPORT_DEFINITION); if(rdef!=null) { rdef = (new
-		 * ReportHandler()).loadReportDefinition(request, id); } else {
-		 */
 		try {
 			if (id.equals("InSession")) {
 				rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
@@ -743,12 +587,12 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 				removeVariablesFromSession(request);
 				rdef = (new ReportHandler()).loadReportDefinition(request, "-1");
 				newReport = true;
-				System.out.println("&&&&&&&&&&&&&&&&&&&&&& CHECK Report Type " + (AppUtils.nvl(rdef.getReportType()).length()<=0));
-				if(AppUtils.nvl(rdef.getReportType()).length()<=0) { 
+				System.out.println("&&&&&&&&&&&&&&&&&&&&&& CHECK Report Type "
+						+ (AppUtils.nvl(rdef.getReportType()).length() <= 0));
+				if (AppUtils.nvl(rdef.getReportType()).length() <= 0) {
 					rdef.setReportType(AppConstants.RT_LINEAR);
 					System.out.println("&&&&&&&&&&&&&&&&&&&&&& ADDED Report Type in session ");
 				}
-				
 
 			} else if (AppUtils.nvl(id).length() > 0) {
 				rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
@@ -774,149 +618,22 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 			// }
 
 			if (rdef != null) {
-					String reportName = definitionJSON.getReportName();
-					if (AppUtils.nvl(reportName).length() <= 0)
-						errorString = "ReportName cannot be null;";
-					rdef.setReportName(reportName);
-
-					String reportDescr = definitionJSON.getReportDescr();
-					rdef.setReportDescr(reportDescr);
-
-					String formHelpText = definitionJSON.getFormHelpText();
-					rdef.setFormHelpText(formHelpText);
-
-					Integer pageSize = definitionJSON.getPageSize();
-					rdef.setPageSize(pageSize);
-
-					List<IdNameBooleanJSON> menuIds = definitionJSON.getDisplayArea();
-					for (IdNameBooleanJSON menuId : menuIds) {
-						if (menuId.isSelected()) {
-							rdef.setMenuID(menuId.getName());
-						}
-
-					}
-
-					Boolean hideFormFieldsAfterRun = definitionJSON.getHideFormFieldsAfterRun();
-					rdef.setHideFormFieldAfterRun(hideFormFieldsAfterRun);
-					Integer maxRowsInExcelCSVDownload = definitionJSON.getMaxRowsInExcelCSVDownload();
-					rdef.setMaxRowsInExcelDownload(maxRowsInExcelCSVDownload);
-					Integer frozenColumns = definitionJSON.getFrozenColumns();
-					rdef.setFrozenColumns(frozenColumns);
-					String dataGridAlign = definitionJSON.getDataGridAlign();
-					rdef.setDataGridAlign(dataGridAlign);
-					String emptyMessage = definitionJSON.getEmptyMessage();
-					rdef.setEmptyMessage(emptyMessage);
-					String dataContainerHeight = definitionJSON.getDataContainerHeight();
-					rdef.setDataContainerHeight(dataContainerHeight);
-					String dataContainerWidth = definitionJSON.getDataContainerWidth();
-					rdef.setDataContainerWidth(dataContainerWidth);
-					boolean runtimeColSortDisabled = definitionJSON.getRuntimeColSortDisabled();
-					rdef.setRuntimeColSortDisabled(runtimeColSortDisabled);
-					Integer numFormCols = definitionJSON.getNumFormCols();
-					rdef.setNumFormCols(Integer.toString(numFormCols));
-					String reportTitle = definitionJSON.getReportTitle();
-					rdef.setReportTitle(reportTitle);
-					String reportSubTitle = definitionJSON.getReportSubTitle();
-					rdef.setReportSubTitle(reportSubTitle);
-
-					List<NameBooleanJSON> displayOptions = definitionJSON.getDisplayOptions();
-					StringBuffer displayOptionStr = new StringBuffer("NNNNNNN");
-					for (NameBooleanJSON displayOption : displayOptions) {
-						if (displayOption.isSelected()) {
-							if (displayOption.getName().equals("HideFormFields")) {
-								displayOptionStr.setCharAt(0, 'Y');
-							} else if (displayOption.getName().equals("HideChart")) {
-								displayOptionStr.setCharAt(1, 'Y');
-							} else if (displayOption.getName().equals("HideReportData")) {
-								displayOptionStr.setCharAt(2, 'Y');
-							} else if (displayOption.getName().equals("HideExcel")) {
-								displayOptionStr.setCharAt(5, 'Y');
-							} else if (displayOption.getName().equals("HidePdf")) {
-								displayOptionStr.setCharAt(6, 'Y');
-							}
-						}
-
-					}
-
-					rdef.setDisplayOptions(displayOptionStr.toString());
-			}
-			persistReportDefinition(request, rdef);
-			messageJSON.setMessage("Success Definition of given report is saved in session.");
-			messageJSON.setAnyStacktrace((newReport ? " New Report info is added to Session "
-					: rdef.getReportID() + " is Modified and added to session and DB."));
-
-/*			ObjectMapper mapper = new ObjectMapper();
-			// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-			// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			try {
-				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageJSON);
-			} catch (Exception ex1) {
-				ex1.printStackTrace();
-			}
-*/		} catch (Exception ex) {
-			messageJSON.setMessage("Error occured while saving definition Tab");
-			messageJSON.setAnyStacktrace(getStackTrace(ex));
-	
-/*			ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
-			errorJSONRuntime.setErrormessage("Error occured while saving definition Tab");
-			errorJSONRuntime.setStacktrace(getStackTrace(ex));
-
-			ObjectMapper mapper = new ObjectMapper();
-			// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-			// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			try {
-				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
-			} catch (Exception ex1) {
-				ex1.printStackTrace();
-			}
-*/		
-			return messageJSON;	
-		}
-
-		return messageJSON;
-	}
-
-/*	@RequestMapping(value = "report/wizard/save_tab_wise_data/{reportID}", method = RequestMethod.POST)
-	public void saveTabWiseData(@PathVariable("reportID") String reportID, @RequestBody WizardJSON wizardJSON,
-			HttpServletRequest request, HttpServletResponse response) throws IOException, RaptorException {
-		ReportDefinition rdef = null;
-		rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
-		if (rdef != null) {
-			rdef = (new ReportHandler()).loadReportDefinition(request, reportID);
-		}
-		System.out.println("&&&&&&&&&&&&&&&&&&&&&& CHECK Report Type " + (AppUtils.nvl(rdef.getReportType()).length()<=0));
-		if(AppUtils.nvl(rdef.getReportType()).length()<=0) { 
-			rdef.setReportType(AppConstants.RT_LINEAR);
-			System.out.println("&&&&&&&&&&&&&&&&&&&&&& ADDED Report Type in session ");
-		}
-		// ReportDefinition rdef = (ReportDefinition)
-		// request.getSession().getAttribute(
-		// AppConstants.SI_REPORT_DEFINITION);
-		String tabId = wizardJSON.getTabId();
-		String errorString = "";
-		if (rdef != null) {
-			if (tabId.equals("Def")) {
-				String reportName = ((DefinitionJSON) wizardJSON).getReportName();
+				String reportName = definitionJSON.getReportName();
+				String errorString = "";
 				if (AppUtils.nvl(reportName).length() <= 0)
 					errorString = "ReportName cannot be null;";
 				rdef.setReportName(reportName);
 
-				String reportDescr = ((DefinitionJSON) wizardJSON).getReportDescr();
+				String reportDescr = definitionJSON.getReportDescr();
 				rdef.setReportDescr(reportDescr);
 
-				String formHelpText = ((DefinitionJSON) wizardJSON).getFormHelpText();
+				String formHelpText = definitionJSON.getFormHelpText();
 				rdef.setFormHelpText(formHelpText);
 
-				Integer pageSize = ((DefinitionJSON) wizardJSON).getPageSize();
+				Integer pageSize = definitionJSON.getPageSize();
 				rdef.setPageSize(pageSize);
 
-				List<IdNameBooleanJSON> menuIds = ((DefinitionJSON) wizardJSON).getDisplayArea();
+				List<IdNameBooleanJSON> menuIds = definitionJSON.getDisplayArea();
 				for (IdNameBooleanJSON menuId : menuIds) {
 					if (menuId.isSelected()) {
 						rdef.setMenuID(menuId.getName());
@@ -924,30 +641,30 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 
 				}
 
-				Boolean hideFormFieldsAfterRun = ((DefinitionJSON) wizardJSON).getHideFormFieldsAfterRun();
+				Boolean hideFormFieldsAfterRun = definitionJSON.getHideFormFieldsAfterRun();
 				rdef.setHideFormFieldAfterRun(hideFormFieldsAfterRun);
-				Integer maxRowsInExcelCSVDownload = ((DefinitionJSON) wizardJSON).getMaxRowsInExcelCSVDownload();
+				Integer maxRowsInExcelCSVDownload = definitionJSON.getMaxRowsInExcelCSVDownload();
 				rdef.setMaxRowsInExcelDownload(maxRowsInExcelCSVDownload);
-				Integer frozenColumns = ((DefinitionJSON) wizardJSON).getFrozenColumns();
+				Integer frozenColumns = definitionJSON.getFrozenColumns();
 				rdef.setFrozenColumns(frozenColumns);
-				String dataGridAlign = ((DefinitionJSON) wizardJSON).getDataGridAlign();
+				String dataGridAlign = definitionJSON.getDataGridAlign();
 				rdef.setDataGridAlign(dataGridAlign);
-				String emptyMessage = ((DefinitionJSON) wizardJSON).getEmptyMessage();
+				String emptyMessage = definitionJSON.getEmptyMessage();
 				rdef.setEmptyMessage(emptyMessage);
-				String dataContainerHeight = ((DefinitionJSON) wizardJSON).getDataContainerHeight();
+				String dataContainerHeight = definitionJSON.getDataContainerHeight();
 				rdef.setDataContainerHeight(dataContainerHeight);
-				String dataContainerWidth = ((DefinitionJSON) wizardJSON).getDataContainerWidth();
+				String dataContainerWidth = definitionJSON.getDataContainerWidth();
 				rdef.setDataContainerWidth(dataContainerWidth);
-				boolean runtimeColSortDisabled = ((DefinitionJSON) wizardJSON).getRuntimeColSortDisabled();
+				boolean runtimeColSortDisabled = definitionJSON.getRuntimeColSortDisabled();
 				rdef.setRuntimeColSortDisabled(runtimeColSortDisabled);
-				Integer numFormCols = ((DefinitionJSON) wizardJSON).getNumFormCols();
+				Integer numFormCols = definitionJSON.getNumFormCols();
 				rdef.setNumFormCols(Integer.toString(numFormCols));
-				String reportTitle = ((DefinitionJSON) wizardJSON).getReportTitle();
+				String reportTitle = definitionJSON.getReportTitle();
 				rdef.setReportTitle(reportTitle);
-				String reportSubTitle = ((DefinitionJSON) wizardJSON).getReportSubTitle();
+				String reportSubTitle = definitionJSON.getReportSubTitle();
 				rdef.setReportSubTitle(reportSubTitle);
 
-				List<NameBooleanJSON> displayOptions = ((DefinitionJSON) wizardJSON).getDisplayOptions();
+				List<NameBooleanJSON> displayOptions = definitionJSON.getDisplayOptions();
 				StringBuffer displayOptionStr = new StringBuffer("NNNNNNN");
 				for (NameBooleanJSON displayOption : displayOptions) {
 					if (displayOption.isSelected()) {
@@ -967,106 +684,226 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 				}
 
 				rdef.setDisplayOptions(displayOptionStr.toString());
+			}
+			if (id.equals("Create")) {
+				rdef.persistReport(request);
+			} else
+				persistReportDefinition(request, rdef);
+			messageJSON.setMessage("Success Definition of given report is saved in session.");
+			messageJSON.setAnyStacktrace((newReport ? " New Report info is added to Session "
+					: rdef.getReportID() + " is Modified and added to session and DB."));
 
-			} else if (tabId.equals("ColEdit")) {
-				String colId = ((ColumnEditJSON) wizardJSON).getColId();
-				List<DataColumnType> reportColumnList = rdef.getAllColumns();
+		} catch (Exception ex) {
+			messageJSON.setMessage("Error occured while saving definition Tab");
+			messageJSON.setAnyStacktrace(getStackTrace(ex));
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"[Controller.processRequest]Invalid raptor action [retrieveTabWiseData].", ex);
+			return messageJSON;
+		}
 
-				for (DataColumnType reportColumnType : reportColumnList) {
-					// columnJSON = new ColumnJSON();
-					if (reportColumnType.getColId().equals(colId)) {
-						reportColumnType.setColName(((ColumnEditJSON) wizardJSON).getColName());
-						reportColumnType.setDisplayAlignment(((ColumnEditJSON) wizardJSON).getDisplayAlignment());
-						reportColumnType
-								.setDisplayHeaderAlignment(((ColumnEditJSON) wizardJSON).getDisplayHeaderAlignment());
-						reportColumnType.setIsSortable(((ColumnEditJSON) wizardJSON).isSortable());
-						reportColumnType.setVisible(((ColumnEditJSON) wizardJSON).isVisible());
-						reportColumnType.setDrillDownURL(((ColumnEditJSON) wizardJSON).getDrilldownURL());
-						reportColumnType.setDrillDownParams(((ColumnEditJSON) wizardJSON).getDrilldownParams());
-						reportColumnType.setDrillDownType(((ColumnEditJSON) wizardJSON).getDrilldownType());
+		return messageJSON;
+	}
 
-					}
+	@RequestMapping(value = { "/report/wizard/retrieve_form_tab_wise_data/{id}",
+			"/report/wizard/retrieve_form_tab_wise_data/{id}/{action}" }, method = RequestMethod.GET)
+	public @ResponseBody FormEditJSON retrieveFormTabWiseData(@PathVariable Map<String, String> pathVariables,
+			HttpServletRequest request, HttpServletResponse response) throws IOException, RaptorException {
+		ReportDefinition rdef = null;
+		String id = "";
+		String action = "";
+		String detailId = "";
+		FormEditJSON wizardJSON = new FormEditJSON();
+		rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
 
-				}
-			} else if (tabId.equals("FormEdit")) {
-				String fieldId = ((FormEditJSON) wizardJSON).getFieldId();
+		if (pathVariables.containsKey("id")) {
+			id = pathVariables.get("id");
+		}
+		if (pathVariables.containsKey("action")) {
+			action = pathVariables.get("action");
+		}
+		
+		ServletContext servletContext = request.getSession().getServletContext();
+		if (!Globals.isSystemInitialized()) {
+			Globals.initializeSystem(servletContext);
+		}
+		wizardJSON.setTabId("FormEdit");
+		wizardJSON.setTabName("Form Edit");
+		FormFieldType currField = null;
+		try {
+			if (id.equals("add")) {
 
-				if (rdef.getFormFieldList() != null) {
-					for (FormFieldType fft : rdef.getFormFieldList().getFormField()) {
-						if (fft.getFieldId().equals(fieldId)) {
-							fft.setFieldName(((FormEditJSON) wizardJSON).getFieldName());
-							fft.setFieldType(((FormEditJSON) wizardJSON).getFieldType());
-							fft.setVisible(((FormEditJSON) wizardJSON).isVisible() ? "Y" : "N");
-							fft.setDefaultValue(((FormEditJSON) wizardJSON).getDefaultValue());
-							fft.setFieldDefaultSQL(((FormEditJSON) wizardJSON).getFieldDefaultSQL());
-							fft.setValidationType(((FormEditJSON) wizardJSON).getValidationType());
+				currField = rdef.addFormFieldType(new ObjectFactory(), "", "", "", "", "", "", "", "", null, null, "",
+						"");
+				wizardJSON.setFieldId(currField.getFieldId());
+				wizardJSON.setFieldName(currField.getFieldName());
+				wizardJSON.setFieldType(currField.getFieldType());
+				wizardJSON.setVisible(AppUtils.nvls(currField.getVisible(), "Y").toUpperCase().startsWith("Y"));
+				wizardJSON.setDefaultValue(currField.getDefaultValue());
+				wizardJSON.setFieldDefaultSQL(currField.getFieldDefaultSQL());
+				wizardJSON.setFieldSQL(currField.getFieldSQL());
+				wizardJSON.setValidationType(currField.getValidationType());
+				persistReportDefinition(request, rdef);
 
-							// clear predefined value
-							if (fft.getPredefinedValueList() != null) {
-								for (Iterator iter = fft.getPredefinedValueList().getPredefinedValue().iterator(); iter
-										.hasNext();)
-									iter.remove();
+			} else if (action.equals("delete")) {
+				rdef.deleteFormField(id);
+				persistReportDefinition(request, rdef);
+				wizardJSON.setMessage("Formfield " + detailId + " Deleted");
+			}
+			if (rdef.getFormFieldList() != null) {
+				for (FormFieldType fft : rdef.getFormFieldList().getFormField()) {
+					if (fft.getFieldId().equals(id)) {
+						wizardJSON.setFieldId(fft.getFieldId());
+						wizardJSON.setFieldName(fft.getFieldName());
+						wizardJSON.setFieldType(fft.getFieldType());
+						wizardJSON.setVisible(fft.getVisible().toUpperCase().startsWith("Y"));
+						wizardJSON.setDefaultValue(fft.getDefaultValue());
+						wizardJSON.setFieldDefaultSQL(fft.getFieldDefaultSQL());
+						wizardJSON.setFieldSQL(fft.getFieldSQL());
+						wizardJSON.setValidationType(fft.getValidationType());
+
+						PredefinedValueList preDefined = fft.getPredefinedValueList();
+
+						if (preDefined != null) {
+							List<IdNameBooleanJSON> preDefinedList = new ArrayList<IdNameBooleanJSON>();
+							IdNameBooleanJSON idNameBooleanJSON = new IdNameBooleanJSON();
+
+							for (String v : preDefined.getPredefinedValue()) {
+								idNameBooleanJSON = new IdNameBooleanJSON();
+								idNameBooleanJSON.setId(v);
+								idNameBooleanJSON.setName(v);
+								preDefinedList.add(idNameBooleanJSON);
 							}
-
-							List<IdNameBooleanJSON> predefList = ((FormEditJSON) wizardJSON).getPredefinedValueList();
-							for (IdNameBooleanJSON item : predefList) {
-								PredefinedValueList predefinedValueList = new ObjectFactory()
-										.createPredefinedValueList();
-								fft.setPredefinedValueList(predefinedValueList);
-								fft.getPredefinedValueList().getPredefinedValue().add(item.getId());
-							}
-
+							wizardJSON.setPredefinedValueList(preDefinedList);
 						}
 					}
 				}
-			} // formedit
-			persistReportDefinition(request, rdef);
-
-			String jsonInString = "";
-
-			ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
-			errorJSONRuntime.setErrormessage("Success");
-			errorJSONRuntime.setStacktrace("Report changed");
-			PrintWriter out = response.getWriter();
-			ObjectMapper mapper = new ObjectMapper();
-			// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-			// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			try {
-				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
-			} catch (Exception ex) {
-				ex.printStackTrace();
 			}
-
-			out.write(jsonInString);
+		} catch (Exception ex) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"[Controller.processRequest]Invalid raptor action [retrieveFormTabWiseData].", ex);
+			ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
+			errorJSONRuntime.setErrormessage("Error occured while retreiving formedit definition Tab");
+			errorJSONRuntime.setStacktrace(getStackTrace(ex));
+			wizardJSON.setErrorMessage("Error occured while retreiving formedit definition Tab");
+			wizardJSON.setErrorStackTrace(getStackTrace(ex));
 
 		}
-	}*/
 
-	@RequestMapping(value = {"/report/wizard/retrieve_tab_wise_data/{tabId}/{id}", "/report/wizard/retrieve_tab_wise_data/{tabId}/{id}/{detailId}"}, method = RequestMethod.GET)
-	public @ResponseBody String retrieveTabWiseData( @PathVariable Map<String, String> pathVariables, /*@PathVariable("tabId") String tabId, @PathVariable("id") String id, @PathVariable("detailId") String detailId,*/
+		return wizardJSON;
+	}
+
+	@RequestMapping(value = { "/report/wizard/retrieve_col_tab_wise_data/{id}" }, method = RequestMethod.GET)
+	public @ResponseBody ColumnEditJSON retrieveColTabWiseData(@PathVariable Map<String, String> pathVariables,
+			HttpServletRequest request, HttpServletResponse response) throws IOException, RaptorException {
+		ReportDefinition rdef = null;
+		String id = "";
+		ColumnEditJSON wizardJSON = new ColumnEditJSON();
+		rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+
+		if (pathVariables.containsKey("id")) {
+			id = pathVariables.get("id");
+		}
+		ServletContext servletContext = request.getSession().getServletContext();
+		if (!Globals.isSystemInitialized()) {
+			Globals.initializeSystem(servletContext);
+		}
+		if (rdef != null) {
+			wizardJSON.setTabId("ColEdit");
+			wizardJSON.setTabName("Column Edit");
+
+			List<DataColumnType> reportColumnList = rdef.getAllColumns();
+
+			for (DataColumnType reportColumnType : reportColumnList) {
+				if (reportColumnType.getColId().equals(id)) {
+					wizardJSON.setColId(reportColumnType.getColId());
+					wizardJSON.setColName(reportColumnType.getColName());
+					wizardJSON.setDisplayAlignment(reportColumnType.getDisplayAlignment());
+					wizardJSON.setDisplayHeaderAlignment(reportColumnType.getDisplayHeaderAlignment());
+					wizardJSON.setSortable(
+							reportColumnType.isIsSortable() == null ? false : reportColumnType.isIsSortable());
+					wizardJSON.setVisible(reportColumnType.isVisible());
+					wizardJSON.setDrilldownURL(
+							reportColumnType.getDrillDownURL() == null ? "" : reportColumnType.getDrillDownURL());
+					wizardJSON.setDrilldownParams(
+							reportColumnType.getDrillDownParams() == null ? "" : reportColumnType.getDrillDownParams());
+					wizardJSON.setDrilldownType(
+							reportColumnType.getDrillDownType() == null ? "" : reportColumnType.getDrillDownType());
+
+				}
+			}
+		} else {
+			wizardJSON.setErrorMessage("Report is not in session");
+		}
+
+		return wizardJSON;
+	}
+
+	@RequestMapping(value = { "/report/wizard/retrieve_sql_tab_wise_data/{id}",
+			"/report/wizard/retrieve_sql_tab_wise_data/" }, method = RequestMethod.GET)
+	public @ResponseBody QueryJSON retrieveSqlTabWiseData(@PathVariable Map<String, String> pathVariables,
 			HttpServletRequest request, HttpServletResponse response) throws IOException, RaptorException {
 		ReportDefinition rdef = null;
 		ReportRuntime rr = null;
-		boolean newReport = false;
-		String jsonInString = "";
-		String tabId = "";
 		String id = "";
 		String detailId = "";
-		
-		if (pathVariables.containsKey("tabId")) {
-			tabId = pathVariables.get("tabId");
-		}
+		QueryJSON wizardJSON = new QueryJSON();
+
 		if (pathVariables.containsKey("id")) {
 			id = pathVariables.get("id");
 		}
 		if (pathVariables.containsKey("detailId")) {
 			detailId = pathVariables.get("detailId");
 		}
-		
-		
+		ServletContext servletContext = request.getSession().getServletContext();
+		if (!Globals.isSystemInitialized()) {
+			Globals.initializeSystem(servletContext);
+		}
+		if (id.equals("InSession") || AppUtils.nvl(id).length() <= 0) {
+			rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+		} else if (AppUtils.nvl(id).length() > 0) {
+			rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+			rr = (ReportRuntime) request.getSession().getAttribute(AppConstants.SI_REPORT_RUNTIME);
+
+			if (rdef != null && !rdef.getReportID().equals(id)) {
+				request.getSession().removeAttribute(AppConstants.SI_REPORT_DEFINITION);
+				removeVariablesFromSession(request);
+				rdef = (new ReportHandler()).loadReportDefinition(request, id);
+			} else if (rr != null && !rr.getReportID().equals(id)) {
+				request.getSession().removeAttribute(AppConstants.SI_REPORT_RUNTIME);
+				removeVariablesFromSession(request);
+				rdef = (new ReportHandler()).loadReportDefinition(request, id);
+			} else if (rdef == null) {
+				rdef = (new ReportHandler()).loadReportDefinition(request, id);
+			}
+		}
+
+		if (rdef != null) {
+
+			wizardJSON.setTabId("Sql");
+			wizardJSON.setTabName("Sql");
+			wizardJSON.setQuery(rdef.getReportSQL());
+		}
+		return wizardJSON;
+	}
+
+	@RequestMapping(value = { "/report/wizard/retrieve_def_tab_wise_data/{id}",
+			"/report/wizard/retrieve_def_tab_wise_data/{id}/{detailId}" }, method = RequestMethod.GET)
+	public @ResponseBody DefinitionJSON retrieveDefTabWiseData(@PathVariable Map<String, String> pathVariables,
+			HttpServletRequest request, HttpServletResponse response) throws IOException, RaptorException {
+		ReportDefinition rdef = null;
+		ReportRuntime rr = null;
+		boolean newReport = false;
+		String tabId = "Def";
+		String id = "";
+
+		if (pathVariables.containsKey("id")) {
+			id = pathVariables.get("id");
+		}
+		String detailId = "";
+		if (pathVariables.containsKey("detailId")) {
+			detailId = pathVariables.get("detailId");
+		}
+
 		ServletContext servletContext = request.getSession().getServletContext();
 		if (!Globals.isSystemInitialized()) {
 			Globals.initializeSystem(servletContext);
@@ -1090,31 +927,33 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 				request.getSession().removeAttribute(AppConstants.SI_REPORT_DEFINITION);
 				removeVariablesFromSession(request);
 				rdef = (new ReportHandler()).loadReportDefinition(request, id);
+				request.getSession().setAttribute(AppConstants.SI_REPORT_DEFINITION, rdef);
 			} else if (rr != null && !rr.getReportID().equals(id)) {
 				request.getSession().removeAttribute(AppConstants.SI_REPORT_RUNTIME);
 				removeVariablesFromSession(request);
 				rdef = (new ReportHandler()).loadReportDefinition(request, id);
+				request.getSession().setAttribute(AppConstants.SI_REPORT_DEFINITION, rdef);
 			} else if (rdef == null) {
 				rdef = (new ReportHandler()).loadReportDefinition(request, id);
+				request.getSession().setAttribute(AppConstants.SI_REPORT_DEFINITION, rdef);
 			}
 			newReport = false;
 
 		} else {
 			rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
 		}
-		WizardJSON wizardJSON = null;
+		DefinitionJSON wizardJSON = new DefinitionJSON();
 		if (tabId.equals("Def")) {
-			wizardJSON = new DefinitionJSON();
-			((DefinitionJSON) wizardJSON).setTabId("Def");
-			((DefinitionJSON) wizardJSON).setTabName("Definition");
+			wizardJSON.setTabId("Def");
+			wizardJSON.setTabName("Definition");
 
-			((DefinitionJSON) wizardJSON).setReportId((rdef != null) ? rdef.getReportID() + "" : "");
-			((DefinitionJSON) wizardJSON).setReportName((rdef != null) ? rdef.getReportName() : "");
-			((DefinitionJSON) wizardJSON).setReportDescr((rdef != null) ? rdef.getReportDescr() : "");
-			((DefinitionJSON) wizardJSON).setReportType((rdef != null) ? rdef.getReportType() : AppConstants.RT_LINEAR);
-			((DefinitionJSON) wizardJSON).setDbInfo((rdef != null) ? rdef.getDBInfo() : "");
-			((DefinitionJSON) wizardJSON).setFormHelpText((rdef != null) ? rdef.getFormHelpText() : "");
-			((DefinitionJSON) wizardJSON).setPageSize((rdef != null) ? rdef.getPageSize() : 50);
+			wizardJSON.setReportId((rdef != null) ? rdef.getReportID() + "" : "");
+			wizardJSON.setReportName((rdef != null) ? rdef.getReportName() : "");
+			wizardJSON.setReportDescr((rdef != null) ? rdef.getReportDescr() : "");
+			wizardJSON.setReportType((rdef != null) ? rdef.getReportType() : AppConstants.RT_LINEAR);
+			wizardJSON.setDbInfo((rdef != null) ? rdef.getDBInfo() : "");
+			wizardJSON.setFormHelpText((rdef != null) ? rdef.getFormHelpText() : "");
+			wizardJSON.setPageSize((rdef != null) ? rdef.getPageSize() : 50);
 			List<IdNameBooleanJSON> displayArea = new ArrayList<IdNameBooleanJSON>();
 			IdNameBooleanJSON idNameJSON = new IdNameBooleanJSON();
 			String qMenu = "";
@@ -1128,17 +967,14 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 				}
 				displayArea.add(idNameJSON);
 			}
-			((DefinitionJSON) wizardJSON).setDisplayArea(displayArea);
-			((DefinitionJSON) wizardJSON)
-					.setHideFormFieldsAfterRun((rdef != null) ? rdef.isHideFormFieldAfterRun() : false);
-			((DefinitionJSON) wizardJSON)
-					.setMaxRowsInExcelCSVDownload((rdef != null) ? rdef.getMaxRowsInExcelDownload() : 500);
-			((DefinitionJSON) wizardJSON).setFrozenColumns((rdef != null) ? rdef.getFrozenColumns() : 0);
-			((DefinitionJSON) wizardJSON).setDataGridAlign((rdef != null) ? rdef.getDataGridAlign() : "left");
-			((DefinitionJSON) wizardJSON).setEmptyMessage((rdef != null) ? rdef.getEmptyMessage() : "No records found");
-			((DefinitionJSON) wizardJSON)
-					.setDataContainerHeight((rdef != null) ? rdef.getDataContainerHeight() : "600");
-			((DefinitionJSON) wizardJSON).setDataContainerWidth((rdef != null) ? rdef.getDataContainerWidth() : "900");
+			wizardJSON.setDisplayArea(displayArea);
+			wizardJSON.setHideFormFieldsAfterRun((rdef != null) ? rdef.isHideFormFieldAfterRun() : false);
+			wizardJSON.setMaxRowsInExcelCSVDownload((rdef != null) ? rdef.getMaxRowsInExcelDownload() : 500);
+			wizardJSON.setFrozenColumns((rdef != null) ? rdef.getFrozenColumns() : 0);
+			wizardJSON.setDataGridAlign((rdef != null) ? rdef.getDataGridAlign() : "left");
+			wizardJSON.setEmptyMessage((rdef != null) ? rdef.getEmptyMessage() : "No records found");
+			wizardJSON.setDataContainerHeight((rdef != null) ? rdef.getDataContainerHeight() : "600");
+			wizardJSON.setDataContainerWidth((rdef != null) ? rdef.getDataContainerWidth() : "900");
 			List<NameBooleanJSON> displayOptions = new ArrayList<NameBooleanJSON>();
 			NameBooleanJSON nameBooleanJSON = new NameBooleanJSON();
 			nameBooleanJSON.setName("HideFormFields");
@@ -1165,169 +1001,36 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 			nameBooleanJSON.setSelected((rdef != null) ? rdef.isDisplayOptionHidePDFIcons() : false);
 			displayOptions.add(nameBooleanJSON);
 
-			((DefinitionJSON) wizardJSON).setDisplayOptions(displayOptions);
+			wizardJSON.setDisplayOptions(displayOptions);
 
-			((DefinitionJSON) wizardJSON)
-					.setRuntimeColSortDisabled((rdef != null) ? rdef.isRuntimeColSortDisabled() : false);
-			((DefinitionJSON) wizardJSON).setNumFormCols((rdef != null) ? rdef.getNumFormColsAsInt() : 1);
-			((DefinitionJSON) wizardJSON).setReportTitle((rdef != null) ? rdef.getReportTitle() : "");
-			((DefinitionJSON) wizardJSON).setReportSubTitle((rdef != null) ? rdef.getReportSubTitle() : "");
-
-		} else if (tabId.equals("Sql")) {
-			wizardJSON = new QueryJSON();
-			((QueryJSON) wizardJSON).setTabId("Sql");
-			((QueryJSON) wizardJSON).setTabName("Sql");
-			((QueryJSON) wizardJSON).setQuery(rdef.getReportSQL());
-
-		} else if (tabId.equals("ColEdit") && rdef != null) {
-			// wizardJSON = new QueryJSON();
-			// ((QueryJSON)
-			// wizardJSON).setQuery((rdef!=null)?rdef.getReportSQL():"");
-			wizardJSON = new ColumnEditJSON();
-			((ColumnEditJSON) wizardJSON).setTabId("ColEdit");
-			((ColumnEditJSON) wizardJSON).setTabName("Column Edit");
-
-			List<DataColumnType> reportColumnList = rdef.getAllColumns();
-
-			for (DataColumnType reportColumnType : reportColumnList) {
-				// columnJSON = new ColumnJSON();
-				if (reportColumnType.getColId().equals(id)) {
-					((ColumnEditJSON) wizardJSON).setColId(reportColumnType.getColId());
-					((ColumnEditJSON) wizardJSON).setColName(reportColumnType.getColName());
-					((ColumnEditJSON) wizardJSON).setDisplayAlignment(reportColumnType.getDisplayAlignment());
-					((ColumnEditJSON) wizardJSON)
-							.setDisplayHeaderAlignment(reportColumnType.getDisplayHeaderAlignment());
-					((ColumnEditJSON) wizardJSON).setSortable(
-							reportColumnType.isIsSortable() == null ? false : reportColumnType.isIsSortable());
-					((ColumnEditJSON) wizardJSON).setVisible(reportColumnType.isVisible());
-					((ColumnEditJSON) wizardJSON).setDrilldownURL(
-							reportColumnType.getDrillDownURL() == null ? "" : reportColumnType.getDrillDownURL());
-					((ColumnEditJSON) wizardJSON).setDrilldownParams(
-							reportColumnType.getDrillDownParams() == null ? "" : reportColumnType.getDrillDownParams());
-					((ColumnEditJSON) wizardJSON).setDrilldownType(
-							reportColumnType.getDrillDownType() == null ? "" : reportColumnType.getDrillDownType());
-
-				}
-			}
-
-		} else if (tabId.equals("FormEdit") && rdef != null) {
-			wizardJSON = new FormEditJSON();
-			((FormEditJSON) wizardJSON).setTabId("FormEdit");
-			((FormEditJSON) wizardJSON).setTabName("Form Edit");
-			FormFieldType currField = null;
-			try {
-			if (id.equals("add")) {
-
-				currField = rdef.addFormFieldType(new ObjectFactory(), "", "", "", "", "", "", "", "", null, null, "",
-						"");
-				((FormEditJSON) wizardJSON).setFieldId(currField.getFieldId());
-				((FormEditJSON) wizardJSON).setFieldName(currField.getFieldName());
-				((FormEditJSON) wizardJSON).setFieldType(currField.getFieldType());
-				((FormEditJSON) wizardJSON).setVisible(currField.getVisible().toUpperCase().startsWith("Y"));
-				((FormEditJSON) wizardJSON).setDefaultValue(currField.getDefaultValue());
-				((FormEditJSON) wizardJSON).setFieldDefaultSQL(currField.getFieldDefaultSQL());
-				((FormEditJSON) wizardJSON).setFieldSQL(currField.getFieldSQL());
-				((FormEditJSON) wizardJSON).setValidationType(currField.getValidationType());
-
-			} else if (id.equals("delete")) {
-				rdef.deleteFormField(detailId);
-				persistReportDefinition(request, rdef);
-				MessageJSON messageJSON = new MessageJSON();
-				messageJSON.setMessage("Formfield " + detailId+ " Deleted");
-				messageJSON.setAnyStacktrace("Given formfield deleted");
-
-				ObjectMapper mapper = new ObjectMapper();
-				// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-				// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-				mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-				try {
-					jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageJSON);
-				} catch (Exception ex1) {
-					ex1.printStackTrace();
-				}
-				
-
-			}
-			if (rdef.getFormFieldList() != null) {
-				for (FormFieldType fft : rdef.getFormFieldList().getFormField()) {
-					if (fft.getFieldId().equals(id)) {
-						((FormEditJSON) wizardJSON).setFieldId(fft.getFieldId());
-						((FormEditJSON) wizardJSON).setFieldName(fft.getFieldName());
-						((FormEditJSON) wizardJSON).setFieldType(fft.getFieldType());
-						((FormEditJSON) wizardJSON).setVisible(fft.getVisible().toUpperCase().startsWith("Y"));
-						((FormEditJSON) wizardJSON).setDefaultValue(fft.getDefaultValue());
-						((FormEditJSON) wizardJSON).setFieldDefaultSQL(fft.getFieldDefaultSQL());
-						((FormEditJSON) wizardJSON).setFieldSQL(fft.getFieldSQL());
-						((FormEditJSON) wizardJSON).setValidationType(fft.getValidationType());
-
-						PredefinedValueList preDefined = fft.getPredefinedValueList();
-
-						if (preDefined != null) {
-							List<IdNameBooleanJSON> preDefinedList = new ArrayList<IdNameBooleanJSON>();
-							IdNameBooleanJSON idNameBooleanJSON = new IdNameBooleanJSON();
-
-							for (String v : preDefined.getPredefinedValue()) {
-								idNameBooleanJSON = new IdNameBooleanJSON();
-								idNameBooleanJSON.setId(v);
-								idNameBooleanJSON.setName(v);
-								preDefinedList.add(idNameBooleanJSON);
-							}
-							((FormEditJSON) wizardJSON).setPredefinedValueList(preDefinedList);
-						}
-					}
-				}
-			}
-			} catch (Exception ex) {
-				ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
-				errorJSONRuntime.setErrormessage("Error occured while retreiving formedit definition Tab");
-				errorJSONRuntime.setStacktrace(getStackTrace(ex));
-
-				ObjectMapper mapper = new ObjectMapper();
-				// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-				// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
-				mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-				try {
-					jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
-				} catch (Exception ex1) {
-					ex1.printStackTrace();
-				}
-				
-			}
+			wizardJSON.setRuntimeColSortDisabled((rdef != null) ? rdef.isRuntimeColSortDisabled() : false);
+			wizardJSON.setNumFormCols((rdef != null) ? rdef.getNumFormColsAsInt() : 1);
+			wizardJSON.setReportTitle((rdef != null) ? rdef.getReportTitle() : "");
+			wizardJSON.setReportSubTitle((rdef != null) ? rdef.getReportSubTitle() : "");
 
 		}
 
-		
-		//PrintWriter out = response.getWriter();
 		ObjectMapper mapper = new ObjectMapper();
-		// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-		// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-		try {
-			jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(wizardJSON);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return jsonInString;
+		return wizardJSON;
+
 	}
 
 	@RequestMapping(value = "/report/wizard/retrieve_data/{validate}", method = RequestMethod.POST)
-	public String retrieveDataForGivenQuery(@PathVariable("validate") boolean validate, @RequestBody QueryJSON queryJSON, HttpServletRequest request,
-			HttpServletResponse response) throws IOException, RaptorException {
+	public @ResponseBody RaptorResponse retrieveDataForGivenQuery(@PathVariable("validate") boolean validate,
+			@RequestBody QueryJSON queryJSON, HttpServletRequest request, HttpServletResponse response)
+			throws IOException, RaptorException {
+		RaptorResponse raptorResponse = new RaptorResponse();
 		String sql = queryJSON.getQuery();
 		String jsonInString = "";
-		//PrintWriter out = response.getWriter();
-		
+
 		ServletContext servletContext = request.getSession().getServletContext();
 		if (!Globals.isSystemInitialized()) {
 			Globals.initializeSystem(servletContext);
 		}
-		
+
 		ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
 		if (rdef == null) {
 			ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
@@ -1335,15 +1038,16 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 			errorJSONRuntime.setStacktrace("");
 
 			ObjectMapper mapper = new ObjectMapper();
-			// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-			// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
 			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 			try {
 				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
+				raptorResponse.data().put("elements", jsonInString);
+				return raptorResponse;
 			} catch (Exception ex1) {
-				ex1.printStackTrace();
+				logger.error(EELFLoggerDelegate.errorLogger,
+						"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex1);
 			}
 		} else {
 			if (!sql.trim().toUpperCase().startsWith("SELECT")) {
@@ -1351,16 +1055,17 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 				errorJSONRuntime.setErrormessage("Invalid statement - the SQL must start with the keyword SELECT");
 				errorJSONRuntime.setStacktrace("SQL Error");
 				ObjectMapper mapper = new ObjectMapper();
-				// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-				// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
 				mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 				try {
 					jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
+					raptorResponse.data().put("elements", jsonInString);
+					return raptorResponse;
+					
 				} catch (Exception ex) {
-					ex.printStackTrace();
-
+					logger.error(EELFLoggerDelegate.errorLogger,
+							"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex);
 				}
 			} else {
 				DataSet ds = null;
@@ -1388,17 +1093,10 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 				}
 				if (session != null) {
 					for (int i = 0; i < sessionParameters.length; i++) {
-						// if(!sessionParameters[i].startsWith("ff"))
-						// sql = Utils.replaceInString(sql, "[" +
-						// sessionParameters[i].toUpperCase()+"]",
-						// (String)session.getAttribute(sessionParameters[i].toUpperCase())
-						// );
-						// else {
 						logger.debug(EELFLoggerDelegate.debugLogger, (" Session " + " sessionParameters[i] "
 								+ sessionParameters[i] + " " + (String) session.getAttribute(sessionParameters[i])));
 						sql = Utils.replaceInString(sql, "[" + sessionParameters[i].toUpperCase() + "]",
 								(String) session.getAttribute(sessionParameters[i]));
-						// }
 					}
 				}
 				logger.debug(EELFLoggerDelegate.debugLogger, ("After testRunSQL " + sql));
@@ -1406,21 +1104,12 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 
 					response.setContentType("application/json");
 					ds = ConnectionUtils.getDataSet(sql, "local", true);
-					/*
-					 * SimpleModule module = new SimpleModule();
-					 * module.addSerializer(new ResultSetSerializer());
-					 * 
-					 * ObjectMapper objectMapper = new ObjectMapper();
-					 * objectMapper.registerModule(module);
-					 * 
-					 * ObjectNode objectNode = objectMapper.createObjectNode();
-					 * objectNode.putPOJO("results", ds);
-					 * 
-					 * objectMapper.writeValue(writer, objectNode);
-					 */
 
 					QueryResultJSON queryResultJSON = new QueryResultJSON();
 					queryResultJSON.setQuery(queryJSON.getQuery());
+					String query = XSSFilter.filterRequestOnlyScript(queryJSON.getQuery());
+					rdef.parseReportSQL(query);
+					queryResultJSON.setQuery(query);
 
 					int numColumns = ds.getColumnCount();
 					queryResultJSON.setTotalRows(ds.getRowCount());
@@ -1439,18 +1128,14 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 						if (queryResultJSON.getTotalRows() > 0) {
 							count = 0;
 							dvJSON = new HashMap<String, String>();
-							// for(rd.reportDataRows.resetNext();
-							// rd.reportDataRows.hasNext(); count++) {
 							for (int r = 0; r < Math.min(ds.getRowCount(), 100); r++) {
 								dvJSON = new HashMap<String, String>();
 								for (int c = 0; c < ds.getColumnCount(); c++) {
-									// jgen.writeFieldName(columnNames[c]);
-									// jgen.writeString(ds.getString(r, c));
 									try {
 										dvJSON.put(ds.getColumnName(c), ds.getString(r, c));
 									} catch (Exception ex) {
-										ex.printStackTrace();
-
+										logger.error(EELFLoggerDelegate.errorLogger,
+												"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex);
 									}
 								}
 								reportDataRows.add(dvJSON);
@@ -1461,44 +1146,62 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 					}
 					queryResultJSON.setReportDataRows(reportDataRows);
 					ObjectMapper mapper = new ObjectMapper();
-					// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-					// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
 					mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 					mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-					// String jsonInString = "";
-					try {
-						jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(queryResultJSON);
-					} catch (Exception ex) {
-						ex.printStackTrace();
+					if (validate) {
+						query = XSSFilter.filterRequestOnlyScript(queryJSON.getQuery());
+						request.setAttribute("sqlValidated", "N");
+						rdef.parseReportSQL(query);
+						request.setAttribute("sqlValidated", "Y");
+						persistReportDefinition(request, rdef);
 
 					}
-
-					// return queryResultJSON;
-
+					try {
+						jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(queryResultJSON);
+						raptorResponse.data().put("elements", jsonInString);
+						return raptorResponse;
+						
+						
+					} catch (Exception ex) {
+						logger.error(EELFLoggerDelegate.errorLogger,
+								"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery]. RaptorException: ", ex);
+					}
 				} catch (ReportSQLException ex) {
-					ex.printStackTrace();
 					ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
-					if(sql.contains("[")) {
-						errorJSONRuntime.setErrormessage("Formfield information is present in the query, hence couldn't execute");
-						errorJSONRuntime.setStacktrace("Formfield information is present in the query, hence couldn't execute");
+					if (sql.contains("[")) {
+						errorJSONRuntime.setErrormessage(
+								"Formfield information is present in the query, hence couldn't execute");
+						errorJSONRuntime
+								.setStacktrace("Formfield information is present in the query, hence couldn't execute");
+						if (validate) {
+							String query = XSSFilter.filterRequestOnlyScript(queryJSON.getQuery());
+							request.setAttribute("sqlValidated", "N");
+							rdef.parseReportSQL(query);
+							request.setAttribute("sqlValidated", "Y");
+							persistReportDefinition(request, rdef);
+
+						}
+
 					} else {
 						errorJSONRuntime.setErrormessage(ex.getMessage());
 						errorJSONRuntime.setStacktrace(getStackTrace(ex));
 					}
 					ObjectMapper mapper = new ObjectMapper();
-					// mapper.setVisibility(JsonMethod.FIELD, Visibility.ANY);
-					// mapper.setVisibilityChecker(mapper.getVisibilityChecker().with(JsonAutoDetect.Visibility.NONE));
 					mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 					mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 					try {
 						jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
-					} catch (Exception ex1) {
-						ex1.printStackTrace();
+						raptorResponse.data().put("elements", jsonInString);
+						return raptorResponse;
+						
 
+					} catch (Exception ex1) {
+						logger.error(EELFLoggerDelegate.errorLogger,
+								"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex1);
 					}
 				}
-				if(validate) {
+				if (validate) {
 					String query = XSSFilter.filterRequestOnlyScript(queryJSON.getQuery());
 					request.setAttribute("sqlValidated", "N");
 					rdef.parseReportSQL(query);
@@ -1506,10 +1209,11 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 					persistReportDefinition(request, rdef);
 
 				}
-				
+
 			}
 		}
-		return jsonInString;
+		raptorResponse.data().put("elements", jsonInString);
+		return raptorResponse;
 
 	}
 
@@ -1517,10 +1221,6 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 	public void reportChartReceive(@RequestBody ChartJSON chartJSON, HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		ReportRuntime reportRuntime;
-		// System.out.println("*****Hit RaptorChart******");
-
-		// System.out.println("chartJSON"+chartJSON.getRangeAxisList());
-		// System.out.println("chartJSON"+chartJSON.getCommonChartOptions().getLegendPosition());
 		reportRuntime = (ReportRuntime) request.getSession().getAttribute(AppConstants.SI_REPORT_RUNTIME); // changing
 																											// session
 																											// to
@@ -1531,8 +1231,8 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 				ReportHandler rh = new ReportHandler();
 				reportRuntime = rh.loadReportRuntime(request, reportID);
 			} catch (RaptorException ex) {
-				ex.printStackTrace();
-
+				logger.error(EELFLoggerDelegate.errorLogger,
+						"[Controller.processRequest]Invalid raptor action [reportChartReceive].", ex);
 			}
 		}
 
@@ -1673,8 +1373,8 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 			try {
 				reportRuntime.persistLinearReport(request);
 			} catch (Exception ex) {
-				ex.printStackTrace();
-				logger.error("While SAVING CHART", ex);
+				logger.error(EELFLoggerDelegate.errorLogger,
+						"[Controller.processRequest]Invalid raptor action [reportChartReceive].", ex);
 			}
 		}
 
@@ -1702,8 +1402,6 @@ public class RaptorControllerAsync extends UnRestrictedBaseController {
 		aThrowable.printStackTrace(printWriter);
 		return result.toString();
 	}
-
-	EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RaptorControllerAsync.class);
 
 	public void persistReportDefinition(HttpServletRequest request, ReportDefinition rdef) throws RaptorException {
 		ReportRuntime rr = (ReportRuntime) request.getSession().getAttribute(AppConstants.SI_REPORT_RUNTIME);

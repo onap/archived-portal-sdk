@@ -4,7 +4,6 @@
 -- ---------------------------------------------------------------------------------------------------------------
 
 SET FOREIGN_KEY_CHECKS=1; 
-
 USE ecomp_sdk;
 
 -- fn_menu 
@@ -15,9 +14,9 @@ INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD,
 INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD, ACTIVE_YN, SERVLET, QUERY_STRING, EXTERNAL_URL, TARGET, MENU_SET_CD, SEPARATOR_YN, IMAGE_SRC) VALUES (9, 'Profile', 1, 90, 'userProfile', 'menu_profile', 'Y', NULL, NULL, NULL, NULL, 'APP', 'N', 'icon-people-oneperson');
 INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD, ACTIVE_YN, SERVLET, QUERY_STRING, EXTERNAL_URL, TARGET, MENU_SET_CD, SEPARATOR_YN, IMAGE_SRC) VALUES (10, 'Admin', 1, 110, 'role_list.htm', 'menu_admin', 'Y', NULL, NULL, NULL, NULL, 'APP', 'N', 'icon-content-star');
 INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD, ACTIVE_YN, SERVLET, QUERY_STRING, EXTERNAL_URL, TARGET, MENU_SET_CD, SEPARATOR_YN, IMAGE_SRC) VALUES (84, 'All Reports', 8, 50, 'report', 'menu_reports', 'Y', NULL, NULL, NULL, NULL, 'APP', 'N', '/static/fusion/images/reports.png');
-INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD, ACTIVE_YN, SERVLET, QUERY_STRING, EXTERNAL_URL, TARGET, MENU_SET_CD, SEPARATOR_YN, IMAGE_SRC) values (87, 'Create Reports', 8, 120, 'report_wizard.htm?r_action=report.create', 'menu_reports', 'Y', NULL, 'r_action=report.create', NULL, NULL, 'APP', 'N', NULL);
+INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD, ACTIVE_YN, SERVLET, QUERY_STRING, EXTERNAL_URL, TARGET, MENU_SET_CD, SEPARATOR_YN, IMAGE_SRC) values (87, 'Create Reports', 8, 120, 'report#/report_wizard', 'menu_reports', 'Y', NULL, 'r_action=report.create', NULL, NULL, 'APP', 'N', NULL);
 INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD, ACTIVE_YN, SERVLET, QUERY_STRING, EXTERNAL_URL, TARGET, MENU_SET_CD, SEPARATOR_YN, IMAGE_SRC) values (88, 'Sample Dashboard', 8, 130, 'report_dashboard', 'menu_reports', 'Y', NULL, NULL, NULL, NULL, 'APP', 'N', NULL);
-INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD, ACTIVE_YN, SERVLET, QUERY_STRING, EXTERNAL_URL, TARGET, MENU_SET_CD, SEPARATOR_YN, IMAGE_SRC) VALUES (89, 'Import', 8, 140, 'report_wizard.htm?action=report.import', 'menu_reports', 'N', null, null, null, null, 'APP', 'N', null); 
+INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD, ACTIVE_YN, SERVLET, QUERY_STRING, EXTERNAL_URL, TARGET, MENU_SET_CD, SEPARATOR_YN, IMAGE_SRC) VALUES (89, 'Import', 8, 140, 'report#/report_import', 'menu_reports', 'N', null, null, null, null, 'APP', 'N', null); 
 INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD, ACTIVE_YN, SERVLET, QUERY_STRING, EXTERNAL_URL, TARGET, MENU_SET_CD, SEPARATOR_YN, IMAGE_SRC) VALUES (94, 'Self', 9, 40,'userProfile#/self_profile', 'menu_profile', 'Y', NULL, NULL, NULL, NULL, 'APP', 'N', '/static/fusion/images/profile.png');
 INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD, ACTIVE_YN, SERVLET, QUERY_STRING, EXTERNAL_URL, TARGET, MENU_SET_CD, SEPARATOR_YN, IMAGE_SRC) VALUES (101, 'Roles', 10, 20, 'admin#/admin', 'menu_admin', 'Y', NULL, NULL, NULL, NULL, 'APP', 'N', '/static/fusion/images/users.png');
 INSERT INTO fn_menu (MENU_ID, LABEL, PARENT_ID, SORT_ORDER, ACTION, FUNCTION_CD, ACTIVE_YN, SERVLET, QUERY_STRING, EXTERNAL_URL, TARGET, MENU_SET_CD, SEPARATOR_YN, IMAGE_SRC) VALUES (102, 'Role Functions', 10, 30, 'admin#/role_function_list', 'menu_admin', 'Y', NULL, NULL, NULL, NULL, 'APP', 'N', NULL);

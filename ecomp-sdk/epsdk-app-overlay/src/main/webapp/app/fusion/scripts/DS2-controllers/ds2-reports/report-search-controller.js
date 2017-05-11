@@ -45,6 +45,7 @@ appDS2.controller("reportSearchController", ['$scope','$rootScope','$http','$tim
 	  paginationPageSize: 5,
 	  paginationTemplate: correctTotalPaginationTemplate,
 	  columnDefs: [],
+	  enableColumnResizing: true,
 	  data: [],
 	  enableGridMenu: true,
 	  enableSelectAll: true,

@@ -1,5 +1,7 @@
 appDS2.controller('reportStepController', function($scope,$http,$location, $routeParams, $q, $modal,$log,$window, raptorReportFactory, stepFormFactory, DOMHelper) {
 
+	
+	$scope.showLoader = true;
 	// tabs for report wizard steps:
 	$scope.activeTabsId = 'Definition';
 
@@ -10,8 +12,10 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 		raptorReportFactory.getDefinitionByReportId(id).then(function(data){
 			$scope.loadDefinition(data);
 			$scope.definitionData = data;
+			$scope.showLoader = false;
 		},function(error){
 			$log.error("raptorReportFactory: getSearchData failed.");
+			$scope.showLoader = false;
 		});
 	}
 	
@@ -20,6 +24,7 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 		raptorReportFactory.createNewDefinition().then(function(data){
 			$scope.loadDefinition(data);
 			$scope.definitionData = data;
+			$scope.showLoader = false;
 		},function(error){
 			$log.error("raptorReportFactory: getSearchData failed.");
 		});
@@ -41,6 +46,7 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 		raptorReportFactory.getSqlInSession().then(function(data){
 			$scope.sqlInSessionJSON = data;
 			$scope.sqlScript = data.query;
+	    	$scope.showLoader = false;
 		},function(error){
 			$log.error("raptorReportFactory: getSearchData failed.");
 		});
@@ -133,6 +139,7 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 		$scope.hideExcelSelected = {"value":definitionData.displayOptions[3].selected};
 		$scope.hidePdfSelected = {"value":definitionData.displayOptions[4].selected};
 		$scope.runtimeColSortDisabled = {"value":definitionData.runtimeColSortDisabled};
+		$scope.showLoader = false;
 	} 
 	
 	
@@ -349,11 +356,21 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 							$scope.drilldownURL = data.drilldownURL;
 							$scope.drilldownParams = data.drilldownParams;
 							$scope.drilldownType = data.drilldownType;					
+							$scope.selectedDrillDownReport = {"value":""};
+						 							
+							
 							},function(error){
 							$log.error("raptorReportFactory: getColumnEditInfoById failed.");
 						}); 						 
 
 					 var init = function() {
+						 
+						 raptorReportFactory.getDrillDownReportList().then(function(data2){
+							 $scope.drilldownReports = data2;
+								},function(error){
+								$log.error("raptorReportFactory: getDrillDownReportList failed.");
+							}); 
+						 
 /*						 $scope.colTableRowData = colData;*/
 						 $scope.displayAlignmentOptions = [
 							 {value:"null", text:""},							 
@@ -373,8 +390,15 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 					 }
 					 
 					 init();
+					 $scope.$watch('selectedDrillDownReport.value',function(){
+						 if ($scope.selectedDrillDownReport) {
+						     $scope.$emit('openDrillDownpage',$scope.selectedDrillDownReport.value);
+						 }
+					 });
 					 
 					 $scope.save = function() {
+						 var drilldownURL = "";//raptorReportFactory.drillDownPopupOptions
+						//raptorReportFactory.drillDownPopupOptions.radioGroup
 						 var colInfo = {
 								  "tabId" : "ColEdit",
 								  "tabName" : "Column Edit",
@@ -384,7 +408,7 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 								  "displayHeaderAlignment" : ($scope.selectedDisplayHeaderAlignment.value=="null")?null:$scope.selectedDisplayHeaderAlignment.value,
 								  "sortable" : ($scope.sortable.value=="true"),
 								  "visible" : ($scope.visible.value=="true"),
-								  "drilldownURL" : "",
+								  "drilldownURL" : drilldownURL,
 								  "drilldownParams" : "",
 								  "drilldownType" : ""
 								}
@@ -576,9 +600,77 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 		      });
  };
     
-	
+	$scope.openDrillDownReportPopup = function (reportId) {
+		   var modalInstance = $modal.open({
+				 scope: $scope,
+				 animation: $scope.animationsEnabled,
+				 templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-reports/modal/report-wizard-drilldown-edit.html',
+				 sizeClass: 'modal-large',
+				 controller: ['$scope', '$modalInstance', '$http', '$log','raptorReportFactory','reportId', function ($scope, $modalInstance, $http, $log, raptorReportFactory, reportId) {
+					 $scope.selectedvalueradioGroup = {"name":""};
+					 $scope.selectedChildReportFormField = {"value":""};
+					 $scope.selectedChildReportColumn = {"value":""};
+					 $scope.fixedValue = {"value":""};
+					 $scope.suppressValues = {"value":""};
+
+				    	raptorReportFactory.getChildReportFormField(reportId).then(function(data){
+				    		$scope.childReportFF =data;
+						},function(error){
+							$log.error("raptorReportFactory: getChildReportFormField failed.");  
+							});
+
+				    	raptorReportFactory.getChildReportColumn(reportId).then(function(data){
+				    		$scope.childReportCol =data;
+						},function(error){
+							$log.error("raptorReportFactory: getChildReportFormField failed.");  
+							});
+				    	
+				    	raptorReportFactory.setDrillDownPopupOptions(null);				    					    					    	
+			
+			      	  $scope.complete = function() {
+//			      		if ($scope.selectedvalueradioGroup.name=="radiovalue1") {
+//				      		console.log("radio 1 selected");
+//			      		} else if ($scope.selectedvalueradioGroup.name=="radiovalue2") {
+//				      		console.log("radio 2 selected");			      			
+//			      		} else if ($scope.selectedvalueradioGroup.name=="radiovalue3") {
+//				      		console.log("radio 3 selected");
+//			      		} else if ($scope.selectedvalueradioGroup.name=="radiovalue4") {
+//				      		console.log("radio 4 selected");
+//			      		} else if ($scope.selectedvalueradioGroup.name=="radiovalue5") {
+//				      		console.log("radio 5 selected");
+//			      		} else {
+//				      		console.log("None selected");
+//			      		}
+
+			      		var drillDownPopupOptions= {
+			      				radioGroup : $scope.selectedvalueradioGroup.name,
+			      				reportFF: $scope.selectedChildReportFormField.value,
+			      				reportCol:  $scope.selectedChildReportColumn.value,
+			      				fixedValue:  $scope.fixedValue.value,
+			      				suppressValues: $scope.suppressValues.value
+			      		}
+				      	raptorReportFactory.setDrillDownPopupOptions(drillDownPopupOptions);
+			      		console.log(raptorReportFactory.drillDownPopupOptions);
+			      		
+			      		$modalInstance.close();
+			      	  };
+			    }],
+				resolve:{
+					reportId: function(){
+		   			return reportId;
+					}
+				 }
+			  });
+
+		      modalInstance.result.then(function () {
+/*			    	$scope.$emit('RefreshFormField');*/
+		      }, function () {
+		      });
+};
+ 
     $scope.$watch('activeTabsId', function (newVal, oldVal) {
         if(newVal !== oldVal) {
+        	$scope.showLoader = true;
             var selectedTab;
             for (selectedTab = 0; selectedTab < $scope.gTabs.length; selectedTab++) {
                 if ($scope.gTabs[selectedTab].id === newVal) {
@@ -587,28 +679,36 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
             		$scope.isColumnStep = false;              	  	                    
             		$scope.isFormFieldStep = false;
                 	$scope.renderStep(selectedTab+1);
-                	if ($scope.stepNum == 2) {
+                	if ($scope.stepNum == 1) {
+                    	$scope.showLoader = false;                	
+                	}
+                	else if ($scope.stepNum == 2) {
                 		loadSqlInSession();
                 	}	else if ($scope.stepNum == 3) {
                 		$scope.isColumnStep = true;
-
                 		raptorReportFactory.getColumnList().then(function(data){
                 			$scope.colTableRowData = data;
+                        	$scope.showLoader = false;
                 		},function(error){
-                			$log.error("raptorReportFactory: get column list failed.");                		});
-                		
+                			$log.error("raptorReportFactory: get column list failed.");
+                			$scope.showLoader = false;});
+                    	                		
                 	}  else if ($scope.stepNum == 4) {
                 		$scope.isFormFieldStep = true;
                 		// put within then function:
                 		raptorReportFactory.getFormFieldList().then(function(data){
                 			$scope.formFieldData = data;
+                        	$scope.showLoader = false;
                 		},function(error){
-                			$log.error("raptorReportFactory: get formfields failed.");                		});
+                			$log.error("raptorReportFactory: get formfields failed."); 
+                			$scope.showLoader = false;});
                 	}  else if ($scope.stepNum == 5) {
                 		raptorReportFactory.getDefinitionInSession().then(function(data){
                     		$scope.reportId = data.reportId;
+                        	$scope.showLoader = false;
                     	},function(error){
-                    		$log.error("raptorReportFactory: getDefinitionInSession failed.");                		});		
+                    		$log.error("raptorReportFactory: getDefinitionInSession failed."); 
+                    		$scope.showLoader = false;});		
                 	}
                 	
                 	if ($scope.stepNum>1){
@@ -869,6 +969,13 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 		$scope.getDefinitionById(-1);
 	});
 	
+	    $scope.$on('openDrillDownpage', function(event, reportId) {
+    	if (reportId!="") {
+				$scope.openDrillDownReportPopup(reportId);
+    	}
+	});
+
+    
 	$scope.$on('RefreshFormField', function(event) {
 		raptorReportFactory.getFormFieldList().then(function(data){
 			$scope.formFieldData = data;
