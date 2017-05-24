@@ -52,12 +52,15 @@ appDS2.controller("reportRunController", ['$scope','$rootScope','$routeParams','
 	
 	
 	
+	$scope.backToParentReport = function (){
+		$window.location.href = "report#/report_run/"+$scope.parentReportUrlParams
+	}
 	
 	$scope.urlParams = parseQueryString($scope.currentReportUrlParams);
 	
-	$scope.reportChartURL = 'report#/report_chart_wizard/'+$scope.urlParams.c_master;
+	$scope.reportChartURL = 'report#/report_chart/'+$scope.urlParams.c_master;
 	
-	$scope.reportEditURL = 'report_wizard.htm?action=report.edit&c_master='+$scope.urlParams.c_master;
+	$scope.reportEditURL = 'report#/report_wizard/'+$scope.urlParams.c_master;
 
 	
 	$http.get('raptor.htm?action=report.run.container&'+$scope.currentReportUrlParams).then(

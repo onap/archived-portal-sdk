@@ -20,6 +20,11 @@
 #columnEditTable .selectWrap{
 	width:220px;
 }
+
+
+#drilldownOption .selectWrap{
+	width:450px;
+}
 </style>
 
 <div style="height: 700px;">
@@ -101,7 +106,7 @@
 
              <tr>
                 <td class="colTableLeftColumn" style="width:350px;">Drill-down Link:</td>
-				<td>
+				<td id="drilldownOption">
 					<select name="drillDown" b2b-dropdown ng-model="selectedDrillDownReport.value" placeholder-text="Select">
 						<option  b2b-dropdown-list option-repeat="d in drilldownReports" value="{{d.id}}">{{d.name}}</option>
                     </select>

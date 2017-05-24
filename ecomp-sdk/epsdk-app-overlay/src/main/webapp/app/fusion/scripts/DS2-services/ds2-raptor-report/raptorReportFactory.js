@@ -376,8 +376,9 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
 						return $q.reject("raptorReportFactory: getSearchDataAtPage callback failed");				
 					});
 		},
-		setDrillDownPopupOptions: function(drillDownPopupOptions) {
-			this.drillDownPopupOptions = drillDownPopupOptions;
+		setDrillDownPopupOptions: function(drillDownURL,drillDownParams) {
+			this.drillDownURL = drillDownURL;
+			this.drillDownParams = drillDownParams;
 		},	
 		getReportDeleteStatus : function(deleteUrl) {
 			return $http.get(deleteUrl).then(function(response) {

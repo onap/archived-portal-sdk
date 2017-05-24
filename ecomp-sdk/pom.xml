@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<!-- ECOMP Portal SDK Maven parent project -->
 	<groupId>org.openecomp.ecompsdkos</groupId>
 	<artifactId>epsdk-project</artifactId>
@@ -9,28 +10,20 @@
 	<packaging>pom</packaging>
 	<name>ECOMP Portal SDK Project (parent)</name>
 	<url>https://wiki.onap.org/display/DW/Portal</url>
-	<scm>
-			<connection>scm:git:https://gitlab/scm/st_quantum/quantum.git</connection>
-	      	<developerConnection>scm:git:ssh://git@gitlab/st_quantum/quantum.git</developerConnection>
-		<tag>HEAD</tag>
-  </scm>
 
 	<modules>
 		<module>epsdk-fw</module>
 		<module>epsdk-core</module>
-		<module>epsdk-analytics</module>		
+		<module>epsdk-analytics</module>
 		<module>epsdk-workflow</module>
 		<module>epsdk-app-common</module>
 		<module>epsdk-app-overlay</module>
-		
 	</modules>
 
 	<properties>
 		<encoding>UTF-8</encoding>
 		<springframework.version>4.2.0.RELEASE</springframework.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
-		<!-- Tests usually require some setup that maven cannot do, so skip. -->
-		<skiptests>true</skiptests>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
 		<releaseNexusPath>content/repositories/releases/</releaseNexusPath>
@@ -39,21 +32,21 @@
 
 	<repositories>
 		<repository>
-	                <!-- Releases repository has ECOMP release artifacts -->
-	                <id>ecomp-releases</id>
-	                <name>OpenECOMP - Release Repository</name>
-	                <url>${nexusproxy}/${releaseNexusPath}</url>
-	        </repository>
-	        <repository>
-	                <!-- Snapshots repository has ECOMP snapshot artifacts -->
-	                <id>ecomp-snapshots</id>
-	                <name>OpenECOMP - Snapshot Repository</name>
-	                <url>${nexusproxy}/${snapshotNexusPath}</url>
-	        </repository>
-	        <repository>
-	                <id>ecomp-public</id>
-	                <name>ecomp onap public Repository</name>
-	                <url>https://nexus.onap.org/content/groups/public</url>
+			<!-- Releases repository has ECOMP release artifacts -->
+			<id>ecomp-releases</id>
+			<name>OpenECOMP - Release Repository</name>
+			<url>${nexusproxy}/${releaseNexusPath}</url>
+		</repository>
+		<repository>
+			<!-- Snapshots repository has ECOMP snapshot artifacts -->
+			<id>ecomp-snapshots</id>
+			<name>OpenECOMP - Snapshot Repository</name>
+			<url>${nexusproxy}/${snapshotNexusPath}</url>
+		</repository>
+		<repository>
+			<id>ecomp-public</id>
+			<name>ecomp onap public Repository</name>
+			<url>https://nexus.onap.org/content/groups/public</url>
 		</repository>
 	</repositories>
 
@@ -76,23 +69,11 @@
 				</plugins>
 			</build>
 		</profile>
-    
+
 	</profiles>
 
 	<build>
 		<plugins>
-
-			<!-- Name the "master" branch -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-scm-plugin</artifactId>
-				<version>1.8.1</version>
-				<configuration>
-					<connectionType>developerConnection</connectionType>
-					<scmVersionType>branch</scmVersionType>
-					<scmVersion>feature/BRANCH_1707</scmVersion>
-				</configuration>
-			</plugin>
 
 			<!-- Compile to Java 1.8 class output format -->
 			<plugin>
@@ -105,7 +86,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- Link iteration name with jar version -->
+			<!-- Include project version in jar -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -160,22 +141,21 @@
 	</build>
 
 	<distributionManagement>
-		<!-- Publish jars to the Nexus Repository - public group -->
-		<!-- The id below must match your .m2/settings.xml/servers/server/id -->
+		<!-- The id below must match .m2/settings.xml/servers/server/id -->
 		<repository>
-		        <id>ecomp-releases</id>
-		        <name>OpenECOMP - Release Repository</name>
-		        <url>${nexusproxy}/${releaseNexusPath}</url>
+			<id>ecomp-releases</id>
+			<name>OpenECOMP - Release Repository</name>
+			<url>${nexusproxy}/${releaseNexusPath}</url>
 		</repository>
 		<snapshotRepository>
-		        <id>ecomp-snapshots</id>
-		        <name>OpenECOMP - Snapshot Repository</name>
-		        <url>${nexusproxy}/${snapshotNexusPath}</url>
+			<id>ecomp-snapshots</id>
+			<name>OpenECOMP - Snapshot Repository</name>
+			<url>${nexusproxy}/${snapshotNexusPath}</url>
 		</snapshotRepository>
-		
+		<!-- Javadocs -->
 		<site>
-		        <id>ecomp-site</id>
-		        <url>dav:${nexusproxy}${sitePath}</url>
+			<id>ecomp-site</id>
+			<url>dav:${nexusproxy}${sitePath}</url>
 		</site>
 	</distributionManagement>
 

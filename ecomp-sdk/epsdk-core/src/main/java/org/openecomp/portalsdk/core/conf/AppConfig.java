@@ -26,7 +26,6 @@ import javax.sql.DataSource;
 
 import org.openecomp.portalsdk.core.interceptor.ResourceInterceptor;
 import org.openecomp.portalsdk.core.interceptor.SessionTimeoutInterceptor;
-import org.openecomp.portalsdk.core.lm.FusionLicenseManager;
 import org.openecomp.portalsdk.core.logging.format.AlarmSeverityEnum;
 import org.openecomp.portalsdk.core.logging.format.AppMessagesEnum;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -66,11 +65,11 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	protected ApplicationContext appApplicationContext = null;
 
 	public AppConfig() {
-		//loads all default fields and marks logging
-		//has been started for each log file type.
+		// loads all default fields and marks logging
+		// has been started for each log file type.
 		initGlobalLocalContext();
 	}
-	
+
 	/**
 	 * Creates and returns a new instance of a secondary (order=2)
 	 * {@link ViewResolver} that finds files by adding prefix "/WEB-INF/jsp/"
@@ -89,9 +88,8 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	}
 
 	/**
-	 * Loads all the default logging fields into the 
-	 * global MDC context and marks each log file type
-	 * that logging has been started.
+	 * Loads all the default logging fields into the global MDC context and
+	 * marks each log file type that logging has been started.
 	 */
 	private void initGlobalLocalContext() {
 		logger.init();
@@ -202,10 +200,14 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 			dataSource.setIdleConnectionTestPeriod(
 					Integer.parseInt(SystemProperties.getProperty(SystemProperties.IDLE_CONNECTION_TEST_PERIOD)));
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Error initializing database, verify database settings in properties file: "
-					+ UserUtils.getStackTrace(e),AlarmSeverityEnum.CRITICAL);
-			logger.error(EELFLoggerDelegate.debugLogger, "Error initializing database, verify database settings in properties file: "
-					+ UserUtils.getStackTrace(e),AlarmSeverityEnum.CRITICAL);
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"Error initializing database, verify database settings in properties file: "
+							+ UserUtils.getStackTrace(e),
+					AlarmSeverityEnum.CRITICAL);
+			logger.error(EELFLoggerDelegate.debugLogger,
+					"Error initializing database, verify database settings in properties file: "
+							+ UserUtils.getStackTrace(e),
+					AlarmSeverityEnum.CRITICAL);
 			// Raise an alarm that opening a connection to the database is
 			// failed.
 			logger.logEcompError(AppMessagesEnum.BeDaoSystemError);
@@ -285,24 +287,20 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 
 	/**
 	 * Sets the array of Strings that are paths excluded for session timeout.
+	 * 
+	 * @param excludeUrlPathsForSessionTimeout
+	 *            Paths to exclude
 	 */
 	public void setExcludeUrlPathsForSessionTimeout(final String... excludeUrlPathsForSessionTimeout) {
 		this.excludeUrlPathsForSessionTimeout = excludeUrlPathsForSessionTimeout;
 	}
 
-	/**
-	 * Creates and returns a new instance of a {@link FusionLicenseManager}.
-	 * 
-	 * @return New instance of {@link FusionLicenseManager}.
-//	@Bean
-	public FusionLicenseManager fusionLicenseManager() {
-		return new FusionLicenseManager(new LicenseableClassImpl());
-	}
-	 */
-
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+	 * 
+	 * @see
+	 * org.springframework.context.ApplicationContextAware#setApplicationContext
+	 * (org.springframework.context.ApplicationContext)
 	 */
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

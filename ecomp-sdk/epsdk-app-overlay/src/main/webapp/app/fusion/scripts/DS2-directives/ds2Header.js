@@ -88,7 +88,7 @@ appDS2.directive('ds2Header', function () {
 			
 			$scope.adjustHeader=function() {
         		$scope.showHeader = ($cookies.get("show_app_header") == undefined ? true : $cookies.get("show_app_header"));
-        		console.log($scope.showHeader);
+        		// console.log($scope.showHeader);
         		if ($scope.showHeader==true) {
         			document.getElementById('page-content').style.marginTop = "45px";
             	}else{			

@@ -408,8 +408,8 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 								  "displayHeaderAlignment" : ($scope.selectedDisplayHeaderAlignment.value=="null")?null:$scope.selectedDisplayHeaderAlignment.value,
 								  "sortable" : ($scope.sortable.value=="true"),
 								  "visible" : ($scope.visible.value=="true"),
-								  "drilldownURL" : drilldownURL,
-								  "drilldownParams" : "",
+								  "drilldownURL" : raptorReportFactory.drillDownURL,
+								  "drilldownParams" : raptorReportFactory.drillDownParams,
 								  "drilldownType" : ""
 								}
 						 raptorReportFactory.saveColumnEditInfo(colInfo).then(function(data){
@@ -600,26 +600,46 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 		      });
  };
     
-	$scope.openDrillDownReportPopup = function (reportId) {
+	$scope.openDrillDownReportPopup = function (reportId,parentReportId) {
 		   var modalInstance = $modal.open({
 				 scope: $scope,
 				 animation: $scope.animationsEnabled,
 				 templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-reports/modal/report-wizard-drilldown-edit.html',
 				 sizeClass: 'modal-large',
 				 controller: ['$scope', '$modalInstance', '$http', '$log','raptorReportFactory','reportId', function ($scope, $modalInstance, $http, $log, raptorReportFactory, reportId) {
+					 
+					 $scope.drillDownOptionList =[];
 					 $scope.selectedvalueradioGroup = {"name":""};
 					 $scope.selectedChildReportFormField = {"value":""};
 					 $scope.selectedChildReportColumn = {"value":""};
 					 $scope.fixedValue = {"value":""};
 					 $scope.suppressValues = {"value":""};
 
-				    	raptorReportFactory.getChildReportFormField(reportId).then(function(data){
-				    		$scope.childReportFF =data;
+				    	raptorReportFactory.getChildReportFormField(reportId).then(function(data){				    		
+				    		for (var i=0;i<data.length;i++) {
+				    			$scope.drillDownOptionList.push(
+				    					{
+				    					"name": data[i].name,
+				    					"id": data[i].id,
+				    					"selectedvalueradioGroup":{"name":""},
+				    					"selectedChildReportFormField":{"value":""},
+				    					"selectedChildReportColumn":{"value":""},
+				    					"fixedValue":{"value":""},
+				    					"suppressValues":{"value":""}				    					
+				    					}
+				    					)
+				    		}
 						},function(error){
 							$log.error("raptorReportFactory: getChildReportFormField failed.");  
 							});
 
-				    	raptorReportFactory.getChildReportColumn(reportId).then(function(data){
+				    	raptorReportFactory.getChildReportFormField(parentReportId).then(function(data){
+				    		$scope.childReportFF =data;
+						},function(error){
+							$log.error("raptorReportFactory: getChildReportFormField failed.");  
+							});				    	
+
+				    	raptorReportFactory.getChildReportColumn(parentReportId).then(function(data){
 				    		$scope.childReportCol =data;
 						},function(error){
 							$log.error("raptorReportFactory: getChildReportFormField failed.");  
@@ -628,19 +648,10 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 				    	raptorReportFactory.setDrillDownPopupOptions(null);				    					    					    	
 			
 			      	  $scope.complete = function() {
-//			      		if ($scope.selectedvalueradioGroup.name=="radiovalue1") {
-//				      		console.log("radio 1 selected");
-//			      		} else if ($scope.selectedvalueradioGroup.name=="radiovalue2") {
-//				      		console.log("radio 2 selected");			      			
-//			      		} else if ($scope.selectedvalueradioGroup.name=="radiovalue3") {
-//				      		console.log("radio 3 selected");
-//			      		} else if ($scope.selectedvalueradioGroup.name=="radiovalue4") {
-//				      		console.log("radio 4 selected");
-//			      		} else if ($scope.selectedvalueradioGroup.name=="radiovalue5") {
-//				      		console.log("radio 5 selected");
-//			      		} else {
-//				      		console.log("None selected");
-//			      		}
+
+			      		console.log("$scope.drillDownOptionList: ");
+			      		console.log($scope.drillDownOptionList);
+			      		
 
 			      		var drillDownPopupOptions= {
 			      				radioGroup : $scope.selectedvalueradioGroup.name,
@@ -649,8 +660,23 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 			      				fixedValue:  $scope.fixedValue.value,
 			      				suppressValues: $scope.suppressValues.value
 			      		}
-				      	raptorReportFactory.setDrillDownPopupOptions(drillDownPopupOptions);
-			      		console.log(raptorReportFactory.drillDownPopupOptions);
+			      		var drillDownParams = "";
+			      		var ampStr ="";
+			      		for (var i=0;i<$scope.drillDownOptionList.length; i++) {
+			      			if (drillDownParams!="") {
+			      				ampStr = "&amp;";
+			      			} 
+			      			if ($scope.drillDownOptionList[i].selectedvalueradioGroup.name=="fixedValue"){
+			      				drillDownParams = drillDownParams + ampStr + $scope.drillDownOptionList[i].id + "="+$scope.drillDownOptionList[i].fixedValue.value;
+			      			} else if ($scope.drillDownOptionList[i].selectedvalueradioGroup.name=="reportFF"){
+			      				drillDownParams = drillDownParams + ampStr + $scope.drillDownOptionList[i].id + "=[!"+$scope.drillDownOptionList[i].selectedChildReportFormField.value + "]";			      				
+			      			} else if ($scope.drillDownOptionList[i].selectedvalueradioGroup.name=="reportCol"){
+			      				drillDownParams = drillDownParams + ampStr + $scope.drillDownOptionList[i].id + "=["+$scope.drillDownOptionList[i].selectedChildReportColumn.value + "]";			      							      				
+			      			}			      				
+			      		}
+				      	raptorReportFactory.setDrillDownPopupOptions(reportId,drillDownParams);
+				      	console.log(raptorReportFactory.drillDownURL);
+				      	console.log(raptorReportFactory.drillDownParams);
 			      		
 			      		$modalInstance.close();
 			      	  };
@@ -970,8 +996,10 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 	});
 	
 	    $scope.$on('openDrillDownpage', function(event, reportId) {
+	    	console.log("$scope.reportId");
+	    	console.log($scope.reportId);
     	if (reportId!="") {
-				$scope.openDrillDownReportPopup(reportId);
+				$scope.openDrillDownReportPopup(reportId,$scope.reportId);
     	}
 	});
 

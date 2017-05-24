@@ -33,57 +33,42 @@
 	<div class="b2b-modal-body ng-scope ng-isolate-scope in"  style="margin-bottom: -50px;">
 		<form name="workflowForm" class="css-form" novalidate>
 			
-	<div id="columnEditTable">
+	<div id="columnEditTable" ng-repeat="drillDownOption in drillDownOptionList">
     <table class="striped">
         <tbody>
- 
         <fieldset role="radiogroup" radio-group-accessibility>
-            <tr ng-show="childReportFF.length>0">	
+            <tr ng-show="childReportFF.length>0||childReportCol.length>0">	
             	<td colspan="2">
-            		<h2>User</h2>
+            		<h2>{{drillDownOption.name}}</h2>
             	</td>       
 			</tr>            
 			
-            <tr ng-show="childReportFF.length>0">	
-                <td>
-                	<div class="form-row" role="radio" style="margin-top:0px;">
-			            <label for="optionsRadios1111" class="radio">
-			                <input type="radio" ng-model="selectedvalueradioGroup.name" id="optionsRadios1111" name="optionsRadio11" value="noValue" required>
-			                <i class="skin"></i>
-			                <span>No Value</span>
-			            </label>
-			        </div>                
-                </td>
-				<td style="margin-top:10px;">
-					<p>Accept Default</p>
-				</td>
-            </tr>
             
-            <tr ng-show="childReportFF.length>0">	
+            <tr ng-show="childReportFF.length>0||childReportCol.length>0">	
                 <td>
                 	<div class="form-row" role="radio" style="margin-top:0px;">
-			            <label for="optionsRadios2222" class="radio">
-			                <input type="radio" ng-model="selectedvalueradioGroup.name" id="optionsRadios2222" name="optionsRadio11" value="fixedValue">
+			            <label for="optionsRadios2{{$index}}" class="radio">
+			                <input type="radio" ng-model="drillDownOption.selectedvalueradioGroup.name" id="optionsRadios2{{$index}}" name="optionsRadio2{{$index}}" value="fixedValue">
 			                <i class="skin"></i>
 			                <span>Fixed Value</span>
 			            </label>
 			        </div>             
                 </td>
-                <td><input type="text" name="defaultValue" ng-model="fixedValue.value" class="colTableInput"></td>                
+                <td><input type="text" name="defaultValue" ng-model="drillDownOption.fixedValue.value" class="colTableInput"></td>                
             </tr>
             
                                     
-            <tr ng-show="childReportFF.length>0">	
+            <tr ng-show="childReportCol.length>0">	
                 <td>
                 	<div class="form-row" role="radio" style="margin-top:0px;">
-			            <label for="optionsRadios333333" class="radio">
-			                <input type="radio" ng-model="selectedvalueradioGroup.name" id="optionsRadios333333" name="optionsRadio11" value="reportCol">
+			            <label for="optionsRadios3{{$index}}" class="radio">
+			                <input type="radio" ng-model="drillDownOption.selectedvalueradioGroup.name" id="optionsRadios3{{$index}}" name="optionsRadio3{{$index}}" value="reportCol">
 			                <i class="skin"></i>
 			                <span>Value of Column</span>
 			        </div>
                 </td>
 				<td>
-					<select name="childReportColumn" b2b-dropdown ng-model="selectedChildReportColumn.value" placeholder-text="Select">
+					<select name="childReportColumn" b2b-dropdown ng-model="drillDownOption.selectedChildReportColumn.value" placeholder-text="Select">
 						<option b2b-dropdown-list option-repeat="d in childReportCol" value="{{d.id}}">{{d.name}}</option>
                     </select>
 				</td>
@@ -93,46 +78,23 @@
             <tr ng-show="childReportFF.length>0">	
                 <td>
                 	<div class="form-row" role="radio" style="margin-top:0px;">
-                		<label for="optionsRadios444444" class="radio">
-                			<input type="radio" ng-model="selectedvalueradioGroup.name" id="optionsRadios444444" name="optionsRadio11" value="reportFF">
+                		<label for="optionsRadios4{{$index}}" class="radio">
+                			<input type="radio" ng-model="drillDownOption.selectedvalueradioGroup.name" id="optionsRadios4{{$index}}" name="optionsRadio4{{$index}}" value="reportFF">
                 			<i class="skin"></i>
                 		<span>Value of Form Field</span>
         			</div>
                 </td>
 				<td>
-					<select name="childReportFormField" b2b-dropdown ng-model="selectedChildReportFormField.value" placeholder-text="Select">
+					<select name="childReportFormField" b2b-dropdown ng-model="drillDownOption.selectedChildReportFormField.value" placeholder-text="Select">
 						<option b2b-dropdown-list option-repeat="d in childReportFF" value="{{d.id}}">{{d.name}}</option>
                     </select>
 				</td>
             </tr> 
 
-            <tr ng-show="childReportFF.length>0">	
-                <td>
-                	<div class="form-row" role="radio" style="margin-top:0px;">
-			            <label for="optionsRadios5555" class="radio">
-			                <input type="radio" ng-model="selectedvalueradioGroup.name" id="optionsRadios5555" name="optionsRadio11" value="valueSet" required>
-			                <i class="skin"></i>
-			                <span>Value Set</span>
-			            </label>
-			        </div>                
-                </td>
-				<td style="margin-top:10px;">
-					<p>Pass the value of the selected column if not empty, otherwise pass the value of the selected form field</p>
-				</td>
-            </tr>
+
                        
              </fieldset>
 
-			<tr>
-				<td colspan="2">
-					<h2>Parameter values not to be passed to the drill-down report</h2>       
-				</td>
-			</tr>            
-
-            <tr>
-                <td class="colTableLeftColumn">Suppress Values</td>
-                <td><input type="text" name="suppressValue" ng-model="suppressValues.value" class="colTableInput"></td>
-            </tr>
 
         </tbody>
       </table>

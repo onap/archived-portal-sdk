@@ -17,9 +17,12 @@ public class SSOUtil {
 	 * Constructs a path for this server, this app's context, etc.
 	 * 
 	 * @param request
+	 *            HttpServletRequest
 	 * @param response
+	 *            HttpServletResponse
 	 * @param forwardPath
-	 * @return
+	 *            Path to forward user
+	 * @return Redirect URL
 	 */
 	public static String getECOMPSSORedirectURL(HttpServletRequest request, HttpServletResponse response,
 			String forwardPath) {
@@ -29,13 +32,11 @@ public class SSOUtil {
 		try {
 			encodedAppURL = URLEncoder.encode(appURL, "UTF-8");
 		} catch (UnsupportedEncodingException ex) {
-			logger.error("getECOMPSSORedirectURL: Failed to encode app URL "
-			 + appURL);
+			logger.error("getECOMPSSORedirectURL: Failed to encode app URL " + appURL);
 		}
 		String portalURL = PortalApiProperties.getProperty(PortalApiConstants.ECOMP_REDIRECT_URL);
 		if (portalURL == null || portalURL.length() == 0) {
-			logger.error("getECOMPSSORedirectURL: Failed to get property " +
-			 PortalApiConstants.ECOMP_REDIRECT_URL);
+			logger.error("getECOMPSSORedirectURL: Failed to get property " + PortalApiConstants.ECOMP_REDIRECT_URL);
 			return null;
 		}
 		String redirectURL = portalURL + "?redirectUrl=" + encodedAppURL;

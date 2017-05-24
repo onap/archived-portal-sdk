@@ -345,7 +345,7 @@ appDS2.controller('reportChartController', function ($scope, $rootScope, $timeou
 
 });
 
-app.directive('onlyDigits', function () {
+appDS2.directive('onlyDigits', function () {
 
     return {
         restrict: 'A',
@@ -362,7 +362,7 @@ app.directive('onlyDigits', function () {
     };
 });
 
-app.directive('onlyCharacters', function () {
+appDS2.directive('onlyCharacters', function () {
     return {
         restrict: 'A',
         require: '?ngModel',
