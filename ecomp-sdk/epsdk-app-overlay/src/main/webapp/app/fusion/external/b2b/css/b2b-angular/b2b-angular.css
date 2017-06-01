@@ -1,4 +1,4 @@
-/*! b2b-angular-library - v1.0.4 - Last updated: 2017-05-03. Copyright (c) 2016 AT&T Services, Inc. */ 
+/*! b2b-angular-library - v1.0.5 - Last updated: 2017-05-24. Copyright (c) 2016 AT&T Services, Inc. */ 
 .b2b-horizontal-table ::-webkit-scrollbar {
   height: 10px; }
 
@@ -257,7 +257,7 @@ small {
   font-family: "Omnes-ECOMP-W02-Medium", Arial !important; }
 
 .font-medium-italic {
-  font-family: "Omnes-ECOMP-W02-Medium-Italic", Arial !important; }
+  font-family: "Omnes-ECOMP-W02-Medium-Italic",Arial !important; }
 
 .font-reset {
   font-style: normal;
@@ -857,9 +857,10 @@ small {
   vertical-align: middle;
   width: 1em; }
 
-[class*="icoWeather-"],[class*="icoTrans-"],[class*="icoBubble-"],[class*="icoRetail-"],[class*="icoPeople-"],[class*="icoNumslets-"],[class*="icoLocation-"],[class*="icoHealthcare-"],[class*="icoDocuments-"],[class*="icoDevices-"],[class*="icoDatanetwork-"],[class*="icoControls-"],[class*="icoBuilding-"],[class*="icoArrows-"]{
+[class*="icoWeather-"], [class*="icoTrans-"], [class*="icoBubble-"], [class*="icoRetail-"], [class*="icoPeople-"], [class*="icoNumslets-"], [class*="icoLocation-"], [class*="icoHealthcare-"], [class*="icoDocuments-"], [class*="icoDevices-"], [class*="icoDatanetwork-"], [class*="icoControls-"], [class*="icoBuilding-"], [class*="icoArrows-"] {
   color: #0568ae;
   display: inline-block;
+  font-style: normal;
   font-size: 20px;
   font-weight: normal;
   font-variant: normal;
@@ -875,8 +876,7 @@ small {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  vertical-align: middle;
-  }
+  vertical-align: middle; }
 
 [class*="icon-primary-"]:before,
 [class*="icon-primary-"]:after {
@@ -7091,7 +7091,7 @@ input.awd-select {
   font-family: "Omnes-ECOMP-W02-Medium", Arial !important; }
 
 .font-medium-italic {
-  font-family: "Omnes-ECOMP-W02-Medium-Italic", Arial !important; }
+  font-family: "Omnes-ECOMP-W02-Medium-Italic",Arial !important; }
 
 .font-reset {
   font-style: normal;
@@ -7378,6 +7378,12 @@ input.awd-select {
   float: right;
   margin-left: 10px; }
 
+.b2b-modal-footer .cta-button-group .marginLeft0 {
+  margin-left: 0px; }
+
+.b2b-modal-footer .cta-button-group .btn-footer-left {
+  margin-right: auto; }
+
 .b2b-modal-footer .cta-button-group .btn + .btn {
   margin-right: 0 !important; }
 
@@ -7622,10 +7628,10 @@ input.awd-select {
   .b2b-alerts-messages h3 {
     color: #333 !important;
     font-family: "Omnes-ECOMP-W02-Medium", Arial;
-    margin-bottom: 0 !important; 
-	margin: 1em 0 5px;
-	line-height: 27px;
-	font-size: 18px;}
+    margin-bottom: 0 !important;
+    margin: 1em 0 5px;
+    line-height: 27px;
+    font-size: 18px; }
   .b2b-alerts-messages h4 {
     color: #333 !important;
     font-family: "Omnes-ECOMP-W02-Medium", Arial;
@@ -7726,7 +7732,6 @@ i:focus {
   margin: 5px;
   width: 22px;
   height: 23px;
-  /*transition: all 0.3s ease-out 0s;*/
   vertical-align: baseline; }
 
 .pager {
@@ -7843,7 +7848,8 @@ h4#pagination-large-count {
 
 .pager .fieldLabel .btn-arrow {
   top: 0;
-  left: 10px; }
+  left: 10px;
+  margin-left: -5px; }
 
 .b2b-p-col-md-12 {
   width: 50%; }
@@ -7854,14 +7860,16 @@ h4#pagination-large-count {
   border-radius: 0;
   cursor: default;
   display: inline-block;
-  margin: 5px;
-  min-width: 23px;
+  margin: 0px 5px 0 5px;
   height: 23px;
   vertical-align: baseline; }
 
 .b2b-pager__item--noclick {
   pointer-events: none !important;
   cursor: default !important; }
+
+.b2b-pager__item--droppable {
+  pointer-events: all !important; }
 
 .b2b-pager {
   padding-top: 10px;
@@ -7892,7 +7900,7 @@ h4#pagination-large-count {
   padding-left: 0;
   padding-right: 0;
   text-align: center;
-  margin-left: 10px; }
+  margin-left: 5px; }
 
 .row.section-row {
   margin-bottom: 20px; }
@@ -7929,12 +7937,10 @@ a.b2b-pager__item--prev-disabled > [class^="icon-primary-"] {
   cursor: not-allowed; }
 
 .b2b-pager__item--next {
-  margin: 5px;
-  padding: 1.5px 6px 1.5px 6px; }
+  padding: 1.5px 0px 1.5px 0px; }
 
 .b2b-pager__item--prev {
-  margin: 5px;
-  padding: 1.5px 6px 1.5px 6px; }
+  padding: 1.5px 0px 1.5px 0px; }
 
 .fieldLabel {
   color: #666666; }
@@ -7991,6 +7997,12 @@ h4#b2b-pagination-large-count {
 
 .b2b-pager > div > span.fieldLabel {
   margin-left: 18px; }
+
+.b2b-go-to-page {
+  margin-top: 14px; }
+
+.b2b-go-to-page-inline {
+  display: inline-block; }
 
 input.b2b-phone-mask-input {
   padding-right: 15px; }
@@ -8522,6 +8534,10 @@ button.btn-search[disabled] {
   button.btn-search[disabled] i {
     color: #767676; }
 
+.innershadow {
+  -webkit-background-blend-mode: mutilply;
+  box-shadow: 0 3px 0 2px rgba(0, 0, 0, 0.08); }
+
 .linkSelectorModule {
   position: relative;
   height: 32px;
@@ -8916,7 +8932,7 @@ ul.module-optinalcta {
   width: 100%;
   background-color: #cf2a2a; }
 
-.b2b-status-tracker > .b2b-status-tracker-step.actionRequired .icon-primary-securityalerts-alert {
+.b2b-status-tracker > .b2b-status-tracker-step.actionRequired .icoSecurityalerts-alert {
   color: #cf2a2a; }
 
 .b2b-status-tracker > .b2b-status-tracker-step.notAvailable > .progress > .progress-bar {
@@ -9759,10 +9775,10 @@ th:nth-child(8) {
   border: 1px solid #ccc;
   background: #FFF;
   border-radius: 6px;
-  text-align: center; 
+  text-align: center;
   background: linear-gradient(#fcfcfc, #f2f2f2);
   background-blend-mode: multiply;
-  width: 1em;}
+  width: 1em; }
 
 .b2b-external-sort-label {
   padding-bottom: 10px; }
@@ -11297,6 +11313,26 @@ button .colors-off-msg {
   position: absolute;
   top: 0;
   z-index: 1; }
+
+.b2b-drag-handle {
+  cursor: move;
+  -ms-interpolation-mode: bicubic;
+  margin-bottom: 40px;
+  height: 23px;
+  padding-right: 10px;
+  float: left; }
+
+.b2b-drag-over {
+  background-color: #d1d1d1; }
+
+.b2-drag-element {
+  background-color: #e8e8e8; }
+
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none; }
 /* Flyout inputs color is not aligned */
 textarea, input {
   color: #333; }
@@ -11479,6 +11515,10 @@ textarea, input {
 .b2b-config-sec-expander-body-icons .icon-misc-pen {
   position: relative;
   left: 18px; }
+.b2b-directory-listing .center {
+  display: block;
+  margin: 2em auto; }
+
 .b2b-directory-listing .listBox {
   height: 310px;
   width: 450px;
@@ -11578,10 +11618,7 @@ textarea, input {
 .b2b-directory-listing-label-heading {
   margin-top: 24px;
   padding-bottom: 5px; }
-.b2b-directory-listing .center {
-    display: block;
-    margin: 2em auto;
-}
+
 .b2b-dl-list-box option {
   padding-top: 13px;
   padding-bottom: 7px;
@@ -11861,7 +11898,6 @@ label.b2b-static-route-label-heading {
 
 .b2b-static-route-content {
   display: inline-block; }
-
 
   .selectWrap::after { 
   align-items: center; 

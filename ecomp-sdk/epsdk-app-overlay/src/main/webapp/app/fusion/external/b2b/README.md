@@ -24,3 +24,7 @@ Modified b2b-library.min.js for ECOMP left menu feature, toggle menu icon, hide 
 +               		return;
 +               	}
 +               	/**Ended**/
+
+30 May 2017 : Changed b2b sort icons
++
+"<i ng-class=\"{'icon-controls-upPRIMARY active': sortPattern === 'ascending', 'icon-controls-down active down': sortPattern === 'descending'}\"></i>\n"

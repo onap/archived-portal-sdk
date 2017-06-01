@@ -178,7 +178,13 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 
 	@Bean
 	public DataSource dataSource() throws Exception {
+			
 		systemProperties();
+		
+		Boolean testConnectionOnCheckout = getConnectionOnCheckout();
+		String preferredTestQuery = getPreferredTestQuery();
+
+		
 		ComboPooledDataSource dataSource = new ComboPooledDataSource();
 		try {
 			dataSource.setDriverClass(SystemProperties.getProperty(SystemProperties.DB_DRIVER));
@@ -199,6 +205,9 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 					.setMaxPoolSize(Integer.parseInt(SystemProperties.getProperty(SystemProperties.DB_MAX_POOL_SIZE)));
 			dataSource.setIdleConnectionTestPeriod(
 					Integer.parseInt(SystemProperties.getProperty(SystemProperties.IDLE_CONNECTION_TEST_PERIOD)));
+			dataSource.setTestConnectionOnCheckout(testConnectionOnCheckout);
+			dataSource.setPreferredTestQuery(preferredTestQuery);
+			
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"Error initializing database, verify database settings in properties file: "
@@ -214,6 +223,32 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 			throw e;
 		}
 		return dataSource;
+	}
+
+	private String getPreferredTestQuery() {
+		String preferredTestQueryStr = null;
+		try {
+			preferredTestQueryStr = SystemProperties.getProperty(SystemProperties.PREFERRED_TEST_QUERY);
+		} catch (Exception e) {
+			logger.info(EELFLoggerDelegate.errorLogger,
+					SystemProperties.PREFERRED_TEST_QUERY + " value not found "
+							+ UserUtils.getStackTrace(e));
+		}
+		String preferredTestQuery = ((preferredTestQueryStr == null) ? "SELECT 1" : preferredTestQueryStr);
+		return preferredTestQuery;
+	}
+
+	private Boolean getConnectionOnCheckout() {
+		String testConnectionOnCheckoutStr = null;
+		try {
+			testConnectionOnCheckoutStr = SystemProperties.getProperty(SystemProperties.TEST_CONNECTION_ON_CHECKOUT);
+		} catch (Exception e) {
+			logger.info(EELFLoggerDelegate.errorLogger,
+					SystemProperties.TEST_CONNECTION_ON_CHECKOUT + " value not found "
+							+ UserUtils.getStackTrace(e));
+		}
+		Boolean testConnectionOnCheckout = Boolean.valueOf(testConnectionOnCheckoutStr == null ? "true":testConnectionOnCheckoutStr);
+		return testConnectionOnCheckout;
 	}
 
 	/*

@@ -253,6 +253,8 @@ public class SystemProperties {
 	public static final String DB_MIN_POOL_SIZE = "db.min_pool_size";
 	public static final String DB_MAX_POOL_SIZE = "db.max_pool_size";
 	public static final String IDLE_CONNECTION_TEST_PERIOD = "hb.idle_connection_test_period";
+	public static final String TEST_CONNECTION_ON_CHECKOUT = "db.test_connection_on_checkout";
+	public static final String PREFERRED_TEST_QUERY = "db.preferred_test_query";
 
 	public static final String MYLOGINS_FEED_CRON = "mylogins_feed_cron";
 	public static final String SESSIONTIMEOUT_FEED_CRON = "sessiontimeout_feed_cron";
