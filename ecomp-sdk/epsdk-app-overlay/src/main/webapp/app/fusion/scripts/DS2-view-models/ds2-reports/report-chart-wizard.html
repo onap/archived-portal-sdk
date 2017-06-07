@@ -20,31 +20,31 @@ table{
 
 <div id="page-content">
 <h1 class="heading-page">Report Chart Configuration</h1>
-<!-- <div style="color:#2ca02c" ng-show="successSubmit">Your configurations have been successfully submitted</div> -->
+
+<div ng-show="showLoader" class="span loader-container">
+	<i class="icon-primary-spinner" role="img"
+		aria-label="Please wait while we load your content"></i>
+</div>
 
 
-
+<div ng-hide="showLoader">
 <div>
 <table>
 	<thead>
 	    <tr>
 	        <th width="30%">Chart Type</th>
-	        <th>Animate</th>
+	        <th></th>
 	    </tr>
 	</thead>
 	
     <tbody>
         <tr>
             <td>
-				<select name="chartType" b2b-dropdown ng-model="reportRunJson.chartTypeJSON.value" placeholder-text="Select">
+				<select name="chartType" b2b-dropdown ng-model="reportRunJson.chartType">
 					<option b2b-dropdown-list option-repeat="d in chartTypeOptions" value="{{d.value}}">{{d.text}}</option>
 	            </select>
             </td>
-            <td>
-                <label for="animateCheckbox" class="checkbox">
-                    <input id="animateCheckbox" type="checkbox" ng-model="reportRunJson.animation" /><i class="skin"></i><span></span>
-                </label>            
-			</td>
+            <td></td>
         </tr>
     </tbody>
 </table>
@@ -108,12 +108,12 @@ table{
     <tbody>
         <tr>
             <td>
-				<select name="chartType" b2b-dropdown ng-model="reportRunJson.domainAxisJSON" placeholder-text="Select">
+				<select name="chartType" b2b-dropdown ng-model="reportRunJson.domainAxis">
 					<option b2b-dropdown-list option-repeat="d in reportRunJson.chartColumnJSONList" value="{{d.value}}">{{d.title}}</option>
 	            </select>
             </td>
             <td>
-				<select name="chartType" b2b-dropdown ng-model="reportRunJson.categoryAxisJSON" placeholder-text="Select">
+				<select name="chartType" b2b-dropdown ng-model="reportRunJson.categoryAxis">
 					<option b2b-dropdown-list option-repeat="d in reportRunJson.chartColumnJSONList" value="{{d.value}}">{{d.title}}</option>
 	            </select>
             </td>
@@ -127,11 +127,11 @@ table{
 <table ng-repeat="rangeReport in reportRunJson.rangeAxisList">
 	<thead>
 	    <tr>
-	        <th width="25%">Range Axis</th>
-	        <th  width="10%">Y Axis</th>
-	        <th  width="20%">Chart Title</th>
+	        <th width="18%">Range Axis</th>
+	        <th  width="15%">Y Axis</th>
+	        <th  width="15%">Chart Title</th>
 	        <th  width="22%">Color</th>
-	        <th  width="18%">Line Type</th>
+	        <th  width="25%">Line Type</th>
 	        <th></th>	        
 	    </tr>
 	</thead>
@@ -144,16 +144,17 @@ table{
             </td>
             <td>
             	<input type="text" name="displayName" ng-model="rangeReport.rangeYAxis" style="width:100px;">
-            </td>            <td>
+            </td>
+            <td>
             	<input type="text" name="displayName" ng-model="rangeReport.rangeChartGroup" style="width:150px;">
             </td>
             <td>
-				<select name="chartType" b2b-dropdown ng-model="rangeReport.rangeColorJSON" placeholder-text="Select">
+				<select name="chartType" b2b-dropdown ng-model="rangeReport.rangeColor">
 					<option b2b-dropdown-list option-repeat="d in rangeColors" value="{{d.value}}">{{d.title}}</option>
 	            </select>
             </td>
             <td>
-				<select name="chartType" b2b-dropdown ng-model="rangeReport.rangeLineTypeJSON" placeholder-text="Select">
+				<select name="lineType" b2b-dropdown ng-model="rangeReport.rangeLineType">
 					<option b2b-dropdown-list option-repeat="d in lineTypes" value="{{d.value}}">{{d.title}}</option>
 	            </select>
             </td>
@@ -208,7 +209,7 @@ table{
 	
 	<div class="fn-ebz-container" >
 		<label class="fn-ebz-text-label">Category</label><BR>
-		<div class="form-field" att-select="reportRunJson.chartColumnJSONList" ng-model="reportRunJson.categoryAxisJSON" placeholder="Select an Option" show-input-filter="true"></div>
+		<div class="form-field" att-select="reportRunJson.chartColumnJSONList" ng-model="reportRunJson.categoryAxis" placeholder="" show-input-filter="true"></div>
 	</div>
 	<BR>
 
@@ -284,7 +285,7 @@ table{
 	
 	
 
-<div ng-show="reportRunJson.chartTypeJSON.value=='BarChart3D'">
+<div ng-show="reportRunJson.chartType=='BarChart3D'">
   
   	<accordion close-others="true" css="att-accordion--no-box">
 	<accordion-group id="accBar" heading="Bar Chart Options"  child-length="10">
@@ -337,9 +338,8 @@ table{
   </accordion-group>
 </accordion>
 </div>
-	
-	<div ng-show="reportRunJson.chartTypeJSON.value=='TimeSeriesChart'">
-	<!-- <div class="fn-ebz-text-label"><b>Time Series Chart Options</b></div><BR> -->
+	{{reportRunJson.chartType}}
+	<div ng-show="reportRunJson.chartType=='TimeSeriesChart'">
 	 <accordion close-others="true" css="att-accordion--no-box">
 		<accordion-group id="accTimeChart"  heading="Time Series Chart Options"  child-length="10">
 		
@@ -380,13 +380,11 @@ table{
 	
 	</div>
 	
-	<div ng-show="reportRunJson.chartTypeJSON.value=='FlexTimeChart'">
-		
+	<div>		
 		
 		<accordion close-others="true" css="att-accordion--no-box">
 		<accordion-group id="accFlexTimeChart"  heading="Flex Time Series Chart Options"  child-length="10">
 		
-		<!-- <div class="fn-ebz-text-label"><b>Flex Time Series Chart Options</b></div><BR>  -->
 		<div style="border:2px;border-style:solid;border-color:#808080;margin-bottom:9px">
 			<div style="margin-left:5px">
 		<div class="fn-ebz-container">
@@ -414,7 +412,6 @@ table{
 	
 	
 	 
-	<!-- <div class="fn-ebz-text-label"><b>Common Options</b></div><BR>  -->
 	
 	<accordion close-others="true" css="att-accordion--no-box">
 	<accordion-group id="accCommonOptions"  heading="Common Options"  child-length="10">
@@ -488,73 +485,250 @@ table{
             </div>    
         </b2b-expander-heading>               
         <b2b-expander-body>                   
-            <div>
-<!-- 	<div style="border:2px;border-style:solid;border-color:#808080;margin-bottom:9px"> -->
-<!-- 	<div style="margin-left:0px">
-	
-	<div class="fn-ebz-container">
-		<label class="fn-ebz-text-label">Primary Axis Label</label><BR>
-		<input type="text" name="prAxis" maxlength=50 ng-model="reportRunJson.primaryAxisLabel" style="width:210px"/>
-	</div>
-	<div class="fn-ebz-container" >
-		<label class="fn-ebz-text-label">Secondary Axis Label</label><BR>
-		<input type="text" name="secAxis" maxlength=75 ng-model="reportRunJson.secondaryAxisLabel"  style="width:210px"/>
-	</div>
-	<BR>
-	<div class="fn-ebz-container" >
-		<label class="fn-ebz-text-label">Range Axis Minimum Range</label><BR>
-		<input type="text" name="rAxisMinRange" only-digits ng-model="reportRunJson.minRange" style="width:210px"/>
-	</div>
-	<div class="fn-ebz-container">
-		<label class="fn-ebz-text-label">Maximum Range</label><BR>
-		<input type="text" name="rAxisMaxRange" only-digits ng-model="reportRunJson.maxRange"  ng-maxLength="35" style="width:210px"/>
-	</div><BR>		
-	
-	 </div> -->
-	 
-<div id="RangeTable">
-<table>
-	<thead>
-	    <tr>
-	        <th width="30%">Primary Axis Label</th>
-	        <th  width="30%">Secondary Axis Label</th>
-	        <th></th>	        
-	    </tr>
-	</thead>
-    <tbody>
-        <tr>
-            <td>
-            	<input type="text" name="primaryAxisLabel" ng-model="reportRunJson.primaryAxisLabel" style="width:200px;">
-            </td>
-            <td>
-            	<input type="text" name="secondaryAxisLabel" ng-model="reportRunJson.secondaryAxisLabel" style="width:200px;">
-            </td>
-        </tr>
-    </tbody>
-</table>
-<table>
-	<thead>
-	    <tr>
-	        <th width="30%">Range Axis Minimum Range</th>
-	        <th  width="30%">Maximum Range</th>
-	        <th></th>
-	    </tr>
-	</thead>
-    <tbody>
-        <tr>
-            <td>
-            	<input type="text" name="minRange" ng-model="reportRunJson.minRange" style="width:200px;">
-            </td>
-            <td>
-            	<input type="text" name="maxRange" ng-model="reportRunJson.maxRange" style="width:200px;">
-            </td>
-        </tr>
-    </tbody>
-</table>
-</div>            	
-            </div>
+            <div>	 
+				<div id="RangeTable">
+				<table>
+					<thead>
+					    <tr>
+					        <th width="30%">Primary Axis Label</th>
+					        <th  width="30%">Secondary Axis Label</th>
+					        <th></th>	        
+					    </tr>
+					</thead>
+				    <tbody>
+				        <tr>
+				            <td>
+				            	<input type="text" name="primaryAxisLabel" ng-model="reportRunJson.primaryAxisLabel" style="width:200px;">
+				            </td>
+				            <td>
+				            	<input type="text" name="secondaryAxisLabel" ng-model="reportRunJson.secondaryAxisLabel" style="width:200px;">
+				            </td>
+				        </tr>
+				    </tbody>
+				</table>
+				<table>
+					<thead>
+					    <tr>
+					        <th width="30%">Range Axis Minimum Range</th>
+					        <th  width="30%">Maximum Range</th>
+					        <th></th>
+					    </tr>
+					</thead>
+				    <tbody>
+				        <tr>
+				            <td>
+				            	<input type="text" name="minRange" ng-model="reportRunJson.minRange" style="width:200px;">
+				            </td>
+				            <td>
+				            	<input type="text" name="maxRange" ng-model="reportRunJson.maxRange" style="width:200px;">
+				            </td>
+				        </tr>
+				    </tbody>
+				</table>
+				</div>            	
+			</div>
         </b2b-expander-body>     
     </b2b-expanders>
+
+	<!-- BAR CHART OPTION SECTION STARTS HERE -->
+    <b2b-expanders ng-show="reportRunJson.chartType=='BarChart3D'" class="mpc-expanders" is-open="barChartOptionOpen">            
+        <b2b-expander-heading>
+            <div class="row">    
+                <div class="span6">
+                    <div class="heading-medium b2b-blue" ng-class=" { 'b2b-toggle-header-active': !barChartOptionOpen, 'b2b-toggle-header-inactive': barChartOptionOpen } ">Bar Chart Options</div>
+                    <p class="p-small">
+                    </p>                    
+                </div>
+                <div style="position: absolute;right: 250px;" class="span1">
+                	<i class="pull-right b2b-toggle-header-icon" b2b-expander-toggle b2b-accessibility-click="13,32" expand-icon="icon-primary-collapsed" collapse-icon="icon-primary-expanded" tabindex="0" aria-posinset="1" aria-setsize="2"></i>
+                </div>
+            </div>    
+        </b2b-expander-heading>               
+        <b2b-expander-body>                   
+            <div>	 
+				<div id="RangeTable">
+				<table>
+					<thead>
+					    <tr>
+					        <th width="25%">Orientation</th>
+					        <th  width="18%">Stacked</th>
+					        <th  width="18%">Show Controls</th>
+					        <th  width="18%">XAxis Date Type</th>
+					        <th  width="21%">Display less XAxis tickers</th>					        
+					        <th></th>	        
+					    </tr>
+					</thead>
+				    <tbody>
+				        <tr>
+				            <td>
+						            <label for="optionsOrientationVertical" class="radio">
+						                <input type="radio" ng-model="reportRunJson.barChartOptions.verticalOrientation" id="optionsOrientationVertical" name="optionsOrientationVertical" value="true">
+						                <i class="skin"></i>
+						                <span>Vertical</span>
+						            </label>            
+						            <label for="optionsOrientationHorizontal" class="radio">
+						                <input type="radio" ng-model="reportRunJson.barChartOptions.verticalOrientation" id="optionsOrientationHorizontal" name="optionsOrientationHorizontal" value="false">
+						                <i class="skin"></i>
+						                <span>Horizontal</span>
+						            </label>            
+				            </td>
+   				            
+				            <td>
+						            <label for="optionsStackedYes" class="radio">
+						                <input type="radio" ng-model="reportRunJson.barChartOptions.stackedChart" id="optionsStackedYes" name="optionsStackedYes" value="true">
+						                <i class="skin"></i>
+						                <span>Yes</span>
+						            </label>            
+						            <label for="optionsStackedNo" class="radio">
+						                <input type="radio" ng-model="reportRunJson.barChartOptions.stackedChart" id="optionsStackedNo" name="optionsStackedNo" value="false">
+						                <i class="skin"></i>
+						                <span>No</span>
+						            </label>  				            
+				            </td>
+				            <td>
+						            <label for="optionsShowControlYes" class="radio">
+						                <input type="radio" ng-model="reportRunJson.barChartOptions.displayBarControls" id="optionsShowControlYes" name="optionsShowControlYes" value="true">
+						                <i class="skin"></i>
+						                <span>Yes</span>
+						            </label>            
+						            <label for="optionsShowControlNo" class="radio">
+						                <input type="radio" ng-model="reportRunJson.barChartOptions.displayBarControls" id="optionsShowControlNo" name="optionsShowControlNo" value="false">
+						                <i class="skin"></i>
+						                <span>No</span>
+						            </label>  				            
+				            </td>
+				            <td>
+						            <label for="optionsXAxisDateTypeYes" class="radio">
+						                <input type="radio" ng-model="reportRunJson.barChartOptions.xAxisDateType" id="optionsXAxisDateTypeYes" name="optionsXAxisDateTypeYes" value="true">
+						                <i class="skin"></i>
+						                <span>Yes</span>
+						            </label>            
+						            <label for="optionsXAxisDateTypeNo" class="radio">
+						                <input type="radio" ng-model="reportRunJson.barChartOptions.xAxisDateType" id="optionsXAxisDateTypeNo" name="optionsXAxisDateTypeNo" value="false">
+						                <i class="skin"></i>
+						                <span>No</span>
+						            </label>  				            
+				            </td>				            
+				            <td>
+						            <label for="optionsMinimizeXAxisTickersYes" class="radio">
+						                <input type="radio" ng-model="reportRunJson.barChartOptions.minimizeXAxisTickers" id="optionsMinimizeXAxisTickersYes" name="optionsMinimizeXAxisTickersYes" value="true">
+						                <i class="skin"></i>
+						                <span>Yes</span>
+						            </label>            
+						            <label for="optionsMinimizeXAxisTickersNo" class="radio">
+						                <input type="radio" ng-model="reportRunJson.barChartOptions.minimizeXAxisTickers" id="optionsMinimizeXAxisTickersNo" name="optionsMinimizeXAxisTickersNo" value="false">
+						                <i class="skin"></i>
+						                <span>No</span>
+						            </label>  				            
+				            </td>				            
+				        </tr>
+				    </tbody>
+				</table>
+				<table>
+					<thead>
+					    <tr>
+					        <th width="25%">Is Time Axis?</th>
+					        <th  width="25%">Log Scale (Y Axis)</th>
+					        <th></th>
+					    </tr>
+					</thead>
+				    <tbody>
+				        <tr>
+				            <td>
+					            <label for="optionsTimeAxisYes" class="radio">
+					                <input type="radio" ng-model="reportRunJson.barChartOptions.timeAxis" id="optionsTimeAxisYes" name="optionsTimeAxisYes" value="true">
+					                <i class="skin"></i>
+					                <span>Yes</span>
+					            </label>            
+					            <label for="optionsTimeAxisNo" class="radio">
+					                <input type="radio" ng-model="reportRunJson.barChartOptions.timeAxis" id="optionsTimeAxisNo" name="optionsTimeAxisNo" value="false">
+					                <i class="skin"></i>
+					                <span>No</span>
+					            </label>  				            
+				            </td>
+				            <td>
+				                <label for="logScaleYAxisCheckBox" class="checkbox">
+				                    <input id="logScaleYAxisCheckBox" type="checkbox" ng-model="reportRunJson.barChartOptions.yAxisLogScale" /><i class="skin"></i><span></span>
+				                </label>            				            
+				            </td>
+				        </tr>
+				    </tbody>
+				</table>
+				</div>            	
+			</div>
+        </b2b-expander-body>     
+    </b2b-expanders>
+	<!-- BAR CHART OPTION SECTION ENDS HERE -->
+
+	<!-- TIME SERIES CHART OPTION SECTION STARTS HERE -->
+    <b2b-expanders ng-show="reportRunJson.chartType=='TimeSeriesChart'" class="mpc-expanders" is-open="timeSeriesChartOptionOpen">            
+        <b2b-expander-heading>
+            <div class="row">    
+                <div class="span6">
+                    <div class="heading-medium b2b-blue" ng-class=" { 'b2b-toggle-header-active': !timeSeriesChartOptionOpen, 'b2b-toggle-header-inactive': timeSeriesChartOptionOpen } ">Time Series Chart Options</div>
+                    <p class="p-small">
+                    </p>                    
+                </div>
+                <div style="position: absolute;right: 250px;" class="span1">
+                	<i class="pull-right b2b-toggle-header-icon" b2b-expander-toggle b2b-accessibility-click="13,32" expand-icon="icon-primary-collapsed" collapse-icon="icon-primary-expanded" tabindex="0" aria-posinset="1" aria-setsize="2"></i>
+                </div>  
+            </div>    
+        </b2b-expander-heading>               
+        <b2b-expander-body>                   
+            <div>	 
+				<div>
+				<table>
+					<thead>
+					    <tr>
+					        <th width="20%">Render as</th>
+					        <th width="20%">X Axis Label</th>
+					        <th width="20%">X Axis Tickers</th>
+					        <th width="20%">Is Time Axis?</th>
+					        <th width="20%">Multi Series</th>					        					        
+					    </tr>
+					</thead>
+				    <tbody>
+				        <tr>
+				            <td>
+					            <label for="optionsLineChartRendererLine" class="radio">
+					                <input type="radio" ng-model="reportRunJson.timeSeriesChartOptions.lineChartRenderer" id="optionsLineChartRendererLine" name="optionsLineChartRendererLine" value="line">
+					                <i class="skin"></i>
+					                <span>Line</span>
+					            </label>            
+					            <label for="optionsLineChartRendererArea" class="radio">
+					                <input type="radio" ng-model="reportRunJson.timeSeriesChartOptions.lineChartRenderer" id="optionsLineChartRendererArea" name="optionsLineChartRendererArea" value="area">
+					                <i class="skin"></i>
+					                <span>Area</span>
+					            </label>  				            
+				            </td>
+				            <td>
+				                <label for="xAxisLabelCheckBox" class="checkbox">
+				                    <input id="xAxisLabelCheckBox" type="checkbox" ng-model="reportRunJson.timeSeriesChartOptions.showXAxisLabel" /><i class="skin"></i><span></span>
+				                </label>            				            				            
+				            </td>
+				            <td>
+				                <label for="addXAxisTickerCheckBox" class="checkbox">
+				                    <input id="addXAxisTickerCheckBox" type="checkbox" ng-model="reportRunJson.timeSeriesChartOptions.addXAxisTicker" /><i class="skin"></i><span></span>
+				                </label>            				            				            
+				            </td>
+				            <td>
+				                <label for="isTimeAxisCheckBox" class="checkbox">
+				                    <input id="isTimeAxisCheckBox" type="checkbox" ng-model="reportRunJson.timeSeriesChartOptions.nonTimeAxis" /><i class="skin"></i><span></span>
+				                </label>
+				            </td>
+				            <td>
+				                <label for="multiSeriesCheckBox" class="checkbox">
+				                    <input id="multiSeriesCheckBox" type="checkbox" ng-model="reportRunJson.timeSeriesChartOptions.multiSeries" /><i class="skin"></i><span></span>
+				                </label>
+				            </td>
+				        </tr>
+				    </tbody>
+				</table>
+				</div>            	
+			</div>
+        </b2b-expander-body>     
+    </b2b-expanders>
+	<!-- TIME SERIES CHART OPTION SECTION ENDS HERE -->
 
     <b2b-expanders class="mpc-expanders" is-open="commonOptionOpen">            
         <b2b-expander-heading>
@@ -606,7 +780,7 @@ table{
 						                <span>down 90&deg;</span>
 						            </label>            
 						            <label for="optionsRadios5555" class="radio">
-						                <input type="radio" ng-model="reportRunJson.commonChartOptions.legendLabelAngle" id="optionsRadios5555" name="optionsRadio55" value="Standard">
+						                <input type="radio" ng-model="reportRunJson.commonChartOptions.legendLabelAngle" id="optionsRadios5555" name="optionsRadio55" value="standard">
 						                <i class="skin"></i>
 						                <span>Standard</span>
 						            </label>            
@@ -616,12 +790,12 @@ table{
 						            <fieldset role="radiogroup" radio-group-accessibility>
 						            <td>
 						            <label for="optionsRadiosTop" class="radio">
-						                <input type="radio" ng-model="reportRunJson.commonChartOptions.legendPosition" id="optionsRadiosTop" name="optionsRadioTop" value="Top">
+						                <input type="radio" ng-model="reportRunJson.commonChartOptions.legendPosition" id="optionsRadiosTop" name="optionsRadioTop" value="top">
 						                <i class="skin"></i>
 						                <span>Top</span>
 						            </label>            
 						            <label for="optionsRadiosBottom" class="radio">
-						                <input type="radio" ng-model="reportRunJson.commonChartOptions.legendPosition" id="optionsRadiosBottom" name="optionsRadioBottom" value="Bottom">
+						                <input type="radio" ng-model="reportRunJson.commonChartOptions.legendPosition" id="optionsRadiosBottom" name="optionsRadioBottom" value="bottom">
 						                <i class="skin"></i>
 						                <span>Bottom</span>
 						            </label>            
@@ -717,3 +891,4 @@ table{
 	<button type="submit" style="width: 90px; height:35px;margin-top:20px; margin-left:5px;" class="btn btn-alt btn-small">Run</button>
 	</a>
 	</div>    
+</div>

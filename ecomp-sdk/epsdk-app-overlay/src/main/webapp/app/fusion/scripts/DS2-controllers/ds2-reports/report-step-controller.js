@@ -1,6 +1,5 @@
-appDS2.controller('reportStepController', function($scope,$http,$location, $routeParams, $q, $modal,$log,$window, raptorReportFactory, stepFormFactory, DOMHelper) {
+appDS2.controller('reportStepController', function($scope,$http,$location, $routeParams, $q, $modal,$log,$window, raptorReportFactory, stepFormFactory) {
 
-	
 	$scope.showLoader = true;
 	// tabs for report wizard steps:
 	$scope.activeTabsId = 'Definition';
@@ -742,19 +741,6 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
                 	}
                     break;
                 }
-            }
-
-            var selectedTabPanelElement = document.getElementById($scope.gTabs[selectedTab].tabPanelId);
-
-            var elem = null;
-            if (selectedTabPanelElement) {
-                elem = DOMHelper.firstTabableElement(selectedTabPanelElement);
-            }
-
-            if (elem) {
-                $timeout(function () {
-                    elem.focus();
-                }, 100);
             }
         }
     });	 

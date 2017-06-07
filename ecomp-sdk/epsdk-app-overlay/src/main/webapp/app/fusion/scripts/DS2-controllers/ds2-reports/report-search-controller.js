@@ -1,5 +1,6 @@
 appDS2.requires.push('ui.grid');
 appDS2.requires.push('ui.grid.pagination');
+appDS2.requires.push('ui.grid.resizeColumns');
 appDS2.controller("reportSearchController", ['$scope','$rootScope','$http','$timeout','uiGridConstants','$modal','$q','$log','raptorReportFactory',function ($scope,$rootScope,$http,$timeout,uiGridConstants,$modal,$q,$log,raptorReportFactory) { 
 	    
 	$scope.getSearchData = function(){

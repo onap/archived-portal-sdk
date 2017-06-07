@@ -18,6 +18,7 @@
 		<module>epsdk-workflow</module>
 		<module>epsdk-app-common</module>
 		<module>epsdk-app-overlay</module>
+		<module>epsdk-app-os</module>
 	</modules>
 
 	<properties>

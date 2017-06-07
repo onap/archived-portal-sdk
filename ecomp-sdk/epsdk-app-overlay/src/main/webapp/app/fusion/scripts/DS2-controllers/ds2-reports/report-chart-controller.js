@@ -1,33 +1,43 @@
 appDS2.controller('reportChartController', function ($scope, $rootScope, $timeout, $window, $http, $routeParams,modalService) {
-	//$scope.test="1223";
-	//alert($scope.chartType.value);
-	console.log("reportChartController called");
+	$scope.showLoader = true;
     $scope.commonOptionOpen = false;
     $scope.additionalOptionOpen = false;
-    
+    $scope.barChartOptionOpen = false;
+    $scope.timeSeriesChartOptionOpen = false;
 	$scope.selectedChartType = {value:""};
     $scope.chartTypeOptions = [
-        {value: 'barChart', text: 'Bar Chart'},
-        {value: 'timeSeries', text: 'Time Series/Area Chart'},
-        {value: 'pieChart', text: 'Pie Chart'},    	
-        {value: 'annotationChart', text: 'Annotation Chart'},
-        {value: 'flexibleTimeChart', text: 'Flexible Time Chart'}    
+        {value: 'BarChart3D', text: 'Bar Chart'},
+        {value: 'TimeSeriesChart', text: 'Time Series/Area Chart'},
+        {value: 'PieChart', text: 'Pie Chart'},    	
+        {value: 'AnnotationChart', text: 'Annotation Chart'},
+        {value: 'FlexTimeChart', text: 'Flexible Time Chart'}    
     ];
-    
-    $scope.animateSelected = {value:false};
-    
+        
 	$scope.populateChrtWzdFields = function() {
 		$scope.reportRunJson = {};
 		$http.get("raptor.htm?action=chart.json&c_master="+$routeParams.reportId).then(function (response) {
 			$scope.reportRunJson = response.data;
 			  //Set chart type
+			$scope.reportRunJson.commonChartOptions.animateAnimatedChart = $scope.reportRunJson.commonChartOptions.animateAnimatedChart+"";
+			$scope.reportRunJson.commonChartOptions.hideLegend = $scope.reportRunJson.commonChartOptions.hideLegend + "";
+			$scope.reportRunJson.showTitle = $scope.reportRunJson.showTitle + "";
+			
+			// if barChartOptions is not null
+			if ($scope.reportRunJson.barChartOptions) {
+				$scope.reportRunJson.barChartOptions.displayBarControls = $scope.reportRunJson.barChartOptions.displayBarControls+"";
+				$scope.reportRunJson.barChartOptions.minimizeXAxisTickers = $scope.reportRunJson.barChartOptions.minimizeXAxisTickers+"";
+				$scope.reportRunJson.barChartOptions.stackedChart = $scope.reportRunJson.barChartOptions.stackedChart+"";
+				$scope.reportRunJson.barChartOptions.timeAxis =$scope.reportRunJson.barChartOptions.timeAxis+""; 
+				$scope.reportRunJson.barChartOptions.verticalOrientation = $scope.reportRunJson.barChartOptions.verticalOrientation +"";
+				$scope.reportRunJson.barChartOptions.xAxisDateType = $scope.reportRunJson.barChartOptions.xAxisDateType +"";
+				}			
+			
 			  if ($scope.reportRunJson.chartTypeJSON) {
-				  var chrtTypeValue = $scope.reportRunJson.chartTypeJSON.value;
+				  var chrtTypeValue = $scope.reportRunJson.chartType;
 					 for(var i = 0; i < $scope.chartTypes.length; i++) {
-						    var obj = $scope.chartTypes[i];
-						    //console.log(obj.id);
 						    if ($scope.chartTypes[i].value==chrtTypeValue) {
-						    	$scope.reportRunJson.chartTypeJSON.index=$scope.chartTypes[i].index;
+						    	$scope.reportRunJson.chartTypeJSON.index=$scope.chartTypes[i].index;						    	
+						    	$scope.reportRunJson.chartTypeJSON.value=$scope.chartTypes[i].value;
 						    	$scope.reportRunJson.chartTypeJSON.title=$scope.chartTypes[i].title;
 						    }
 	
@@ -108,12 +118,65 @@ appDS2.controller('reportChartController', function ($scope, $rootScope, $timeou
 						 }
 					}
 				}
+				$scope.showLoader = false;				
 	 	  });
 		
 	 	$scope.legend = "true";
 	}
 	
 	$scope.saveChartData = function() {
+		$scope.showLoader = true;
+
+		$scope.reportRunJson.commonChartOptions.animateAnimatedChart = ($scope.reportRunJson.commonChartOptions.animateAnimatedChart=="true")
+		$scope.reportRunJson.commonChartOptions.hideLegend = ($scope.reportRunJson.commonChartOptions.hideLegend=="true");
+		$scope.reportRunJson.showTitle = ($scope.reportRunJson.showTitle=="true");
+		
+		$scope.reportRunJson.chartTypeJSON = {
+				'index':0,'title':'','value':''};
+		
+		
+		if (($scope.reportRunJson.chartType == "BarChart3D")&&($scope.reportRunJson.barChartOptions)) {
+			$scope.reportRunJson.barChartOptions.displayBarControls = ($scope.reportRunJson.barChartOptions.displayBarControls=="true") ;
+			$scope.reportRunJson.barChartOptions.minimizeXAxisTickers = ($scope.reportRunJson.barChartOptions.minimizeXAxisTickers=="true") ;
+			$scope.reportRunJson.barChartOptions.stackedChart = ($scope.reportRunJson.barChartOptions.stackedChart=="true") ;
+			$scope.reportRunJson.barChartOptions.timeAxis= ($scope.reportRunJson.barChartOptions.timeAxi=="true") ;
+			$scope.reportRunJson.barChartOptions.verticalOrientation = ($scope.reportRunJson.barChartOptions.verticalOrientation=="true") ;
+			$scope.reportRunJson.barChartOptions.xAxisDateType = ($scope.reportRunJson.barChartOptions.xAxisDateType=="true") ;
+		}
+		
+		for (var i=0;i<$scope.chartTypes.length;i++) {
+			if ($scope.reportRunJson.chartType==$scope.chartTypes[i].value) {
+				$scope.reportRunJson.chartTypeJSON = {
+						'index':$scope.chartTypes[i].index,
+						'title':$scope.chartTypes[i].title,
+						'value':$scope.chartTypes[i].value					
+				}				
+			}
+		}
+		
+		$scope.reportRunJson.domainAxisJSON = {
+				"index":0,"value":$scope.reportRunJson.domainAxis,"title": $scope.reportRunJson.domainAxis
+			};
+		$scope.reportRunJson.categoryAxisJSON = {
+				"index":0,"value":$scope.reportRunJson.categoryAxis,"title": $scope.reportRunJson.categoryAxis
+			};
+		
+		// Specifically for DS2 for color 
+		for (var i=0; i<$scope.reportRunJson.rangeAxisList.length; i ++) {
+			$scope.reportRunJson.rangeAxisList[i].rangeColorJSON = 
+			{"index":0, "value": $scope.reportRunJson.rangeAxisList[i].rangeColor, "title": ""};
+			
+			$scope.reportRunJson.rangeAxisList[i].rangeLineTypeJSON = 				
+			{"index":0, "value": "", "title": ""};
+			for (var j=0;j<$scope.lineTypes.length;j++) {
+				if ($scope.reportRunJson.rangeAxisList[i].rangeLineType ==$scope.lineTypes[j].value) {
+					$scope.reportRunJson.rangeAxisList[i].rangeLineTypeJSON = 				
+					{"index":$scope.lineTypes[j].index, "value": $scope.lineTypes[j].value, "title": $scope.lineTypes[j].title};
+				}
+			}
+			
+		}
+		
 		//Converting string variables to numbers
 		$scope.reportRunJson.commonChartOptions.rightMargin = Number($scope.reportRunJson.commonChartOptions.rightMargin);
 		$scope.reportRunJson.commonChartOptions.topMargin = Number($scope.reportRunJson.commonChartOptions.topMargin);
@@ -121,15 +184,24 @@ appDS2.controller('reportChartController', function ($scope, $rootScope, $timeou
 		$scope.reportRunJson.commonChartOptions.leftMargin = Number($scope.reportRunJson.commonChartOptions.leftMargin);
 	 
 		if ($scope.reportRunJson.categoryAxisJSON == "") { 
-			console.log('Inside categoryAxisJSON value'); 
 			$scope.reportRunJson.categoryAxisJSON = {}; 
 			$scope.reportRunJson.categoryAxisJSON.value = -1; 
-			console.log('$scope.reportRunJson.categoryAxisJSON',$scope.reportRunJson.categoryAxisJSON);  
 		}
 		
-		console.log($scope.reportRunJson);
 		$http.post("save_chart", JSON.stringify($scope.reportRunJson)).success(function(data, status) {
-			 $scope.successSubmit=true;	        
+			 $scope.successSubmit=true;  
+			$scope.showLoader = false;
+			$scope.reportRunJson.commonChartOptions.animateAnimatedChart = $scope.reportRunJson.commonChartOptions.animateAnimatedChart+"";
+			$scope.reportRunJson.commonChartOptions.hideLegend = $scope.reportRunJson.commonChartOptions.hideLegend + "";
+			$scope.reportRunJson.showTitle = $scope.reportRunJson.showTitle + "";			
+			if ($scope.reportRunJson.chartType == "BarChart3D") {
+				$scope.reportRunJson.barChartOptions.displayBarControls = $scope.reportRunJson.barChartOptions.displayBarControls+"";
+				$scope.reportRunJson.barChartOptions.minimizeXAxisTickers = $scope.reportRunJson.barChartOptions.minimizeXAxisTickers+"";
+				$scope.reportRunJson.barChartOptions.stackedChart = $scope.reportRunJson.barChartOptions.stackedChart+"";
+				$scope.reportRunJson.barChartOptions.timeAxis =$scope.reportRunJson.barChartOptions.timeAxis+""; 
+				$scope.reportRunJson.barChartOptions.verticalOrientation = $scope.reportRunJson.barChartOptions.verticalOrientation +"";
+				$scope.reportRunJson.barChartOptions.xAxisDateType = $scope.reportRunJson.barChartOptions.xAxisDateType +"";
+			}			
 			})
 	}
 	
