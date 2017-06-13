@@ -130,6 +130,8 @@ public class ChartJSON {
 		this.hasCategoryAxis = hasCategoryAxis;
 	}
 	private ArrayList <RangeAxisJSON> rangeAxisList;
+	private ArrayList <RangeAxisJSON> rangeAxisRemoveList;
+	
 	private ArrayList <ArrayList<Row>> wholeList;
 
 	private String primaryAxisLabel;
@@ -447,5 +449,12 @@ public class ChartJSON {
 		else
 			return "";
 	}
+	public ArrayList<RangeAxisJSON> getRangeAxisRemoveList() {
+		return rangeAxisRemoveList;
+	}
+	public void setRangeAxisRemoveList(ArrayList<RangeAxisJSON> rangeAxisRemoveList) {
+		this.rangeAxisRemoveList = rangeAxisRemoveList;
+	}
+	
 	
 }

@@ -55,13 +55,13 @@ public class ProfileSearchController extends RestrictedBaseController {
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ProfileSearchController.class);
 	
 	@Autowired
-	UserProfileService service;
+	private UserProfileService service;
 	
 	@Autowired
-	FnMenuService fnMenuService;
+	private FnMenuService fnMenuService;
 
 	@RequestMapping(value = { "/profile_search" }, method = RequestMethod.GET)
-	public ModelAndView ProfileSearch(HttpServletRequest request) {
+	public ModelAndView profileSearch(HttpServletRequest request) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();
 		List<User> profileList = null;
@@ -71,14 +71,13 @@ public class ProfileSearchController extends RestrictedBaseController {
 			model.putAll(setDashboardData(request));
 			model.put("profileList", mapper.writeValueAsString(profileList));
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"error while profile_search process in ProfileSearchController" + e.getMessage());
+			logger.error(EELFLoggerDelegate.applicationLogger, "profileSearch failed", e);
 		}
 		return new ModelAndView(getViewName(), "model", model);
 	}
 
 	@RequestMapping(value = { "/get_user" }, method = RequestMethod.GET)
-	public void GetUser(HttpServletRequest request, HttpServletResponse response) {
+	public void getUser(HttpServletRequest request, HttpServletResponse response) {
 		logger.info(EELFLoggerDelegate.applicationLogger, "Initiating get_user in ProfileSearchController");
 		ObjectMapper mapper = new ObjectMapper();
 		List<User> profileList = null;
@@ -86,11 +85,10 @@ public class ProfileSearchController extends RestrictedBaseController {
 			profileList = service.findAll();
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(profileList));
 			JSONObject j = new JSONObject(msg);
+			response.setContentType("application/json");
 			response.getWriter().write(j.toString());
-
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"error while get_user process in ProfileSearchController" + e.getMessage());
+			logger.error(EELFLoggerDelegate.applicationLogger, "getUser failed", e);
 		}
 	}
 
@@ -111,16 +109,15 @@ public class ProfileSearchController extends RestrictedBaseController {
 			model.put("profileList", mapper.writeValueAsString(profileList));
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
 			JSONObject j = new JSONObject(msg);
+			response.setContentType("application/json");
 			response.getWriter().write(j.toString());
-
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"error while get_user_pagination process in ProfileSearchController" + e.getMessage());
+			logger.error(EELFLoggerDelegate.applicationLogger, "getUserPagination failed", e);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public Map<String, Object> setDashboardData(HttpServletRequest request) throws Exception {
+	private Map<String, Object> setDashboardData(HttpServletRequest request) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, Object> model = new HashMap<String, Object>();
 		List<List<MenuData>> childItemList = new ArrayList<List<MenuData>>();
@@ -132,8 +129,7 @@ public class ProfileSearchController extends RestrictedBaseController {
 					.getAttribute(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_ATTRIBUTE_NAME));
 			fnMenuService.setMenuDataStructure(childItemList, parentList, menuResult);
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"error while setDashboardData process in ProfileSearchController" + e.getMessage());
+			logger.error(EELFLoggerDelegate.applicationLogger, "setDashboardData failed", e);
 		}
 		model.put("childItemList", mapper.writeValueAsString(childItemList));
 		model.put("parentList", mapper.writeValueAsString(parentList));
@@ -156,8 +152,7 @@ public class ProfileSearchController extends RestrictedBaseController {
 			PrintWriter out = response.getWriter();
 			out.write(mapper.writeValueAsString(user.getActive()));
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"error while toggleProfileActive process in ProfileSearchController" + e.getMessage());
+			logger.error(EELFLoggerDelegate.applicationLogger, "toggleProfileActive failed", e);
 		}
 	}
 }

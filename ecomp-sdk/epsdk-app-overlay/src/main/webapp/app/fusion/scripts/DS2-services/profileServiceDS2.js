@@ -73,6 +73,21 @@ appDS2.factory('ProfileServiceDS2', function ($http, $q) {
 				// something went wrong
 				return $q.reject(response.data);
 			});
+		},
+		
+		toggleProfileStatus: function(id) {
+			return $http.get('profile/toggleProfileActive?profile_id=' + id)
+			.then(function(response) {
+				if (typeof response.data === 'object') {
+					return response.data;
+				} else {
+					return $q.reject(response.data);
+				}
+			}, function(response) {
+				// something went wrong
+				return $q.reject(response.data);
+			});			
 		}
+		
 	};
 });

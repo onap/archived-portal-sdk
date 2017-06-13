@@ -34,8 +34,9 @@
 						<td>
 							<div class="form-row">
 								<label class="btn-switch-label" tabindex="0" role="option">
-									<input type="checkbox" b2b-switches ng-model="rowData.active"
-									ng-disabled="allDisabled" aria-disabled="{{allDisabled}}">
+									<input type="checkbox" b2b-switches 
+										ng-model="rowData.active" ng-click="toggleProfileActive(rowData)"
+										ng-disabled="allDisabled" aria-disabled="{{allDisabled}}" />
 									<div class="sr-text hidden-spoken" ng-if="!allDisabled">Double
 										tap to turn</div>
 								</label>

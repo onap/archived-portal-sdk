@@ -138,29 +138,32 @@ table{
     <tbody>
         <tr>
             <td>
-				<select name="chartType" b2b-dropdown ng-model="rangeReport.rangeAxisLabelJSON.value" placeholder-text="Select">
+				<select name="chartType" b2b-dropdown ng-model="rangeReport.rangeAxisLabelJSON.value" placeholder-text="Select" ng-disabled="rangeReport.removed=='true'">
 					<option b2b-dropdown-list option-repeat="d in reportRunJson.chartColumnJSONList" value="{{d.value}}">{{d.title}}</option>
-	            </select>
+				</select>
             </td>
             <td>
-            	<input type="text" name="displayName" ng-model="rangeReport.rangeYAxis" style="width:100px;">
+            	<input type="text" name="displayName" ng-model="rangeReport.rangeYAxis" ng-disabled="rangeReport.removed=='true'" style="width:100px;">
             </td>
             <td>
-            	<input type="text" name="displayName" ng-model="rangeReport.rangeChartGroup" style="width:150px;">
+            	<input type="text" name="displayName" ng-model="rangeReport.rangeChartGroup" ng-disabled="rangeReport.removed=='true'" style="width:150px;">
             </td>
             <td>
-				<select name="chartType" b2b-dropdown ng-model="rangeReport.rangeColor">
+				<select name="chartType" b2b-dropdown ng-model="rangeReport.rangeColor" ng-disabled="rangeReport.removed=='true'">
 					<option b2b-dropdown-list option-repeat="d in rangeColors" value="{{d.value}}">{{d.title}}</option>
-	            </select>
+				</select>
             </td>
             <td>
-				<select name="lineType" b2b-dropdown ng-model="rangeReport.rangeLineType">
-					<option b2b-dropdown-list option-repeat="d in lineTypes" value="{{d.value}}">{{d.title}}</option>
-	            </select>
+				<select name="lineType" b2b-dropdown ng-model="rangeReport.rangeLineType" ng-disabled="rangeReport.removed=='true'">
+					<option b2b-dropdown-list option-repeat="d in lineTypes"  value="{{d.value}}">{{d.title}}</option>
+				</select>
             </td>
             <td>
             	<button ng-show="$index==0" type="submit" style="width: 90px; height:35px;margin-left:5px;" class="btn btn-secondary btn-small" ng-click="addRangeAxisRow()">Add</button>
-            	<button ng-hide="$index==0" type="submit" style="width: 90px; height:35px;margin-left:5px;" class="btn btn-secondary btn-small" ng-click="removeRangeAxisRow($index)">Remove</button>
+            	<span ng-hide="$index==0">
+            		<button ng-if="rangeReport.removed!='true'" type="submit" style="width: 90px; height:35px;margin-left:5px;" class="btn btn-secondary btn-small" ng-click="removeRangeAxisRow($index)">Remove</button>
+            		<button ng-if="rangeReport.removed=='true'" type="submit" style="width: 90px; height:35px;margin-left:5px;" class="btn btn-secondary btn-small" disabled="disabled">Removed</button>
+            	</span>
             </td>
         </tr>
       

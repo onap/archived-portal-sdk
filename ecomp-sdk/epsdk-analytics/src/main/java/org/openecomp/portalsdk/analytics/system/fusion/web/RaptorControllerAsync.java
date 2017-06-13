@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -1276,6 +1277,10 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 
 			ArrayList<RangeAxisJSON> rangeAxisList = chartJSON.getRangeAxisList();
 			int r = 0;
+			HashSet<String> removeRangeAxisMap = new HashSet<>();
+			for(RangeAxisJSON rangeAxis:chartJSON.getRangeAxisRemoveList()){				
+				removeRangeAxisMap.add(rangeAxis.getRangeAxis());
+			}
 			for (int i = 0; i < rangeAxisList.size(); i++) {
 				RangeAxisJSON rangeAxisJSON = rangeAxisList.get(i);
 				String rangeAxis = rangeAxisJSON.getRangeAxis();
@@ -1287,7 +1292,10 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 				rangefor: for (Iterator<DataColumnType> iterator = reportCols.iterator(); iterator.hasNext();) {
 					DataColumnType dct = (DataColumnType) iterator.next();
 					if (dct.getColId().equals(rangeAxis)) {
-						dct.setChartSeq(++r);
+						if(removeRangeAxisMap.contains(rangeAxis))
+							dct.setChartSeq(-1); // if we set it to -1, means this range axis will not be included
+						else
+							dct.setChartSeq(++r);
 						dct.setColOnChart("0");
 						dct.setYAxis(rangeYAxis); // +"|"+dct.getColId());
 						dct.setChartGroup(rangeChartGroup); // +"|"+dct.getColId());

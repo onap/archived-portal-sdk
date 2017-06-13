@@ -187,7 +187,8 @@ appDS2.controller('reportChartController', function ($scope, $rootScope, $timeou
 			$scope.reportRunJson.categoryAxisJSON = {}; 
 			$scope.reportRunJson.categoryAxisJSON.value = -1; 
 		}
-		
+		//add the remove list to the json
+		$scope.reportRunJson.rangeAxisRemoveList= $scope.rangeAxisRemoveList;
 		$http.post("save_chart", JSON.stringify($scope.reportRunJson)).success(function(data, status) {
 			 $scope.successSubmit=true;  
 			$scope.showLoader = false;
@@ -201,8 +202,9 @@ appDS2.controller('reportChartController', function ($scope, $rootScope, $timeou
 				$scope.reportRunJson.barChartOptions.timeAxis =$scope.reportRunJson.barChartOptions.timeAxis+""; 
 				$scope.reportRunJson.barChartOptions.verticalOrientation = $scope.reportRunJson.barChartOptions.verticalOrientation +"";
 				$scope.reportRunJson.barChartOptions.xAxisDateType = $scope.reportRunJson.barChartOptions.xAxisDateType +"";
-			}			
-			})
+			}	
+			$scope.populateChrtWzdFields();
+		})
 	}
 	
 	
@@ -211,14 +213,17 @@ appDS2.controller('reportChartController', function ($scope, $rootScope, $timeou
 	      });	
 	};
 
-	$scope.removeRangeAxisRow = function (index) {
-		$scope.reportRunJson.rangeAxisList.splice(index, 1);
+	$scope.rangeAxisRemoveList= [];
+	$scope.removeRangeAxisRow = function (index) {	
+		$scope.rangeAxisRemoveList.push($scope.reportRunJson.rangeAxisList[index]);
+		$scope.reportRunJson.rangeAxisList[index].removed="true";
 	};
 	
 	
 	$scope.init = function () {
 		if ($scope) { 
 			$scope.populateChrtWzdFields();
+			$scope.reportRunJson.rangeAxisRemoveList= [];
 		}
 	};
 	

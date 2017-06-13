@@ -171,27 +171,23 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 
 	/**
 	 * 
-	 * Application Data Source
+	 * Creates the Application Data Source.
 	 * 
 	 * @return DataSource Object
+	 * @throws Exception
+	 *             on failure to create data source object
 	 */
-
 	@Bean
 	public DataSource dataSource() throws Exception {
-			
-		systemProperties();
-		
-		Boolean testConnectionOnCheckout = getConnectionOnCheckout();
-		String preferredTestQuery = getPreferredTestQuery();
 
-		
+		systemProperties();
+
 		ComboPooledDataSource dataSource = new ComboPooledDataSource();
 		try {
 			dataSource.setDriverClass(SystemProperties.getProperty(SystemProperties.DB_DRIVER));
 			dataSource.setJdbcUrl(SystemProperties.getProperty(SystemProperties.DB_CONNECTIONURL));
 			dataSource.setUser(SystemProperties.getProperty(SystemProperties.DB_USERNAME));
-			// dataSource.setPassword(SystemProperties.getProperty(SystemProperties.DB_PASSWOR));
-			String password = SystemProperties.getProperty(SystemProperties.DB_PASSWOR);
+			String password = SystemProperties.getProperty(SystemProperties.DB_PASSWORD);
 			if (SystemProperties.containsProperty(SystemProperties.DB_ENCRYPT_FLAG)) {
 				String encryptFlag = SystemProperties.getProperty(SystemProperties.DB_ENCRYPT_FLAG);
 				if (encryptFlag != null && encryptFlag.equalsIgnoreCase("true")) {
@@ -205,9 +201,8 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 					.setMaxPoolSize(Integer.parseInt(SystemProperties.getProperty(SystemProperties.DB_MAX_POOL_SIZE)));
 			dataSource.setIdleConnectionTestPeriod(
 					Integer.parseInt(SystemProperties.getProperty(SystemProperties.IDLE_CONNECTION_TEST_PERIOD)));
-			dataSource.setTestConnectionOnCheckout(testConnectionOnCheckout);
-			dataSource.setPreferredTestQuery(preferredTestQuery);
-			
+			dataSource.setTestConnectionOnCheckout(getConnectionOnCheckout());
+			dataSource.setPreferredTestQuery(getPreferredTestQuery());
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger,
 					"Error initializing database, verify database settings in properties file: "
@@ -217,37 +212,55 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 					"Error initializing database, verify database settings in properties file: "
 							+ UserUtils.getStackTrace(e),
 					AlarmSeverityEnum.CRITICAL);
-			// Raise an alarm that opening a connection to the database is
-			// failed.
+			// Raise an alarm that opening a connection to the database failed.
 			logger.logEcompError(AppMessagesEnum.BeDaoSystemError);
 			throw e;
 		}
 		return dataSource;
 	}
 
+	/**
+	 * Gets the value of the property
+	 * {@link SystemProperties#PREFERRED_TEST_QUERY}; defaults to "Select 1" if
+	 * the property is not defined.
+	 * 
+	 * @return String value that is a SQL query
+	 */
 	private String getPreferredTestQuery() {
-		String preferredTestQueryStr = null;
-		try {
+		// Use simple default
+		String preferredTestQueryStr = "SELECT 1";
+		if (SystemProperties.containsProperty(SystemProperties.PREFERRED_TEST_QUERY)) {
 			preferredTestQueryStr = SystemProperties.getProperty(SystemProperties.PREFERRED_TEST_QUERY);
-		} catch (Exception e) {
+			logger.debug(EELFLoggerDelegate.debugLogger, "getPreferredTestQuery: property key {} value is {}",
+					SystemProperties.PREFERRED_TEST_QUERY, preferredTestQueryStr);
+		} else {
 			logger.info(EELFLoggerDelegate.errorLogger,
-					SystemProperties.PREFERRED_TEST_QUERY + " value not found "
-							+ UserUtils.getStackTrace(e));
+					"getPreferredTestQuery: property key {} not found, using default value {}",
+					SystemProperties.PREFERRED_TEST_QUERY, preferredTestQueryStr);
 		}
-		String preferredTestQuery = ((preferredTestQueryStr == null) ? "SELECT 1" : preferredTestQueryStr);
-		return preferredTestQuery;
+		return preferredTestQueryStr;
 	}
 
+	/**
+	 * Gets the value of the property
+	 * {@link SystemProperties#TEST_CONNECTION_ON_CHECKOUT}; defaults to true if
+	 * the property is not defined.
+	 * 
+	 * @return Boolean value
+	 */
 	private Boolean getConnectionOnCheckout() {
-		String testConnectionOnCheckoutStr = null;
-		try {
-			testConnectionOnCheckoutStr = SystemProperties.getProperty(SystemProperties.TEST_CONNECTION_ON_CHECKOUT);
-		} catch (Exception e) {
+		// Default to true, always test connection
+		boolean testConnectionOnCheckout = true;
+		if (SystemProperties.containsProperty(SystemProperties.TEST_CONNECTION_ON_CHECKOUT)) {
+			testConnectionOnCheckout = Boolean
+					.valueOf(SystemProperties.getProperty(SystemProperties.TEST_CONNECTION_ON_CHECKOUT));
+			logger.debug(EELFLoggerDelegate.debugLogger, "getConnectionOnCheckout: property key {} value is {}",
+					SystemProperties.TEST_CONNECTION_ON_CHECKOUT, testConnectionOnCheckout);
+		} else {
 			logger.info(EELFLoggerDelegate.errorLogger,
-					SystemProperties.TEST_CONNECTION_ON_CHECKOUT + " value not found "
-							+ UserUtils.getStackTrace(e));
+					"getConnectionOnCheckout: property key {} not found, using default value {}",
+					SystemProperties.TEST_CONNECTION_ON_CHECKOUT, testConnectionOnCheckout);
 		}
-		Boolean testConnectionOnCheckout = Boolean.valueOf(testConnectionOnCheckoutStr == null ? "true":testConnectionOnCheckoutStr);
 		return testConnectionOnCheckout;
 	}
 

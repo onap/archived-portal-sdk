@@ -11,6 +11,6 @@ features including charts, maps and reports ("Raptor").
 
 Version 1.1.0
 - [Portal-7] Improvements added as part of the rebasing process
- 
+
 Version 1.0.0
 - Initial release

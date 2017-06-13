@@ -74,7 +74,7 @@ public class SystemProperties {
 	/**
 	 * Tests whether a property value is available for the specified key.
 	 * 
-	 * @param key
+	 * @param key Property key
 	 * @return True if the key is known, otherwise false.
 	 */
 	public static boolean containsProperty(String key) {
@@ -85,12 +85,12 @@ public class SystemProperties {
 	 * Returns the property value associated with the given key (never
 	 * {@code null}), after trimming any trailing space.
 	 * 
-	 * @throws IllegalStateException
-	 *             if the key cannot be resolved
 	 * @param key
 	 *            Property key
 	 * @return Property value; the empty string if the environment was not
 	 *         autowired, which should never happen.
+	 * @throws IllegalStateException
+	 *             if the key cannot be resolved
 	 */
 	public static String getProperty(String key) {
 		String value = "";
@@ -244,15 +244,17 @@ public class SystemProperties {
 	// Hibernate Config
 	public static final String HB_DIALECT = "hb.dialect";
 	public static final String HB_SHOW_SQL = "hb.show_sql";
+	public static final String IDLE_CONNECTION_TEST_PERIOD = "hb.idle_connection_test_period";
 	
 	// DataSource
 	public static final String DB_DRIVER = "db.driver";
 	public static final String DB_CONNECTIONURL = "db.connectionURL";
 	public static final String DB_USERNAME = "db.userName";
+	/** @deprecated this variable is used in many places so don't remove */
 	public static final String DB_PASSWOR = "db.password";
+	public static final String DB_PASSWORD = "db.password";
 	public static final String DB_MIN_POOL_SIZE = "db.min_pool_size";
 	public static final String DB_MAX_POOL_SIZE = "db.max_pool_size";
-	public static final String IDLE_CONNECTION_TEST_PERIOD = "hb.idle_connection_test_period";
 	public static final String TEST_CONNECTION_ON_CHECKOUT = "db.test_connection_on_checkout";
 	public static final String PREFERRED_TEST_QUERY = "db.preferred_test_query";
 

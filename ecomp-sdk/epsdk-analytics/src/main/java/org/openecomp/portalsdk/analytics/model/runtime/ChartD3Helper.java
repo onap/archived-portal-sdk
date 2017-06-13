@@ -1074,7 +1074,7 @@ public class ChartD3Helper {
 							} else {
 								wholeScript.append("			.rotateLabels(\"0\") \n  ");
 							}
-							//wholeScript.append("             .axisLabel('" + legendColumnName + "')");
+							wholeScript.append("             .axisLabel('" + legendColumnName + "')");
 					if(flagNoDate == 1 || !timeAxis) {
 						wholeScript.append(";\n");
 					} else {
