@@ -28,7 +28,6 @@
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
 		<releaseNexusPath>content/repositories/releases/</releaseNexusPath>
-		<stagingNexusPath>content/repositories/staging/</stagingNexusPath>
 	</properties>
 
 	<repositories>
