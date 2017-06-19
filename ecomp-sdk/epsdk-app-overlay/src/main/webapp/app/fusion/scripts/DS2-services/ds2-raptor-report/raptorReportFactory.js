@@ -361,7 +361,80 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
 						return $q.reject("raptorReportFactory: getSearchData callback failed");				
 					});
 		},
-
+		
+		getSecurityReportOwnerList: function() {
+			return $http
+					.get('report/wizard/security/retrieveReportOwner')
+					.then(function(response) {
+						if (typeof response.data === 'object') {
+							return response.data;
+						} else {
+							return $q.reject("raptorReportFactory: getSecurityReportOwnerList did not return a valid JSON object.");
+						}
+					}, function(response) {
+						// something went wrong
+						return $q.reject("raptorReportFactory: getSecurityReportOwnerList callback failed");				
+					});
+		},
+		getReportRoleList: function() {
+			return $http
+					.get('report/wizard/security/retrieveReportRoleList')
+					.then(function(response) {
+						if (typeof response.data === 'object') {
+							return response.data;
+						} else {
+							return $q.reject("raptorReportFactory: getReportRoleList did not return a valid JSON object.");
+						}
+					}, function(response) {
+						// something went wrong
+						return $q.reject("raptorReportFactory: getReportRoleList callback failed");				
+					});
+		},
+		getReportSecurityInfo: function() {
+			return $http
+					.get('report/wizard/security/getReportSecurityInfo')
+					.then(function(response) {
+						if (typeof response.data === 'object') {
+							return response.data;
+						} else {
+							return $q.reject("raptorReportFactory: getReportSecurityInfo did not return a valid JSON object.");
+						}
+					}, function(response) {
+						// something went wrong
+						return $q.reject("raptorReportFactory: getReportSecurityInfo callback failed");				
+					});
+		},
+		getReportSecurityUsers: function() {
+			return $http
+					.get('report/wizard/security/retrieveReportUserList')
+					.then(function(response) {
+						if (typeof response.data === 'object') {
+							return response.data;
+						} else {
+							return $q.reject("raptorReportFactory: getReportSecurityUsers did not return a valid JSON object.");
+						}
+					}, function(response) {
+						// something went wrong
+						return $q.reject("raptorReportFactory: getReportSecurityUsers callback failed");				
+					});
+		},		
+		
+		getReportSecurityRoles: function() {
+			return $http
+					.get('report/wizard/security/getReportSecurityRoles')
+					.then(function(response) {
+						if (typeof response.data === 'object') {
+							return response.data;
+						} else {
+							return $q.reject("raptorReportFactory: getReportSecurityUsers did not return a valid JSON object.");
+						}
+					}, function(response) {
+						// something went wrong
+						return $q.reject("raptorReportFactory: getReportSecurityUsers callback failed");				
+					});
+		},		
+				
+		
 		getSearchDataAtPage : function(pageSearchParameter) {
 			return $http
 					.get('raptor.htm?action=report.search.execute&r_page='+pageSearchParameter)
@@ -392,6 +465,131 @@ appDS2.factory('raptorReportFactory', function($http, $q) {
 				// something went wrong
 				return $q.reject("raptorReportFactory: getReportDeleteStatus callback failed");				
 			});
-		}
+		},
+		addReportSecurityUser: function(UserId) {
+				return $http({
+					method: "POST",
+	                url: "report/security/addReportUser",
+	                data: UserId			
+				}).then(function(response) {
+					if (typeof response.data === 'object') {
+						return response.data;
+					} else {
+						return $q.reject("raptorReportFactory: addReportSecurityUser did not return a valid JSON object.");
+					}
+				}, function(response) {
+					// something went wrong
+					return $q.reject("raptorReportFactory: saveNewDefinition callback failed");
+				});
+			},
+			removeReportSecurityUser: function(UserId) {
+				return $http({
+					method: "POST",
+	                url: "report/security/removeReportUser",
+	                data: UserId			
+				}).then(function(response) {
+					if (typeof response.data === 'object') {
+						return response.data;
+					} else {
+						return $q.reject("raptorReportFactory: removeReportSecurityUser did not return a valid JSON object.");
+					}
+				}, function(response) {
+					// something went wrong
+					return $q.reject("raptorReportFactory: saveNewDefinition callback failed");
+				});
+			},
+			addReportSecurityRole: function(RoleId) {
+				return $http({
+					method: "POST",
+	                url: "report/security/addReportRole",
+	                data: RoleId			
+				}).then(function(response) {
+					if (typeof response.data === 'object') {
+						return response.data;
+					} else {
+						return $q.reject("raptorReportFactory: addReportSecurityRole did not return a valid JSON object.");
+					}
+				}, function(response) {
+					// something went wrong
+					return $q.reject("raptorReportFactory: saveNewDefinition callback failed");
+				});
+			},
+			removeReportSecurityRole: function(RoleId) {
+				return $http({
+					method: "POST",
+	                url: "report/security/removeReportRole",
+	                data: RoleId			
+				}).then(function(response) {
+					if (typeof response.data === 'object') {
+						return response.data;
+					} else {
+						return $q.reject("raptorReportFactory: removeReportSecurityRole did not return a valid JSON object.");
+					}
+				}, function(response) {
+					// something went wrong
+					return $q.reject("raptorReportFactory: removeReportSecurityRole callback failed");
+				});
+			},
+			updateReportSecurityInfo: function(securityInfo) {
+				return $http({
+					method: "POST",
+	                url: "report/security/updateReportSecurityInfo",
+	                data: securityInfo			
+				}).then(function(response) {
+					if (typeof response.data === 'object') {
+						return response.data;
+					} else {
+						return $q.reject("raptorReportFactory: updateReportSecurityInfo did not return a valid JSON object.");
+					}
+				}, function(response) {
+					// something went wrong
+					return $q.reject("raptorReportFactory: updateReportSecurityInfo callback failed");
+				});
+			},
+
+			toggleUserEditAccess: function(reportUser) {
+				var readOnly = reportUser.accessAllowed?"N":"Y"; 
+				return $http({
+					method: "POST",
+	                url:"report/security/toggleUserEditAccess/"+reportUser.id,
+	                data: readOnly			
+				}).then(function(response) {
+					if (typeof response.data === 'object') {
+						return response.data;
+					} else {
+						return $q.reject("raptorReportFactory: toggleUserEditAccess did not return a valid JSON object.");
+					}
+				}, function(response) {
+					// something went wrong
+					return $q.reject("raptorReportFactory: toggleUserEditAccess callback failed");
+				});
+			},
+			toggleRoleEditAccess: function(reportRole) {
+				var readOnly = reportRole.accessAllowed?"N":"Y"; 
+				return $http({
+					method: "POST",
+	                url:"report/security/toggleRoleEditAccess/"+reportRole.id,
+	                data: readOnly			
+				}).then(function(response) {
+					if (typeof response.data === 'object') {
+						return response.data;
+					} else {
+						return $q.reject("raptorReportFactory: toggleRoleEditAccess did not return a valid JSON object.");
+					}
+				}, function(response) {
+					// something went wrong
+					return $q.reject("raptorReportFactory: toggleRoleEditAccess callback failed");
+				});
+			},						
+			resetSecurityLoadingCounter: function() {
+				this.securityPageApiCounter = 0;
+				this.securityPageApiTotalCount = 5;
+			},	
+			icrementSecurityLoadingCounter: function() {
+				this.securityPageApiCounter = this.securityPageApiCounter+1;
+			},
+			checkSecurityLoadingCounter: function() {
+				return (this.securityPageApiCounter ==this.securityPageApiTotalCount);
+			}
 	};
 });

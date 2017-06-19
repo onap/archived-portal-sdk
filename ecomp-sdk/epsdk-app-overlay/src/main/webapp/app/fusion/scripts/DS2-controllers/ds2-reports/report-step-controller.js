@@ -3,7 +3,8 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 	$scope.showLoader = true;
 	// tabs for report wizard steps:
 	$scope.activeTabsId = 'Definition';
-
+	$scope.addReportUserId = {'id':''};
+	$scope.addReportRoleId = {'id':''};
 	// For all the dropdown box, please declare the active selection variable in the following manner:
 	// $scope.selectedOpt = {}; 
 	// $scope.selectedOpt.value = "";
@@ -17,8 +18,95 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 			$scope.showLoader = false;
 		});
 	}
-	
 
+	$scope.addReportSecurityUser = function(userId) {		
+		raptorReportFactory.addReportSecurityUser(userId).then(function(data){
+			$scope.loadSecurityPage();
+		},function(error){
+			$log.error("raptorReportFactory: addReportSecurityUser failed.");
+		});	
+	}
+	
+	$scope.removeReportSecurityUser = function(securityUser) {
+		   var modalInstance = $modal.open({
+				 scope: $scope,
+				 animation: $scope.animationsEnabled,
+				 templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-reports/modal/report-security-user-del-confirm.html',
+				 sizeClass: 'modal-large',
+				 controller: ['$scope', '$modalInstance', '$http', '$log','raptorReportFactory','securityUser', function ($scope, $modalInstance, $http, $log, raptorReportFactory,securityUser) {					 
+					 $scope.securityUserName = securityUser.name;
+					 $scope.ok = function() {
+							raptorReportFactory.removeReportSecurityUser(securityUser.id).then(function(data){
+								$modalInstance.close();		
+							},function(error){
+								$log.error("raptorReportFactory: removeReportSecurityUser failed.");
+							});							 
+						}					 
+					 $scope.cancel = function() {
+			      		$modalInstance.dismiss();
+			      	 };
+			    }],
+				resolve:{
+					securityUser: function(){
+		   			return securityUser;
+					}
+				 }
+			  });
+		      modalInstance.result.then(function () {
+		    	  $scope.loadSecurityPage();
+		      }, function () {
+		      });
+	};	
+	
+	
+	$scope.addReportSecurityRole = function(roleId) {			
+		raptorReportFactory.addReportSecurityRole(roleId).then(function(data){
+			$scope.loadSecurityPage();
+		},function(error){
+			$log.error("raptorReportFactory: addReportSecurityRole failed.");
+		});	
+	}	
+			
+	$scope.removeReportSecurityRole = function(securityRole) {
+		   var modalInstance = $modal.open({
+				 scope: $scope,
+				 animation: $scope.animationsEnabled,
+				 templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-reports/modal/report-security-role-del-confirm.html',
+				 sizeClass: 'modal-large',
+				 controller: ['$scope', '$modalInstance', '$http', '$log','raptorReportFactory','securityRole', function ($scope, $modalInstance, $http, $log, raptorReportFactory,securityRole) {					 
+					 $scope.securityRoleName = securityRole.name;
+					 $scope.ok = function() {
+							raptorReportFactory.removeReportSecurityRole(securityRole.id).then(function(data){
+								$modalInstance.close();		
+							},function(error){
+								$log.error("raptorReportFactory: removeReportSecurityRole failed.");
+							});	
+						}					 
+					 $scope.cancel = function() {
+			      		$modalInstance.dismiss();
+			      	 };
+			    }],
+				resolve:{
+					securityRole: function(){
+		   			return securityRole;
+					}
+				 }
+			  });
+		      modalInstance.result.then(function () {
+		    	  $scope.loadSecurityPage();
+		      }, function () {
+		      });
+	}			
+
+	$scope.saveReportSecurityInfo = function(userId, isPublic) {		
+		var securityInfo = {'userId':userId+"",'isPublic':isPublic};
+		raptorReportFactory.updateReportSecurityInfo(securityInfo).then(function(data){
+			$scope.loadSecurityPage();
+		},function(error){
+			$log.error("raptorReportFactory: updateReportSecurityInfo failed.");
+		});	
+	};
+	
 	$scope.createNewDefinition = function() {
 		raptorReportFactory.createNewDefinition().then(function(data){
 			$scope.loadDefinition(data);
@@ -322,10 +410,16 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
              tabPanelId: 'threetab4x',
              disabled: (!$scope.isEdit)
          }, {
-             title: 'Run',
-             id: 'Run',
+             title: 'Security',
+             id: 'Security',
              uniqueId: 'uniqueTab5x',
              tabPanelId: 'threetab5x',
+             disabled: (!$scope.isEdit)
+         }, {
+             title: 'Run',
+             id: 'Run',
+             uniqueId: 'uniqueTab6x',
+             tabPanelId: 'threetab6x',
              disabled: (!$scope.isEdit)
          }
      ];
@@ -434,6 +528,26 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 		      }, function () {
 		      });
     };
+    
+    
+    $scope.throwReportNameMissingError = function () {
+		   var modalInstance = $modal.open({
+				 scope: $scope,
+				 animation: $scope.animationsEnabled,
+				 templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-reports/modal/report-wizard-report-name-validation.html',
+				 sizeClass: 'modal-small',
+				 controller: ['$scope', '$modalInstance', '$http', '$log', function ($scope, $modalInstance, $http, $log) {			
+			      	  $scope.close = function() {
+			      		$modalInstance.dismiss();
+			      	  };
+			    }]
+			  });
+		      modalInstance.result.then(function () {
+		      }, function () {
+		      });		   
+ };
+
+    
     $scope.addNewFormField = function () {
 		   var modalInstance = $modal.open({
 				 scope: $scope,
@@ -646,12 +760,7 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 				    	
 				    	raptorReportFactory.setDrillDownPopupOptions(null);				    					    					    	
 			
-			      	  $scope.complete = function() {
-
-			      		console.log("$scope.drillDownOptionList: ");
-			      		console.log($scope.drillDownOptionList);
-			      		
-
+			      	  $scope.complete = function() {			      		
 			      		var drillDownPopupOptions= {
 			      				radioGroup : $scope.selectedvalueradioGroup.name,
 			      				reportFF: $scope.selectedChildReportFormField.value,
@@ -674,8 +783,6 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 			      			}			      				
 			      		}
 				      	raptorReportFactory.setDrillDownPopupOptions(reportId,drillDownParams);
-				      	console.log(raptorReportFactory.drillDownURL);
-				      	console.log(raptorReportFactory.drillDownParams);
 			      		
 			      		$modalInstance.close();
 			      	  };
@@ -703,9 +810,10 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 /*                    stepFormFactory.getStepJSONData(getJsonSrcName($scope.stepNum))*/
             		$scope.isColumnStep = false;              	  	                    
             		$scope.isFormFieldStep = false;
+            		$scope.isSecurityStep = false;
                 	$scope.renderStep(selectedTab+1);
                 	if ($scope.stepNum == 1) {
-                    	$scope.showLoader = false;                	
+                    	$scope.showLoader = false;
                 	}
                 	else if ($scope.stepNum == 2) {
                 		loadSqlInSession();
@@ -728,6 +836,16 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
                 			$log.error("raptorReportFactory: get formfields failed."); 
                 			$scope.showLoader = false;});
                 	}  else if ($scope.stepNum == 5) {
+                		$scope.isSecurityStep = true;
+                		$scope.reportOwnerId={'id':''};
+                		$scope.isPublicOptionList = [
+                			{'value':'true','text':'Yes'},
+                			{'value':'false','text':'No'},                			
+                		];
+                		$scope.loadSecurityPage();
+                		
+                	}
+                	else if ($scope.stepNum == 6) {
                 		raptorReportFactory.getDefinitionInSession().then(function(data){
                     		$scope.reportId = data.reportId;
                         	$scope.showLoader = false;
@@ -745,6 +863,64 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
         }
     });	 
 	 
+    $scope.loadSecurityPage = function() {
+    	$scope.showLoader = true;
+    	raptorReportFactory.resetSecurityLoadingCounter();
+    	
+    	//API call 1:
+		raptorReportFactory.getSecurityReportOwnerList().then(function(data){
+    		$scope.reportOwnerList = data;
+			raptorReportFactory.icrementSecurityLoadingCounter();
+			if(raptorReportFactory.checkSecurityLoadingCounter()){$scope.showLoader = false;};
+    	},function(error){
+    		$log.error("raptorReportFactory: getSecurityReportOwnerList failed."); 
+    		});
+
+		//API call 2: get report role list
+		raptorReportFactory.getReportRoleList().then(function(data){
+    		$scope.reportRoleList = data;
+			raptorReportFactory.icrementSecurityLoadingCounter();
+			if(raptorReportFactory.checkSecurityLoadingCounter()){$scope.showLoader = false;};
+		},function(error){
+    		$log.error("raptorReportFactory: getReportRoleList failed."); 
+    		});	
+
+		//API call 3: get security page basic info
+		raptorReportFactory.getReportSecurityInfo().then(function(data){
+    		$scope.reportSecurityInfo = data;
+    		$scope.reportOwnerId ={id: $scope.reportSecurityInfo.ownerId};        	
+			raptorReportFactory.icrementSecurityLoadingCounter();
+			if(raptorReportFactory.checkSecurityLoadingCounter()){$scope.showLoader = false;};
+    	},function(error){
+    		$log.error("raptorReportFactory: getReportSecurityInfo failed."); 
+    		$scope.showLoader = false;});
+		               		
+		//API call 4: retrieve security users
+		raptorReportFactory.getReportSecurityUsers().then(function(data){
+    		$scope.reportSecurityUsers = data;
+    		for (var i=0; i<$scope.reportSecurityUsers.length;i++) {
+    			$scope.reportSecurityUsers[i]["accessAllowed"] = !$scope.reportSecurityUsers[i]["readOnly"];
+    		}
+    		raptorReportFactory.icrementSecurityLoadingCounter();
+			if(raptorReportFactory.checkSecurityLoadingCounter()){$scope.showLoader = false;};
+    	},function(error){
+    		$log.error("raptorReportFactory: reportSecurityUsers failed."); 
+    		});
+
+		//API call 5: retrieve security roles
+		raptorReportFactory.getReportSecurityRoles().then(function(data){
+    		$scope.reportSecurityRoles = data;
+    		for (var i=0; i<$scope.reportSecurityRoles.length;i++) {
+    			$scope.reportSecurityRoles[i]["accessAllowed"] = !$scope.reportSecurityRoles[i]["readOnly"];
+    		}
+    		
+			raptorReportFactory.icrementSecurityLoadingCounter();
+			if(raptorReportFactory.checkSecurityLoadingCounter()){$scope.showLoader = false;};			
+    	},function(error){
+    		$log.error("raptorReportFactory: reportSecurityRoles failed."); 
+    		});     	
+    }
+    
     
     $scope.renderStep = function(stepNum){
     	var containerElement = angular.element(document.getElementById("stepView"));
@@ -753,8 +929,70 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
         var jsonSrcName = getJsonSrcName(stepNum);
         stepFormFactory.renderForm(jsonSrcName, containerElement, $scope);
     }
+
+    $scope.toggleUserEditAccessActive = function(rowData) {
+		   var modalInstance = $modal.open({
+				 scope: $scope,
+				 animation: $scope.animationsEnabled,
+				 templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-reports/modal/report-user-role-confirm-toggle.html',
+				 sizeClass: 'modal-small',
+				 controller: ['$scope', '$modalInstance', '$http', '$log','raptorReportFactory','rowData', function ($scope, $modalInstance, $http, $log, raptorReportFactory, rowData) {
+					$scope.rowData = rowData;
+					$scope.toggleEditAccessStatus = function(rowData) {
+						raptorReportFactory.toggleUserEditAccess(rowData);
+				        $modalInstance.close();
+					};
+					 
+					$scope.cancelEditAccessToggle = function(rowData) {
+						rowData.accessAllowed = ! rowData.accessAllowed;
+						$modalInstance.dismiss('cancel');}
+			    }],
+				resolve:{
+					rowData: function(){
+		   			return rowData;
+					}
+				 }
+			  });
+		      modalInstance.result.then(function () {
+		    	  
+		      }, function () {
+		      });		
+	}
     
-    // initialize the page at step 1;
+    $scope.toggleRoleEditAccessActive = function(rowData) {
+		   var modalInstance = $modal.open({
+				 scope: $scope,
+				 animation: $scope.animationsEnabled,
+				 templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-reports/modal/report-user-role-confirm-toggle.html',
+				 sizeClass: 'modal-small',
+				 controller: ['$scope', '$modalInstance', '$http', '$log','raptorReportFactory','rowData', function ($scope, $modalInstance, $http, $log, raptorReportFactory, rowData) {
+					$scope.rowData = rowData;
+					$scope.toggleEditAccessStatus = function(rowData) {
+						raptorReportFactory.toggleRoleEditAccess(rowData); 
+				        $modalInstance.close();
+					};
+					 
+					$scope.cancelEditAccessToggle = function(rowData) {
+						rowData.accessAllowed = ! rowData.accessAllowed;
+						$modalInstance.dismiss('cancel');}
+			    }],
+				resolve:{
+					rowData: function(){
+		   			return rowData;
+					}
+				 }
+			  });
+		      modalInstance.result.then(function () {
+		    	  
+		      }, function () {
+		      });		
+	}
+    
+    
+    
+    
+    
+	// initialize the page at step 1;
     $scope.renderStep(1);
     
 	// create a message to display in our view
@@ -835,7 +1073,7 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
             	    	    }
             	    	};
 
-            	    	formSelect.selectAll("option").forEach(function(d) {d.forEach(function(optionD) { console.log(optionD);checkOption(optionD); }) });
+            	    	formSelect.selectAll("option").forEach(function(d) {d.forEach(function(optionD) {checkOption(optionD); }) });
             	    }
             	    	 
             	    if(formElement[0].length == 0) {
@@ -956,12 +1194,18 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
     $scope.save = function() {
 	 	if ($scope.stepNum ==1) {	 		
 	 		updateDefinitionData();
+	 	} else if($scope.stepNum ==5) {
+	 		$scope.saveReportSecurityInfo($scope.reportOwnerId.id,$scope.reportSecurityInfo.isPublic);
 	 	}
 	};
 
     //Next function
     $scope.next = function(){
 	 	if ($scope.stepNum ==1) {	 		
+	 		if ($scope.reportName==="") {
+	 			$scope.throwReportNameMissingError();
+	 			return;
+	 		}
 	 		updateDefinitionData();
 	 	}
     	$scope.stepNum = $scope.stepNum +1;
@@ -982,8 +1226,6 @@ appDS2.controller('reportStepController', function($scope,$http,$location, $rout
 	});
 	
 	    $scope.$on('openDrillDownpage', function(event, reportId) {
-	    	console.log("$scope.reportId");
-	    	console.log($scope.reportId);
     	if (reportId!="") {
 				$scope.openDrillDownReportPopup(reportId,$scope.reportId);
     	}

@@ -42,13 +42,16 @@ import javax.servlet.http.HttpSession;
 
 import org.openecomp.portalsdk.analytics.controller.Action;
 import org.openecomp.portalsdk.analytics.controller.ErrorHandler;
+import org.openecomp.portalsdk.analytics.controller.WizardSequence;
 import org.openecomp.portalsdk.analytics.error.RaptorException;
 import org.openecomp.portalsdk.analytics.error.RaptorRuntimeException;
 import org.openecomp.portalsdk.analytics.error.ReportSQLException;
 import org.openecomp.portalsdk.analytics.model.DataCache;
 import org.openecomp.portalsdk.analytics.model.ReportHandler;
 import org.openecomp.portalsdk.analytics.model.base.IdNameValue;
+import org.openecomp.portalsdk.analytics.model.base.ReportUserRole;
 import org.openecomp.portalsdk.analytics.model.definition.ReportDefinition;
+import org.openecomp.portalsdk.analytics.model.definition.SecurityEntry;
 import org.openecomp.portalsdk.analytics.model.definition.wizard.ColumnEditJSON;
 import org.openecomp.portalsdk.analytics.model.definition.wizard.ColumnJSON;
 import org.openecomp.portalsdk.analytics.model.definition.wizard.DefinitionJSON;
@@ -73,6 +76,7 @@ import org.openecomp.portalsdk.analytics.model.runtime.ReportRuntime;
 import org.openecomp.portalsdk.analytics.system.AppUtils;
 import org.openecomp.portalsdk.analytics.system.ConnectionUtils;
 import org.openecomp.portalsdk.analytics.system.Globals;
+import org.openecomp.portalsdk.analytics.system.fusion.adapter.Item;
 import org.openecomp.portalsdk.analytics.util.AppConstants;
 import org.openecomp.portalsdk.analytics.util.DataSet;
 import org.openecomp.portalsdk.analytics.util.Utils;
@@ -104,7 +108,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 @Controller
 @RequestMapping("/")
 public class RaptorControllerAsync extends RestrictedBaseController {
-	
+
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RaptorControllerAsync.class);
 
 	private String viewName;
@@ -185,8 +189,8 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 																													// whole
 					}
 				} catch (Exception e) {
-					logger.error(EELFLoggerDelegate.errorLogger, "[Controller.processRequest]Invalid raptor action ["
-							+ actionKey + "].", e);
+					logger.error(EELFLoggerDelegate.errorLogger,
+							"[Controller.processRequest]Invalid raptor action [" + actionKey + "].", e);
 				}
 			} else {
 				response.sendRedirect("login.htm");
@@ -203,8 +207,8 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 					if (action == null)
 						throw new RaptorRuntimeException("Action not found");
 				} catch (RaptorException e) {
-					logger.error(EELFLoggerDelegate.errorLogger, "[Controller.processRequest]Invalid raptor action ["
-							+ actionKey + "].", e);
+					logger.error(EELFLoggerDelegate.errorLogger,
+							"[Controller.processRequest]Invalid raptor action [" + actionKey + "].", e);
 
 					viewName = (new ErrorHandler()).processFatalErrorJSON(request,
 							new RaptorRuntimeException("[Controller.processRequest]Invalid raptor action [" + actionKey
@@ -486,8 +490,8 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 
 							// clear predefined value
 							if (fft.getPredefinedValueList() != null) {
-								for (Iterator<String> iter = fft.getPredefinedValueList().getPredefinedValue().iterator(); iter
-										.hasNext();)
+								for (Iterator<String> iter = fft.getPredefinedValueList().getPredefinedValue()
+										.iterator(); iter.hasNext();)
 									iter.remove();
 							}
 
@@ -722,7 +726,7 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 		if (pathVariables.containsKey("action")) {
 			action = pathVariables.get("action");
 		}
-		
+
 		ServletContext servletContext = request.getSession().getServletContext();
 		if (!Globals.isSystemInitialized()) {
 			Globals.initializeSystem(servletContext);
@@ -887,6 +891,319 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 		return wizardJSON;
 	}
 
+	@RequestMapping(value = { "/report/wizard/security/retrieveReportUserList" }, method = RequestMethod.GET)
+	public @ResponseBody List<SecurityEntry> getReportUserList(HttpServletRequest request)
+			throws IOException, RaptorException {
+			List<SecurityEntry> reportUserList = new ArrayList<SecurityEntry>();
+			ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+			Vector reportUsers = rdef.getReportUsers(request);
+			for(Iterator iter=reportUsers.iterator(); iter.hasNext();) { 
+				SecurityEntry rUser = (SecurityEntry) iter.next(); 
+				reportUserList.add(rUser);
+			}
+			return reportUserList;
+	};
+	
+	@RequestMapping(value = { "/report/wizard/security/retrieveReportRoleList" }, method = RequestMethod.GET)
+	public @ResponseBody List<IdNameValue> getReportRoleList(HttpServletRequest request)
+			throws IOException, RaptorException {
+			List<IdNameValue> reportRoleList = new ArrayList<IdNameValue>();
+			ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+			Vector reportRoles = rdef.getReportRoles(request);
+			Vector remainingRoles = Utils.getRolesNotInList(reportRoles,request); 
+			for(int i=0; i<remainingRoles.size(); i++) {
+				IdNameValue role = (IdNameValue) remainingRoles.get(i);
+				reportRoleList.add(role);
+			}
+			return reportRoleList;
+		};
+		
+		@RequestMapping(value = { "/report/wizard/security/retrieveReportUserList_query" }, method = RequestMethod.GET)
+		public @ResponseBody List<Map<String, String>> getReportUserListQuery(HttpServletRequest request)
+				throws IOException, RaptorException {				
+				List<Map<String, String>> reportUserList = new ArrayList();
+				ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+				String reportId = rdef.getReportID();
+				Map<String, Object> params = new HashMap<String, Object>();
+		        params.put("report_id", new Long(reportId));	
+		        List<ReportUserRole> queriedUserList = getDataAccessService().executeNamedQuery("getReportSecurityUsers", params, null);
+		        for (int i=0; i<queriedUserList.size();i++){
+		        	Map<String, String> reportUser = new HashMap<String, String>();
+		        	Object tmp = queriedUserList.get(i);
+		        	reportUser.put("rep_id", queriedUserList.get(i).toString());
+		        	reportUser.put("order_no", queriedUserList.get(i).getOrderNo().toString());
+		        	reportUser.put("user_id", queriedUserList.get(i).getUserId().toString());		        	
+		        	reportUser.put("role_id", queriedUserList.get(i).getRoleId().toString());		        			        	
+		        	reportUser.put("read_only_yn", queriedUserList.get(i).getReadOnlyYn());		        			        	
+		        	reportUserList.add(reportUser);
+		        }		        
+				return reportUserList;
+			};
+
+
+
+			@RequestMapping(value = "/report/security/addReportUser", method = RequestMethod.POST)
+			public @ResponseBody Map<String,String> addSelectedReportUser(
+					@RequestBody String userIdToAdd, HttpServletRequest request, HttpServletResponse response)
+					throws IOException, RaptorException {
+					Map<String, String> JsonResponse = new HashMap<String, String>();
+					ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+					try {
+						JsonResponse.put("status","success");
+						JsonResponse.put("userId",userIdToAdd);
+						String action = "Add User";
+						rdef.getReportSecurity().addUserAccess(userIdToAdd, "Y");
+						WizardSequence ws = rdef.getWizardSequence();
+						ws.performAction(action,rdef);
+						return JsonResponse;
+					} catch (Exception ex) {
+						logger.error(EELFLoggerDelegate.errorLogger,
+								"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex);
+						return null;
+					}				
+				}
+
+			@RequestMapping(value = "/report/security/removeReportUser", method = RequestMethod.POST)
+			public @ResponseBody Map<String,String> removeSelectedReportUser(
+					@RequestBody String userIdToRemove, HttpServletRequest request, HttpServletResponse response)
+					throws IOException, RaptorException {
+						Map<String, String> JsonResponse = new HashMap<String, String>();
+						ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+						try {
+							JsonResponse.put("status","success");
+							JsonResponse.put("userId",userIdToRemove);
+							String action = "Delete User";				
+							rdef.getReportSecurity().removeUserAccess(userIdToRemove);
+							rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+							WizardSequence ws = rdef.getWizardSequence();
+							ws.performAction(action,rdef);
+							return JsonResponse;							
+						} catch (Exception ex) {
+							logger.error(EELFLoggerDelegate.errorLogger,
+									"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex);
+							return null;
+						}				
+					}
+			
+			@RequestMapping(value = "/report/security/addReportRole", method = RequestMethod.POST)
+			public @ResponseBody Map<String,String> addSelectedReportRole(
+					@RequestBody String roleIdToAdd, HttpServletRequest request, HttpServletResponse response)
+					throws IOException, RaptorException {
+					Map<String, String> JsonResponse = new HashMap<String, String>();
+					ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+					try {
+						JsonResponse.put("status","success");
+						JsonResponse.put("roleId",roleIdToAdd);
+						String action = "Add Role";
+						rdef.getReportSecurity().addRoleAccess(roleIdToAdd, "Y");
+						WizardSequence ws = rdef.getWizardSequence();
+						ws.performAction(action,rdef);
+						return JsonResponse;
+					} catch (Exception ex) {
+						logger.error(EELFLoggerDelegate.errorLogger,
+								"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex);
+						return null;
+					}				
+				}
+
+			@RequestMapping(value = "/report/security/removeReportRole", method = RequestMethod.POST)
+			public @ResponseBody Map<String,String> removeSelectedReportRole(
+					@RequestBody String roleIdToRemove, HttpServletRequest request, HttpServletResponse response)
+					throws IOException, RaptorException {
+					Map<String, String> JsonResponse = new HashMap<String, String>();
+					ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+					try {
+						JsonResponse.put("status","success");
+						JsonResponse.put("roleId",roleIdToRemove);
+						String action = "Delete Role";
+						rdef.getReportSecurity().removeRoleAccess(roleIdToRemove);
+						WizardSequence ws = rdef.getWizardSequence();
+						ws.performAction(action,rdef);
+						return JsonResponse;
+					} catch (Exception ex) {
+						logger.error(EELFLoggerDelegate.errorLogger,
+								"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex);
+						return null;
+					}				
+				}			
+
+			@RequestMapping(value = "/report/security/updateReportSecurityInfo", method = RequestMethod.POST)
+			public @ResponseBody Map<String,String> updateReportSecurityInfo(
+					@RequestBody Map<String,String> securityInfo, HttpServletRequest request, HttpServletResponse response)
+					throws IOException, RaptorException {
+
+					Map<String, String> JsonResponse = new HashMap<String, String>();
+					ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+					try {
+						JsonResponse.put("status","success");
+						String OwnerUserId = securityInfo.get("userId");
+						String isPublic = securityInfo.get("isPublic");
+						boolean rPublic = isPublic.equals("true"); 
+						rdef.getReportSecurity().setOwnerID(OwnerUserId);
+						rdef.setPublic(rPublic);
+						persistReportDefinition(request, rdef);
+						return JsonResponse;
+						
+					} catch (Exception ex) {
+						logger.error(EELFLoggerDelegate.errorLogger,
+								"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex);
+						return null;
+					}				
+				}
+
+			@RequestMapping(value = "/report/security/toggleUserEditAccess/{userID}", method = RequestMethod.POST)
+			public @ResponseBody Map<String,String> toggleUserEditAccess(
+					@PathVariable("userID") String userId,
+					@RequestBody String readOnly, HttpServletRequest request, HttpServletResponse response)
+					throws IOException, RaptorException {
+					Map<String, String> JsonResponse = new HashMap<String, String>();
+					ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+					try {
+						String action ="";
+						JsonResponse.put("status","success");
+						if (readOnly.equals("N")) {
+							action = "Grant User Access";
+						}  else {
+							action = "Revoke User Access";							
+						}						
+						rdef.getReportSecurity().updateUserAccess(userId, readOnly);
+						WizardSequence ws = rdef.getWizardSequence();
+						ws.performAction(action,rdef);
+						
+						return JsonResponse;
+					} catch (Exception ex) {
+						logger.error(EELFLoggerDelegate.errorLogger,
+								"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex);
+						return null;
+					}				
+				};			
+
+				@RequestMapping(value = "/report/security/toggleRoleEditAccess/{roleID}", method = RequestMethod.POST)
+				public @ResponseBody Map<String,String> toggleRoleEditAccess(
+						@PathVariable("roleID") String roleId,
+						@RequestBody String readOnly, HttpServletRequest request, HttpServletResponse response)
+						throws IOException, RaptorException {
+						Map<String, String> JsonResponse = new HashMap<String, String>();
+						ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+						try {
+							String action ="";
+							JsonResponse.put("status","success");
+							if (readOnly.equals("N")) {
+								action = "Grant Role Access";
+							}  else {
+								action = "Revoke Role Access";							
+							}						
+							rdef.getReportSecurity().updateRoleAccess(roleId, readOnly);
+							WizardSequence ws = rdef.getWizardSequence();
+							ws.performAction(action,rdef);
+							
+							return JsonResponse;
+						} catch (Exception ex) {
+							logger.error(EELFLoggerDelegate.errorLogger,
+									"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex);
+							return null;
+						}				
+					};			
+				
+	@RequestMapping(value = { "/report/wizard/security/retrieveReportOwner" }, method = RequestMethod.GET)
+	public @ResponseBody List<IdNameValue> getReportOwnerInList(HttpServletRequest request)
+			throws IOException, RaptorException {
+		ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+
+		List<IdNameValue> UserList = new ArrayList<IdNameValue>();
+		List excludeValues = new java.util.ArrayList();
+		HttpSession session = request.getSession();
+		String query = Globals.getCustomizedScheduleQueryForUsers();
+		session.setAttribute("login_id", AppUtils.getUserBackdoorLoginId(request));
+		String userId = AppUtils.getUserID(request);
+		session.setAttribute("LOGGED_USERID", userId);
+		String[] sessionParameters = Globals.getSessionParams().split(",");
+		String param = "";
+		for (int i = 0; i < sessionParameters.length; i++) {
+			param = (String) session.getAttribute(sessionParameters[0]);
+			query = Utils.replaceInString(query, "[" + sessionParameters[i].toUpperCase() + "]",
+					(String) session.getAttribute(sessionParameters[i]));
+		}
+		boolean isAdmin = AppUtils.isAdminUser(request);
+		Vector allUsers = AppUtils.getAllUsers(query, param, isAdmin);
+		Vector result = new Vector(allUsers.size());
+
+		for (Iterator iter = allUsers.iterator(); iter.hasNext();) {
+			IdNameValue value = (IdNameValue) iter.next();
+
+			boolean exclude = false;
+			for (Iterator iterE = excludeValues.iterator(); iterE.hasNext();)
+				if (((IdNameValue) iterE.next()).getId().equals(value.getId())) {
+					exclude = true;
+					break;
+				} // if
+
+			if (!exclude)
+				UserList.add(value);
+		} // for
+		return UserList;
+	}
+
+	
+	@RequestMapping(value = { "/report/wizard/security/getReportSecurityInfo" }, method = RequestMethod.GET)
+	public @ResponseBody Map<String,String> getReportSecurityInfo(HttpServletRequest request)
+			throws IOException, RaptorException {
+		Map<String, String> securityInfoMap = new HashMap<String,String>();
+		ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+		String isPublic = Boolean.toString(rdef.isPublic()); 
+		String createUser = AppUtils.getUserName(rdef.getCreateID());
+		String createDate = rdef.getCreateDate();
+		String updateUser = AppUtils.getUserName(rdef.getUpdateID());
+		String updateDate = rdef.getUpdateDate();
+		String ownerId = rdef.getOwnerID();
+		
+		securityInfoMap.put("isPublic",isPublic);
+		securityInfoMap.put("createdUser",createUser);		
+		securityInfoMap.put("createdDate",createDate);		
+		securityInfoMap.put("updateUser",updateUser);
+		securityInfoMap.put("updatedDate",updateDate);
+		securityInfoMap.put("ownerId",ownerId);
+		
+		return securityInfoMap;
+	}	
+	
+	@RequestMapping(value = { "/report/wizard/security/getReportSecurityUsers" }, method = RequestMethod.GET)
+	public @ResponseBody List<SecurityEntry> getReportSecurityUsers(HttpServletRequest request)
+			throws IOException, RaptorException {
+		
+		List<SecurityEntry> reportUserMapList = new ArrayList<SecurityEntry>();
+		ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+		Vector reportUsers = rdef.getReportUsers(request);
+		int iCount = 0;
+		
+		for(Iterator iter=reportUsers.iterator(); iter.hasNext(); iCount++) { 
+			Map<String, String> reportUserMap = new HashMap<String,String>();
+			SecurityEntry rUser = (SecurityEntry) iter.next();
+			reportUserMapList.add(rUser);
+		}
+		
+		return reportUserMapList;
+	}		
+	
+	
+	@RequestMapping(value = { "/report/wizard/security/getReportSecurityRoles" }, method = RequestMethod.GET)
+	public @ResponseBody List<SecurityEntry> getReportSecurityRoles(HttpServletRequest request)
+			throws IOException, RaptorException {
+		
+		List<SecurityEntry> reportRoleList = new ArrayList<SecurityEntry>();
+		ReportDefinition rdef = (ReportDefinition) request.getSession().getAttribute(AppConstants.SI_REPORT_DEFINITION);
+		Vector reportRoles = rdef.getReportRoles(request);
+		int iCount = 0;
+		
+		for(Iterator iter=reportRoles.iterator(); iter.hasNext(); iCount++) { 
+			SecurityEntry rRole = (SecurityEntry) iter.next(); 
+			reportRoleList.add(rRole);
+		}
+		
+		return reportRoleList;
+	}		
+	
+	
 	@RequestMapping(value = { "/report/wizard/retrieve_def_tab_wise_data/{id}",
 			"/report/wizard/retrieve_def_tab_wise_data/{id}/{detailId}" }, method = RequestMethod.GET)
 	public @ResponseBody DefinitionJSON retrieveDefTabWiseData(@PathVariable Map<String, String> pathVariables,
@@ -1063,7 +1380,7 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 					jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
 					raptorResponse.data().put("elements", jsonInString);
 					return raptorResponse;
-					
+
 				} catch (Exception ex) {
 					logger.error(EELFLoggerDelegate.errorLogger,
 							"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex);
@@ -1136,7 +1453,8 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 										dvJSON.put(ds.getColumnName(c), ds.getString(r, c));
 									} catch (Exception ex) {
 										logger.error(EELFLoggerDelegate.errorLogger,
-												"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].", ex);
+												"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery].",
+												ex);
 									}
 								}
 								reportDataRows.add(dvJSON);
@@ -1161,11 +1479,11 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 						jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(queryResultJSON);
 						raptorResponse.data().put("elements", jsonInString);
 						return raptorResponse;
-						
-						
+
 					} catch (Exception ex) {
 						logger.error(EELFLoggerDelegate.errorLogger,
-								"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery]. RaptorException: ", ex);
+								"[Controller.processRequest]Invalid raptor action [retrieveDataForGivenQuery]. RaptorException: ",
+								ex);
 					}
 				} catch (ReportSQLException ex) {
 					ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
@@ -1195,7 +1513,6 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 						jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
 						raptorResponse.data().put("elements", jsonInString);
 						return raptorResponse;
-						
 
 					} catch (Exception ex1) {
 						logger.error(EELFLoggerDelegate.errorLogger,

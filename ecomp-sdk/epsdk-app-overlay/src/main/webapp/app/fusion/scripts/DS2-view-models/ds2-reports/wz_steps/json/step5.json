@@ -1,20 +1,12 @@
 {
 	"step" : "5",
-	"last_step": true,
-	"hideSaveButton":true,
-	"hideBackButton":true,
 	"content": {
-		"title": "Step 5 : Run",
+		"title": "",
 		"sections": [
 			{
-				"elements": [
-				],
-				"buttons": [
-				{
-				"text":"Run Report",
-				"value":"next",
-				"ngFunction":"RunCurrentReport()"
-				}]
+				"title": "",
+				"elements": [										
+				]				
 			},
 			{
 				"title": "finalButton",
@@ -22,7 +14,6 @@
 				"next":"Microservice Config",
 				"previous":"none" 
 			}
-		] 
-		
+		]
 	}
 }

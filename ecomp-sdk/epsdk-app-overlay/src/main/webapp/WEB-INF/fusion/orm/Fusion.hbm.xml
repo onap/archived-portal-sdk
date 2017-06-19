@@ -266,6 +266,17 @@
         <property name="siteCd"      column="broadcast_site_cd"    />
     </class>
     
+    <class name="org.openecomp.portalsdk.analytics.model.base.ReportUserRole" table="cr_report_access">
+		<composite-id>
+			<key-property name="repId" column="rep_id" />
+			<key-property name="orderNo" column="order_no" />
+		</composite-id>
+
+        <property name="roleId" column="role_id"/>
+        <property name="userId"  column="user_id"/>
+        <property name="readOnlyYn"  column="read_only_yn"/>
+    </class>    
+    
     <!-- State Lookup class mapping details -->
     <class name="LuState" table="FN_LU_STATE">
         <id       name="abbr"  column="state_cd" />
@@ -349,4 +360,26 @@
     <query name="getAllRoles">
       select id, name from Role order by name
     </query>	
+    
+    <query name="getReportSecurityUsers">
+      select repId, orderNo, roleId, userId, readOnlyYn from ReportUserRole where repId = :report_id and userId is not null
+    </query>
+        
+    <query name="getReportSecurityRoles">
+      select repId, orderNo, roleId, userId, readOnlyYn from ReportUserRole where repId = :report_id and roleId is not null
+    </query>
+
+<!--     <query name="insertReportSecurityUsers">
+		insert into ReportUserRole (repId, roleId, userId, readOnlyYn) values (:report_id, :role_id, :user_id, :read_only_yn)
+    </query> -->
+    
+
+    <query name="deleteReportSecurityUsers">
+      delete from ReportUserRole where repId = :report_id and userId =:user_id
+    </query>
+
+    <query name="deleteReportSecurityRoles">
+      delete from ReportUserRole where repId = :report_id and roleId =:role_id
+    </query>
+
 </hibernate-mapping>
