@@ -18,6 +18,7 @@ Version 1.1.0
 - [Portal-6] Updates to License and Trademark in the PORTAL Source Code
 - [Portal 13] ecompsdk db connection intermittent issue seen for VID app 
 - [Portal 15] Fix Charting and Search Capabilities of EcompSDK Analytics
+- [Portal 23] Updating the SDK version from Snapshot to Release 1.1.0
  
 Version 1.0.0
 - Initial release
