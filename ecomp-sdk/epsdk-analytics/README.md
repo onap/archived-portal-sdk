@@ -9,6 +9,11 @@ features including charts, maps and reports ("Raptor").
   
 ## Release Notes
 
+### ONAP Distributions
+
+Version 1.3.0
+- [Portal-19] Renaming the Group Id in the POM file to org.onap.portal.sdk
+
 Version 1.1.0
 - [Portal-7] Improvements added as part of the rebasing process
 - [PORTAL-17] Remove jfree related items 

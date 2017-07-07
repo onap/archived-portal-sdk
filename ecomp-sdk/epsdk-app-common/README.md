@@ -22,7 +22,10 @@ SDK is currently using AngularJS version 1.4.8 for compatibility with b2b librar
 version 1.0.1.  Note that previous versions of the EPSDK web application used  
 AngularJS version 1.5.0.
 
-### OpenECOMP Distributions
+### ONAP Distributions
+
+Version 1.3.0
+- [Portal-19] Renaming the Group Id in the POM file to org.onap.portal.sdk
 
 Version 1.1.0
 - [Portal-7] Improvements added as part of the rebasing process
