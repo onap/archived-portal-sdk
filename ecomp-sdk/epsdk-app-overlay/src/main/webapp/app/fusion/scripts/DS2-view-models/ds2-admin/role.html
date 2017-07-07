@@ -49,9 +49,10 @@
 		</div>
 		<br/>
 		
-		<div>
+		<!-- Commented code due to issues with child role activation and deactivation, should be revisited -->
+		<!-- <div>
 			<h4 class="heading-small-emphasis">Child Roles</h4>    
-			<button class="btn btn-alt btn-small" ng-click="addNewChildRoleFunctionModalPopup(role.roleFunctions,role.name, role);">Manage Child Roles</button>
+			<button class="btn btn-alt btn-small" ng-click="addNewChildRoleFunctionModalPopup(role.childRoles,role.name, role);">Manage Child Roles</button>
 			
 			<table class="striped" ng-if="role.childRoles.length">
 						<thead>
@@ -69,7 +70,7 @@
 							</tr>					   
 						</tbody>
 			</table>
-		</div>
+		</div> -->
 		<br/>
 		<div>
 			<a href="admin#/role_function_list">Manage Role Functions</a><br><br>

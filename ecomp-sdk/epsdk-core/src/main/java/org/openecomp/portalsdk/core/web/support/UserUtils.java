@@ -46,12 +46,13 @@ import org.openecomp.portalsdk.core.menu.MenuBuilder;
 import org.openecomp.portalsdk.core.restful.domain.EcompRole;
 import org.openecomp.portalsdk.core.restful.domain.EcompUser;
 import org.openecomp.portalsdk.core.service.DataAccessService;
+import org.openecomp.portalsdk.core.service.UrlAccessService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @SuppressWarnings("rawtypes")
 public class UserUtils {
-	
+
 	static EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserUtils.class);
 
 	public static final String KEY_USER_ROLES_CACHE = "userRoles";
@@ -59,7 +60,7 @@ public class UserUtils {
 	private static DataAccessService dataAccessService;
 
 	public static void setUserSession(HttpServletRequest request, User user, Set applicationMenuData,
-			Set businessDirectMenuData, String loginMethod) {
+			Set businessDirectMenuData, String loginMethod , List<RoleFunction> roleFunctionList) {
 		HttpSession session = request.getSession(true);
 
 		UserUtils.clearUserSession(request); // let's clear the current user
@@ -77,6 +78,8 @@ public class UserUtils {
 		session.setAttribute(SystemProperties.getProperty(SystemProperties.USER_NAME), user.getFullName());
 		session.setAttribute(SystemProperties.FIRST_NAME, user.getFirstName());
 		session.setAttribute(SystemProperties.LAST_NAME, user.getLastName());
+		session.setAttribute(SystemProperties.ROLE_FUNCTION_LIST, roleFunctionList);
+
 		ServletContext context = session.getServletContext();
 		int licenseVarificationFlag = 3;
 		try {
@@ -125,12 +128,14 @@ public class UserUtils {
 		session.removeAttribute(SystemProperties.getProperty(SystemProperties.ROLES_ATTRIBUTE_NAME));
 		session.removeAttribute(SystemProperties.getProperty(SystemProperties.ROLE_FUNCTIONS_ATTRIBUTE_NAME));
 		session.removeAttribute(SystemProperties.getProperty(SystemProperties.LOGIN_METHOD_ATTRIBUTE_NAME));
+		session.removeAttribute(SystemProperties.getProperty(SystemProperties.ROLE_FUNCTION_LIST));
+
 	}
 
 	@SuppressWarnings("unchecked")
 	public static Set getRoleFunctions(HttpServletRequest request) {
 		HashSet roleFunctions = null;
-
+//		HashSet<RoleFunction> rolefun = null;
 		HttpSession session = request.getSession();
 		roleFunctions = (HashSet) session
 				.getAttribute(SystemProperties.getProperty(SystemProperties.ROLE_FUNCTIONS_ATTRIBUTE_NAME));
@@ -152,11 +157,12 @@ public class UserUtils {
 					roleFunctions.add(function.getCode());
 				}
 			}
-
 			session.setAttribute(SystemProperties.getProperty(SystemProperties.ROLE_FUNCTIONS_ATTRIBUTE_NAME),
 					roleFunctions);
 		}
-
+		
+		
+		
 		return roleFunctions;
 	}
 
@@ -228,38 +234,7 @@ public class UserUtils {
 
 	}
 
-	/**
-	 * Answers whether the specified URL is accessible.
-	 * 
-	 * @param request
-	 * @param currentUrl
-	 * @return true if yes, false if no.
-	 */
-	public static boolean isUrlAccessible(HttpServletRequest request, String currentUrl) {
-		boolean isAccessible = false;
-		Map<String,String> params = new HashMap<>();
-		params.put("current_url", currentUrl);
-		List list = getDataAccessService().executeNamedQuery("restrictedUrls", params, null);
-		// loop through the list of restricted URL's
-		if (list != null && list.size() > 0) {
-			for (int i = 0; i < list.size(); i++) {
-				/*
-				 * Object[] restrictedUrl = (Object[])list.get(i);
-				 * 
-				 * String url = (String)restrictedUrl[0]; String functionCd =
-				 * (String)restrictedUrl[1];
-				 */
-				UrlsAccessible urlFunctions = (UrlsAccessible) list.get(i);
-				// String url = (String) urlFunctions.getUrl();
-				String functionCd = (String) urlFunctions.getFunctionCd();
-				if (UserUtils.isAccessible(request, functionCd)) {
-					isAccessible = true;
-				}
-			}
-			return isAccessible;
-		}
-		return true;
-	}
+
 
 	public static boolean hasRole(HttpServletRequest request, String roleKey) {
 		return getRoles(request).keySet().contains(new Long(roleKey));
@@ -308,10 +283,11 @@ public class UserUtils {
 		return userId;
 	}
 
-	
 	private static final Object stackTraceLock = new Object();
+
 	/**
-	 * Serializes a stack trace of the specified throwable and returns it as a string.
+	 * Serializes a stack trace of the specified throwable and returns it as a
+	 * string.
 	 * 
 	 * TODO: why is synchronization required?
 	 * 
@@ -328,7 +304,8 @@ public class UserUtils {
 	}
 
 	/**
-	 * Gets the full URL of the request by joining the request and any query string.
+	 * Gets the full URL of the request by joining the request and any query
+	 * string.
 	 * 
 	 * @param request
 	 * @return Full URL of the request including query parameters
@@ -362,8 +339,8 @@ public class UserUtils {
 			while (headerNames.hasMoreElements()) {
 				String headerName = (String) headerNames.nextElement();
 				if (logger.isTraceEnabled())
-				logger.trace(EELFLoggerDelegate.debugLogger,
-						"getRequestId: header {} = {}", headerName, request.getHeader(headerName));
+					logger.trace(EELFLoggerDelegate.debugLogger, "getRequestId: header {} = {}", headerName,
+							request.getHeader(headerName));
 				if (headerName.equalsIgnoreCase(SystemProperties.ECOMP_REQUEST_ID)) {
 					requestId = request.getHeader(headerName);
 					break;
@@ -380,7 +357,8 @@ public class UserUtils {
 	}
 
 	/**
-	 * Converts a Hibernate-mapped User object to a JSON-serializable EcompUser object.
+	 * Converts a Hibernate-mapped User object to a JSON-serializable EcompUser
+	 * object.
 	 * 
 	 * @param user
 	 * @return EcompUser with a subset of fields.
@@ -408,7 +386,8 @@ public class UserUtils {
 	}
 
 	/**
-	 * Converts a Hibernate-mapped Role object to a JSON-serializable EcompRole object.
+	 * Converts a Hibernate-mapped Role object to a JSON-serializable EcompRole
+	 * object.
 	 * 
 	 * @param role
 	 * @return EcompRole with a subset of fields: ID and name
@@ -419,5 +398,7 @@ public class UserUtils {
 		ecompRole.setName(role.getName());
 		return ecompRole;
 	}
-	
-}
+
+	}
+
+

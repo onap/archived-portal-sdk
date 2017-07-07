@@ -222,9 +222,9 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 	}
 
 	@Override
-	public List<EcompRole> getAvailableRoles() throws PortalAPIException {
+	public List<EcompRole> getAvailableRoles(String requestedLoginId) throws PortalAPIException {
 		try {
-			List<Role> roles = roleService.getActiveRoles();
+			List<Role> roles = roleService.getActiveRoles(requestedLoginId);
 			List<EcompRole> ecompRoles = new ArrayList<EcompRole>();
 			for (Role role : roles)
 				ecompRoles.add(UserUtils.convertToEcompRole(role));
@@ -251,7 +251,7 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 			 */
 			SortedSet<Role> roles = new TreeSet<Role>();
 			for (EcompRole role : rolesJson) {
-				roles.add(roleService.getRole(role.getId()));
+				roles.add(roleService.getRole(loginId,role.getId()));
 			}
 			// Replace existing roles with new ones
 			replaceExistingRoles(roles, user);

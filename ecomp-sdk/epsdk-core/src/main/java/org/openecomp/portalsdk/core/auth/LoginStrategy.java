@@ -20,6 +20,7 @@
 package org.openecomp.portalsdk.core.auth;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -27,10 +28,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openecomp.portalsdk.core.command.LoginBean;
+import org.openecomp.portalsdk.core.domain.RoleFunction;
 import org.openecomp.portalsdk.core.menu.MenuProperties;
 import org.openecomp.portalsdk.core.onboarding.exception.PortalAPIException;
 import org.openecomp.portalsdk.core.onboarding.listener.PortalTimeoutHandler;
 import org.openecomp.portalsdk.core.service.LoginService;
+import org.openecomp.portalsdk.core.service.RoleService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.AppUtils;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
@@ -50,6 +53,9 @@ public abstract class LoginStrategy {
 
 	@Autowired
 	private LoginService loginService;
+	
+	@Autowired
+	RoleService roleService;
 
 	public abstract ModelAndView doLogin(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
@@ -77,6 +83,9 @@ public abstract class LoginStrategy {
 		 **/
 		commandBean = loginService.findUser(commandBean,
 				(String) request.getAttribute(MenuProperties.MENU_PROPERTIES_FILENAME_KEY), additionalParamsMap);
+		List<RoleFunction> roleFunctionList=  roleService.getRoleFunctions(loginId);
+
+		
 
 		if (commandBean.getUser() == null) {
 			String loginErrorMessage = (commandBean.getLoginErrorMessage() != null) ? commandBean.getLoginErrorMessage()
@@ -92,7 +101,7 @@ public abstract class LoginStrategy {
 			// store the currently logged in user's information in the session
 			UserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(),
 					commandBean.getBusinessDirectMenu(),
-					SystemProperties.getProperty(SystemProperties.LOGIN_METHOD_BACKDOOR));
+					SystemProperties.getProperty(SystemProperties.LOGIN_METHOD_BACKDOOR), roleFunctionList);
 			initateSessionMgtHandler(request);
 
 			// user has been authenticated, now take them to the welcome page

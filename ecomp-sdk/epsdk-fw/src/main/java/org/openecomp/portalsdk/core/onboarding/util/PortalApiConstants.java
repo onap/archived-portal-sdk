@@ -37,6 +37,7 @@ public interface PortalApiConstants {
 	public static final String PORTAL_API_IMPL_CLASS = "portal.api.impl.class";
 	public static final String ECOMP_REDIRECT_URL = "ecomp_redirect_url";
 	public static final String ECOMP_REST_URL = "ecomp_rest_url";
+	public static final String ROLE_ACCESS_CENTRALIZED = "role_access_centralized";
 	public static final String CSP_COOKIE_NAME = "csp_cookie_name";
 	public static final String CSP_GATE_KEEPER_PROD_KEY = "csp_gate_keeper_prod_key";
 	
@@ -48,6 +49,7 @@ public interface PortalApiConstants {
     public static final String UEB_LISTENERS_ENABLE = "ueb_listeners_enable";
     public static final String UEB_APP_INBOUND_MAILBOX_NAME = "ueb_app_mailbox_name";
     public static final String UEB_APP_CONSUMER_GROUP_NAME = "ueb_app_consumer_group_name";
+    
     // UebManager generates a consumer group name for special token {UUID} 
     public static final String UEB_APP_CONSUMER_GROUP_NAME_GENERATOR = "{UUID}";
     public static final String UEB_APP_KEY = "ueb_app_key";

@@ -110,7 +110,6 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-
 		if (portalRestApiServiceImpl == null) {
 			// Should never happen due to checks in init()
 			logger.error("doPost: no service class instance");
@@ -145,7 +144,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					bodyMap.put("userid", userId);
 					requestBody = mapper.writeValueAsString(bodyMap);
 					responseJson = RestWebServiceClient.getInstance().postPortalContent(storeAnalyticsContextPath,
-							userId, credential, null, credential, credential, "application/json", requestBody);
+							userId, credential, null, credential, credential, "application/json", requestBody, true);
 					if (logger.isDebugEnabled())
 						logger.debug("doPost: postPortalContent returns " + responseJson);
 					response.setStatus(HttpServletResponse.SC_OK);
@@ -321,8 +320,9 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					String credential = PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY);
 					// for now lets also pass uebkey as user name and password
 					contentType = "text/javascript";
+										
 					responseString = RestWebServiceClient.getInstance().getPortalContent(webAnalyticsContextPath,
-							userId, credential, null, credential, credential);
+							userId, credential, null, credential, credential,true);
 					if (logger.isDebugEnabled())
 						logger.debug("doGet: " + webAnalyticsContextPath + ": " + responseString);
 					response.setStatus(HttpServletResponse.SC_OK);
@@ -398,9 +398,10 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 				}
 			} else
 			// Example: /roles <-- get all roles
+				
 			if (requestUri.endsWith(PortalApiConstants.API_PREFIX + "/roles")) {
 				try {
-					List<EcompRole> roles = getAvailableRoles();
+					List<EcompRole> roles = getAvailableRoles(getUserId(request));
 					responseJson = mapper.writeValueAsString(roles);
 					if (logger.isDebugEnabled())
 						logger.debug("doGet: getAvailableRoles: " + responseJson);
@@ -484,8 +485,8 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 	}
 
 	@Override
-	public List<EcompRole> getAvailableRoles() throws PortalAPIException {
-		return portalRestApiServiceImpl.getAvailableRoles();
+	public List<EcompRole> getAvailableRoles(String requestedLoginId) throws PortalAPIException {
+		return portalRestApiServiceImpl.getAvailableRoles(requestedLoginId);
 	}
 
 	@Override

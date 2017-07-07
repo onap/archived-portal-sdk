@@ -46,6 +46,6 @@ public class FavoritesClient {
 	public static String getFavorites(String userId, String appName, String requestId, String appUserName,
 			String appPassword) throws Exception {
 		return RestWebServiceClient.getInstance().getPortalContent("/getFavorites", userId, appName, requestId, appUserName,
-				appPassword);
+				appPassword,true);
 	}
 }

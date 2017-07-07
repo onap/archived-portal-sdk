@@ -48,7 +48,7 @@ public class FunctionalMenuClient {
 	public static String getFunctionalMenu(String userId, String appName, String requestId, String appUserName,
 			String appPassword) throws Exception {
 		return RestWebServiceClient.getInstance().getPortalContent("/functionalMenuItemsForUser", userId, appName,
-				requestId, appUserName, appPassword);
+				requestId, appUserName, appPassword,true);
 	}
 
 }

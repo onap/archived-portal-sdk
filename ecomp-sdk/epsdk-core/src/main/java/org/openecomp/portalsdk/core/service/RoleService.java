@@ -26,25 +26,104 @@ import org.openecomp.portalsdk.core.domain.RoleFunction;
 
 
 public interface RoleService {
-	List<RoleFunction> getRoleFunctions();
+	/**
+	 * 
+	 * @param requestedLoginId loginId
+	 * @return returns List of RoleFunction
+	 * @throws Exception
+	 * Method getRoleFunctions returns list of Role Functions
+	 */
+	List<RoleFunction> getRoleFunctions(String requestedLoginId) throws Exception;
 	
-	List<Role> getAvailableChildRoles(Long roleId);
 	
-	Role getRole(Long id);
+	/**
+	 * 
+	 * @param requestedLoginId
+	 * @param roleId
+	 * @return returns List of Role
+	 * @throws Exception
+	 * Method getAvailableChildRoles returns list of avialable child roles
+	 */
+	List<Role> getAvailableChildRoles(String requestedLoginId,Long roleId) throws Exception;
 	
-	void saveRole(Role domainRole);
 	
-	void deleteRole(Role domainRole);
+	/**
+	 * 
+	 * @param requestedLoginId
+	 * @param id roleId
+	 * @return returns role 
+	 * @throws Exception
+	 * Method getRole returns Role object if requested roleID
+	 */
+	Role getRole(String requestedLoginId,Long id) throws Exception;
 	
-	List<Role> getAvailableRoles();
+	/**
+	 * 
+	 * @param requestedLoginId
+	 * @param domainRole Object to be saved
+	 * Method saveRole saves the Role Object
+	 */
+	void saveRole(String requestedLoginId,Role domainRole);
 	
-	List<Role> getActiveRoles();
+	/**
+	 * 
+	 * @param requestedLoginId
+	 * @param domainRole Object to be removed
+	 * Method deleteRole deletes the requested Role Object
+	 */
+	void deleteRole(String requestedLoginId,Role domainRole);
+	
+	/**
+	 * 
+	 * @param requestedLoginId
+	 * @return returns list of available roles
+	 * @throws Exception
+	 * Method getAvailableRoles gets the list of available roles
+	 */
+	
+	List<Role> getAvailableRoles(String requestedLoginId) throws Exception;
+	
+	/**
+	 * 
+	 * @param requestedLoginId
+	 * @return
+	 * @throws Exception
+	 * Method getActiveRoles gets the list of active roles of application
+	 * 
+	 */
+	List<Role> getActiveRoles(String requestedLoginId) throws Exception;
 
-	RoleFunction getRoleFunction(String code);
+	/**
+	 * 
+	 * @param requestedLoginId
+	 * @param code function code
+	 * @return
+	 * @throws Exception
+	 * Method getRoleFunction returns RoleFunction of requested function code
+	 */
+	RoleFunction getRoleFunction(String requestedLoginId,String code) throws Exception;
 	
-	void saveRoleFunction(RoleFunction domainRoleFunction);
+	/**
+	 * 
+	 * @param requestedLoginId
+	 * @param domainRoleFunction
+	 * Method saveRoleFunction saves the requested RoleFunction object
+	 */
+	void saveRoleFunction(String requestedLoginId,RoleFunction domainRoleFunction);
 	
-	void deleteRoleFunction(RoleFunction domainRoleFunction);
+	/**
+	 * 
+	 * @param requestedLoginId
+	 * @param domainRoleFunction
+	 * Method deleteRoleFunction deletes the requested RoleFunction object
+	 */
+	void deleteRoleFunction(String requestedLoginId,RoleFunction domainRoleFunction);
 	
-	void deleteDependcyRoleRecord(Long id);
+	/**
+	 * 
+	 * @param requestedLoginId
+	 * @param id
+	 * Method deleteDependcyRoleRecord deletes the requested object
+	 */
+	void deleteDependcyRoleRecord(String requestedLoginId,Long id);
 }

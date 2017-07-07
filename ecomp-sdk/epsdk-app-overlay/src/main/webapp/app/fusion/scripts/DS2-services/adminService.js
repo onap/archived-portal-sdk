@@ -373,7 +373,7 @@ getFnMenuItems: function(){
 		confirmRoleChildRemove: function(selected,availableRole,id){
 			return $http({
 				method: "POST",
-                url: "role/removeChildRole.htm?role_id=" + roleId,
+                url: "role/removeChildRole.htm?role_id=" + id,
                 data:JSON.stringify({roleFunction:availableRole})
 			
 			}).then(function(response) {
@@ -394,7 +394,7 @@ getFnMenuItems: function(){
 		confirmRoleChildAdd: function(selected,availableRole,id){
 			return $http({
 				method: "POST",
-                url: "role/addChildRole.htm?role_id=" + roleId,
+                url: "role/addChildRole.htm?role_id=" + id,
                 data:JSON.stringify({roleFunction:availableRole})
 			
 			}).then(function(response) {

@@ -29,9 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.openecomp.portalsdk.core.controller.RestrictedBaseController;
 import org.openecomp.portalsdk.core.domain.Role;
+import org.openecomp.portalsdk.core.domain.User;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.RoleService;
 import org.openecomp.portalsdk.core.web.support.JsonMessage;
+import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +48,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequestMapping("/")
 public class RoleListController extends RestrictedBaseController {
 
+	
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RoleListController.class);
 	@Autowired
 	RoleService service;
@@ -56,9 +59,11 @@ public class RoleListController extends RestrictedBaseController {
 	public ModelAndView getRoleList(HttpServletRequest request) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();	
+		User user = UserUtils.getUserSession(request);
+
 		
 		try {
-			model.put("availableRoles", mapper.writeValueAsString(service.getAvailableRoles()));
+			model.put("availableRoles", mapper.writeValueAsString(service.getAvailableRoles(user.getOrgUserId())));
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getRoleList failed", e);
 		}
@@ -69,10 +74,12 @@ public class RoleListController extends RestrictedBaseController {
 	@RequestMapping(value = {"/get_roles" }, method = RequestMethod.GET)
 	public void getRoles(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> model = new HashMap<String, Object>();
-		ObjectMapper mapper = new ObjectMapper();	
+		ObjectMapper mapper = new ObjectMapper();
+		User user = UserUtils.getUserSession(request);
+
 		
 		try {
-			model.put("availableRoles", mapper.writeValueAsString(service.getAvailableRoles()));
+			model.put("availableRoles", mapper.writeValueAsString(service.getAvailableRoles(user.getOrgUserId())));
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
 			JSONObject j = new JSONObject(msg);
 			response.getWriter().write(j.toString());	
@@ -85,6 +92,8 @@ public class RoleListController extends RestrictedBaseController {
 	@RequestMapping(value = {"/role_list/toggleRole" }, method = RequestMethod.POST)
 	public ModelAndView toggleRole(HttpServletRequest request, 
 			HttpServletResponse response) throws Exception {
+		User user = UserUtils.getUserSession(request);
+
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -92,12 +101,12 @@ public class RoleListController extends RestrictedBaseController {
 			JsonNode root = mapper.readTree(request.getReader());
 			Role role = mapper.readValue(root.get("role").toString(), Role.class);
 
-			Role domainRole = service.getRole(role.getId());
+			Role domainRole = service.getRole(user.getOrgUserId(),role.getId());
 			//role. toggle active ind
 			boolean active = domainRole.getActive();
 			domainRole.setActive(!active);
 			
-			service.saveRole(domainRole);
+			service.saveRole(user.getOrgUserId(),domainRole);
 			logger.info(EELFLoggerDelegate.auditLogger, "Toggle active status for role " + domainRole.getId());
 
 			response.setCharacterEncoding("UTF-8");
@@ -105,7 +114,7 @@ public class RoleListController extends RestrictedBaseController {
 			request.setCharacterEncoding("UTF-8");
 
 			PrintWriter out = response.getWriter();
-			String responseString = mapper.writeValueAsString(service.getAvailableRoles());
+			String responseString = mapper.writeValueAsString(service.getAvailableRoles(user.getOrgUserId()));
 			JSONObject j = new JSONObject("{availableRoles: "+responseString+"}");
 			
 			out.write(j.toString());
@@ -125,6 +134,7 @@ public class RoleListController extends RestrictedBaseController {
 	@RequestMapping(value = {"/role_list/removeRole" }, method = RequestMethod.POST)
 	public ModelAndView removeRole(HttpServletRequest request, 
 			HttpServletResponse response) throws Exception {
+		User user = UserUtils.getUserSession(request);
 
 		try {
 
@@ -133,10 +143,10 @@ public class RoleListController extends RestrictedBaseController {
 			JsonNode root = mapper.readTree(request.getReader());
 			Role role = mapper.readValue(root.get("role").toString(), Role.class);
 
-			Role domainRole = service.getRole(role.getId());
+			Role domainRole = service.getRole(user.getOrgUserId(),role.getId());
 						
-			service.deleteDependcyRoleRecord(role.getId());
-			service.deleteRole(domainRole);
+			service.deleteDependcyRoleRecord(user.getOrgUserId(),role.getId());
+			service.deleteRole(user.getOrgUserId(),domainRole);
 			logger.info(EELFLoggerDelegate.auditLogger, "Remove role " + domainRole.getId());
 
 			response.setCharacterEncoding("UTF-8");
@@ -145,7 +155,7 @@ public class RoleListController extends RestrictedBaseController {
 
 			PrintWriter out = response.getWriter();
 			
-			String responseString = mapper.writeValueAsString(service.getAvailableRoles());
+			String responseString = mapper.writeValueAsString(service.getAvailableRoles(user.getOrgUserId()));
 			JSONObject j = new JSONObject("{availableRoles: "+responseString+"}");
 			out.write(j.toString());
 			

@@ -20,6 +20,7 @@ AngularJS version 1.5.0.
 Version 1.1.0
 [Portal-7] Improvements added as part of the rebasing process
 [Portal-10] Enhancing Drill Down Capabilities of EcompSDK Analytics
+[PORTAL-17] Remove jfree related items
 
 Version 1.0.0
 - Initial release

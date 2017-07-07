@@ -64,9 +64,10 @@ public class ProfileController extends RestrictedBaseController {
 	private String viewName;
 	
 	@RequestMapping(value = { "/profile" }, method = RequestMethod.GET)
-	public ModelAndView profile(HttpServletRequest request) {
+	public ModelAndView profile(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();
+		User user = UserUtils.getUserSession(request);
 
 		User profile = null;
 		Long profileId = null;
@@ -83,7 +84,7 @@ public class ProfileController extends RestrictedBaseController {
 			model.put("stateList", mapper.writeValueAsString(getStates()));
 			model.put("countries", mapper.writeValueAsString(getCountries()));
 			model.put("timeZones", mapper.writeValueAsString(getTimeZones()));
-			model.put("availableRoles", mapper.writeValueAsString(getAvailableRoles()));
+			model.put("availableRoles", mapper.writeValueAsString(getAvailableRoles(user.getOrgUserId())));
 			model.put("profile", mapper.writeValueAsString(profile));
 			model.put("profileId", mapper.writeValueAsString(profileId));
 		} catch (Exception e) {
@@ -99,6 +100,7 @@ public class ProfileController extends RestrictedBaseController {
 
 		User profile = null;
 		Long profileId = null;
+		User user = UserUtils.getUserSession(request);
 
 		profile = UserUtils.getUserSession(request);
 		profileId = profile.getId();
@@ -108,7 +110,7 @@ public class ProfileController extends RestrictedBaseController {
 			model.put("stateList", mapper.writeValueAsString(getStates()));
 			model.put("countries", mapper.writeValueAsString(getCountries()));
 			model.put("timeZones", mapper.writeValueAsString(getTimeZones()));
-			model.put("availableRoles", mapper.writeValueAsString(getAvailableRoles()));
+			model.put("availableRoles", mapper.writeValueAsString(getAvailableRoles(user.getOrgUserId())));
 			model.put("profile", mapper.writeValueAsString(profile));
 			model.put("profileId", mapper.writeValueAsString(profileId));
 		} catch (Exception e) {
@@ -121,6 +123,7 @@ public class ProfileController extends RestrictedBaseController {
 	public void getSelfProfile(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();
+		User user = UserUtils.getUserSession(request);
 
 		User profile = null;
 		Long profileId = null;
@@ -133,7 +136,7 @@ public class ProfileController extends RestrictedBaseController {
 			model.put("stateList", mapper.writeValueAsString(getStates()));
 			model.put("countries", mapper.writeValueAsString(getCountries()));
 			model.put("timeZones", mapper.writeValueAsString(getTimeZones()));
-			model.put("availableRoles", mapper.writeValueAsString(getAvailableRoles()));
+			model.put("availableRoles", mapper.writeValueAsString(getAvailableRoles(user.getOrgUserId())));
 			model.put("profile", mapper.writeValueAsString(profile));
 			model.put("profileId", mapper.writeValueAsString(profileId));
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
@@ -148,6 +151,7 @@ public class ProfileController extends RestrictedBaseController {
 	@RequestMapping(value = { "/get_profile" }, method = RequestMethod.GET)
 	public void GetUser(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> model = new HashMap<String, Object>();
+		User user = UserUtils.getUserSession(request);
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			User profile = null;
@@ -162,7 +166,7 @@ public class ProfileController extends RestrictedBaseController {
 			model.put("stateList", mapper.writeValueAsString(getStates()));
 			model.put("countries", mapper.writeValueAsString(getCountries()));
 			model.put("timeZones", mapper.writeValueAsString(getTimeZones()));
-			model.put("availableRoles", mapper.writeValueAsString(getAvailableRoles()));
+			model.put("availableRoles", mapper.writeValueAsString(getAvailableRoles(user.getOrgUserId())));
 			model.put("profile", mapper.writeValueAsString(profile));
 			model.put("profileId", mapper.writeValueAsString(profileId));
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
@@ -345,8 +349,8 @@ public class ProfileController extends RestrictedBaseController {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public List getAvailableRoles() {
-		return roleService.getAvailableRoles();
+	public List getAvailableRoles(String requestedLoginId) throws Exception {
+		return roleService.getAvailableRoles(requestedLoginId);
 	}
 
 }

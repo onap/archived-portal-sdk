@@ -111,7 +111,7 @@ public class PostSearchController extends RestrictedBaseController {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private HashMap getExistingUsers() {
+	private HashMap getExistingUsers() throws Exception {
 		HashMap existingUsers = new HashMap();
 
 		// get the list of user ids in the system

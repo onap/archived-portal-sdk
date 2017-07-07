@@ -29,9 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.openecomp.portalsdk.core.controller.RestrictedBaseController;
 import org.openecomp.portalsdk.core.domain.RoleFunction;
+import org.openecomp.portalsdk.core.domain.User;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.RoleService;
 import org.openecomp.portalsdk.core.web.support.JsonMessage;
+import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +46,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Controller
 @RequestMapping("/")
 public class RoleFunctionListController extends RestrictedBaseController {
+	
+	
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RoleFunctionListController.class);
 
 	@Autowired
@@ -54,10 +58,12 @@ public class RoleFunctionListController extends RestrictedBaseController {
 	@RequestMapping(value = {"/role_function_list" }, method = RequestMethod.GET)
 	public ModelAndView welcome(HttpServletRequest request) {
 		Map<String, Object> model = new HashMap<String, Object>();
-		ObjectMapper mapper = new ObjectMapper();	
+		ObjectMapper mapper = new ObjectMapper();
+		User user = UserUtils.getUserSession(request);
+
 		
 		try {
-			model.put("availableRoleFunctions", mapper.writeValueAsString(service.getRoleFunctions()));
+			model.put("availableRoleFunctions", mapper.writeValueAsString(service.getRoleFunctions(user.getOrgUserId())));
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "welcome failed", e);
 		}
@@ -69,9 +75,11 @@ public class RoleFunctionListController extends RestrictedBaseController {
 	public void getRoleFunctionList(HttpServletRequest request,HttpServletResponse response) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();	
+		User user = UserUtils.getUserSession(request);
+
 		
 		try {
-			model.put("availableRoleFunctions", mapper.writeValueAsString(service.getRoleFunctions()));
+			model.put("availableRoleFunctions", mapper.writeValueAsString(service.getRoleFunctions(user.getOrgUserId())));
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
 			JSONObject j = new JSONObject(msg);
 			response.getWriter().write(j.toString());	
@@ -85,16 +93,18 @@ public class RoleFunctionListController extends RestrictedBaseController {
 	public void saveRoleFunction(HttpServletRequest request, 
 			HttpServletResponse response, @RequestBody String roleFunc) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
+		User user = UserUtils.getUserSession(request);
+
 		String restCallStatus = "";
 		try {
 			String data = roleFunc;
 			RoleFunction availableRoleFunction = mapper.readValue(data, RoleFunction.class);		
 			String code = availableRoleFunction.getCode();
-			RoleFunction domainRoleFunction = service.getRoleFunction(code);
+			RoleFunction domainRoleFunction = service.getRoleFunction(user.getOrgUserId(),code);
 			domainRoleFunction.setName(availableRoleFunction.getName());
 			domainRoleFunction.setCode(code); 
 			restCallStatus="success";
-			service.saveRoleFunction(domainRoleFunction);
+			service.saveRoleFunction(user.getOrgUserId(),domainRoleFunction);
 		} catch (Exception e) {
 			restCallStatus="fail";
 			logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction failed", e);
@@ -108,16 +118,18 @@ public class RoleFunctionListController extends RestrictedBaseController {
 	public void addRoleFunction(HttpServletRequest request, 
 			HttpServletResponse response, @RequestBody String roleFunc) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
+		User user = UserUtils.getUserSession(request);
+
 		String restCallStatus = "";
 		boolean canSave=true;
 		try {
 			String data = roleFunc;
 			RoleFunction availableRoleFunction = mapper.readValue(data, RoleFunction.class);		
 			String code = availableRoleFunction.getCode();
-			RoleFunction domainRoleFunction = service.getRoleFunction(code);
+			RoleFunction domainRoleFunction = service.getRoleFunction(user.getOrgUserId(),code);
 			domainRoleFunction.setName(availableRoleFunction.getName());
 			domainRoleFunction.setCode(code); 
-			List<RoleFunction> currentRoleFunction = service.getRoleFunctions();
+			List<RoleFunction> currentRoleFunction = service.getRoleFunctions(user.getOrgUserId());
 			restCallStatus="success";
 			for(RoleFunction roleF:currentRoleFunction){
 				if(roleF.getCode().equals(code)){
@@ -127,7 +139,7 @@ public class RoleFunctionListController extends RestrictedBaseController {
 				}
 			}
 			if(canSave)
-				service.saveRoleFunction(domainRoleFunction);
+				service.saveRoleFunction(user.getOrgUserId(),domainRoleFunction);
 		} catch (Exception e) {
 			restCallStatus="fail";
 			logger.error(EELFLoggerDelegate.errorLogger, "addRoleFunction failed", e);
@@ -141,15 +153,17 @@ public class RoleFunctionListController extends RestrictedBaseController {
 	public void removeRoleFunction(HttpServletRequest request, 
 			HttpServletResponse response, @RequestBody String roleFunc) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
+		User user = UserUtils.getUserSession(request);
+
 		String restCallStatus = "";
 		try {
 			String data = roleFunc;
 		
 			RoleFunction availableRoleFunction = mapper.readValue(data, RoleFunction.class);
 
-			RoleFunction domainRoleFunction = service.getRoleFunction(availableRoleFunction.getCode());
+			RoleFunction domainRoleFunction = service.getRoleFunction(user.getOrgUserId(),availableRoleFunction.getCode());
 			
-			service.deleteRoleFunction(domainRoleFunction);
+			service.deleteRoleFunction(user.getOrgUserId(),domainRoleFunction);
 			logger.info(EELFLoggerDelegate.auditLogger, "Remove role function " + domainRoleFunction.getName());
 			restCallStatus="success";
 		} catch (Exception e) {

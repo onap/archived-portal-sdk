@@ -52,7 +52,7 @@ public class UserProfileController extends RestrictedBaseController {
 	ProfileService service;
 
 	@RequestMapping(value = { "/user_profile" }, method = RequestMethod.GET)
-	public ModelAndView userProfile(HttpServletRequest request) {
+	public ModelAndView userProfile(HttpServletRequest request) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();
 		List<Profile> profileList = service.findAll();

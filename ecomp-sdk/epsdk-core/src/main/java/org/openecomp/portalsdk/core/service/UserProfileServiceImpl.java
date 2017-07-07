@@ -31,10 +31,8 @@ import org.openecomp.portalsdk.core.domain.Role;
 import org.openecomp.portalsdk.core.domain.User;
 import org.openecomp.portalsdk.core.domain.support.CollaborateList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("userProfileService")
 @Transactional
 public class UserProfileServiceImpl implements UserProfileService{
 
@@ -42,6 +40,7 @@ public class UserProfileServiceImpl implements UserProfileService{
 	@Autowired
 	private DataAccessService  dataAccessService;
 	
+	@SuppressWarnings("unchecked")
 	public List<User> findAll() {
 		return getDataAccessService().getList(User.class, null);
 	}
@@ -94,6 +93,7 @@ public class UserProfileServiceImpl implements UserProfileService{
 	}
 	
 	public List<User> findAllActive() {
+		@SuppressWarnings("unchecked")
 		List<User> users =  getDataAccessService().getList(User.class, null);
 		Iterator<User> itr = users.iterator();
 		while(itr.hasNext()){

@@ -102,11 +102,13 @@ public interface IPortalRestAPIService {
 	 * library will catch the exception and send an appropriate response to
 	 * Portal.
 	 * 
+	 *  @param requestedLoginId
+	 *           requested userloginId to fetch available roles
 	 * @return List of role attribute objects; empty list if none are found.
 	 * @throws PortalAPIException
 	 *             If an unexpected error occurs while processing the request.
 	 */
-	public List<EcompRole> getAvailableRoles() throws PortalAPIException;
+	public List<EcompRole> getAvailableRoles(String requestedLoginId) throws PortalAPIException;
 
 	/**
 	 * Updates roles for the user with the specified loginId to the list of

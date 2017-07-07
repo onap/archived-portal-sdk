@@ -170,5 +170,5 @@ public class Role extends DomainVo {
 
       return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
     }
-
+    
 }

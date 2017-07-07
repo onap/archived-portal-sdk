@@ -33,10 +33,8 @@ import org.openecomp.portalsdk.core.domain.Role;
 import org.openecomp.portalsdk.core.domain.RoleFunction;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("roleService")
 @Transactional
 public class RoleServiceImpl implements RoleService {
 
@@ -57,13 +55,13 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<RoleFunction> getRoleFunctions() {
+	public List<RoleFunction> getRoleFunctions(String loginId) {
 		// List msgDB = getDataAccessService().getList(Profile.class, null);
 		return getDataAccessService().getList(RoleFunction.class, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Role> getAvailableChildRoles(Long roleId) {
+	public List<Role> getAvailableChildRoles(String loginId,Long roleId) {
 		List<Role> availableChildRoles = (List<Role>) getDataAccessService().getList(Role.class, null);
 		if (roleId == null || roleId == 0) {
 			return availableChildRoles;
@@ -71,7 +69,7 @@ public class RoleServiceImpl implements RoleService {
 
 		Role currentRole = (Role) getDataAccessService().getDomainObject(Role.class, roleId, null);
 		Set<Role> allParentRoles = new TreeSet<Role>();
-		allParentRoles = getAllParentRolesAsList(currentRole, allParentRoles);
+		allParentRoles = getAllParentRolesAsList(loginId,currentRole, allParentRoles);
 
 		Iterator<Role> availableChildRolesIterator = availableChildRoles.iterator();
 		while (availableChildRolesIterator.hasNext()) {
@@ -84,48 +82,48 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Set<Role> getAllParentRolesAsList(Role role, Set<Role> allParentRoles) {
+	private Set<Role> getAllParentRolesAsList(String loginId,Role role, Set<Role> allParentRoles) {
 		Set<Role> parentRoles = role.getParentRoles();
 		allParentRoles.addAll(parentRoles);
 		Iterator<Role> parentRolesIterator = parentRoles.iterator();
 		while (parentRolesIterator.hasNext()) {
-			getAllParentRolesAsList(parentRolesIterator.next(), allParentRoles);
+			getAllParentRolesAsList( loginId,parentRolesIterator.next(), allParentRoles);
 		}
 		return allParentRoles;
 	}
 
-	public RoleFunction getRoleFunction(String code) {
+	public RoleFunction getRoleFunction(String loginId,String code) {
 		return (RoleFunction) getDataAccessService().getDomainObject(RoleFunction.class, code, null);
 	}
 
-	public void saveRoleFunction(RoleFunction domainRoleFunction) {
+	public void saveRoleFunction(String loginId,RoleFunction domainRoleFunction) {
 		getDataAccessService().saveDomainObject(domainRoleFunction, null);
 	}
 
-	public void deleteRoleFunction(RoleFunction domainRoleFunction) {
+	public void deleteRoleFunction(String loginId,RoleFunction domainRoleFunction) {
 		getDataAccessService().deleteDomainObject(domainRoleFunction, null);
 	}
 
-	public Role getRole(Long id) {
+	public Role getRole(String loginId,Long id) {
 		return (Role) getDataAccessService().getDomainObject(Role.class, id, null);
 	}
 
-	public void saveRole(Role domainRole) {
+	public void saveRole(String loginId,Role domainRole) {
 		getDataAccessService().saveDomainObject(domainRole, null);
 	}
 
-	public void deleteRole(Role domainRole) {
+	public void deleteRole(String loginId,Role domainRole) {
 		getDataAccessService().deleteDomainObject(domainRole, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Role> getAvailableRoles() {
+	public List<Role> getAvailableRoles(String loginId) {
 		return getDataAccessService().getList(Role.class, null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Role> getActiveRoles() {
+	public List<Role> getActiveRoles(String loginId) {
 		String filter = " where active_yn = 'Y' ";
 		return getDataAccessService().getList(Role.class, filter, null, null);
 	}
@@ -139,7 +137,7 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public void deleteDependcyRoleRecord(Long id) {
+	public void deleteDependcyRoleRecord(String loginId,Long id) {
 		Connection conn = null;
 		Statement stmt = null;
 		try {

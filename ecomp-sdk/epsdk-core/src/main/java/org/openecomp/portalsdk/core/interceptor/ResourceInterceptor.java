@@ -38,9 +38,9 @@ import org.openecomp.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.openecomp.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.openecomp.portalsdk.core.service.DataAccessService;
 import org.openecomp.portalsdk.core.service.LoginService;
+import org.openecomp.portalsdk.core.service.UrlAccessService;
 import org.openecomp.portalsdk.core.service.WebServiceCallService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
-import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -59,6 +59,9 @@ public class ResourceInterceptor extends HandlerInterceptorAdapter {
 
 	private AbstractCacheManager cacheManager;
 
+	@Autowired
+	UrlAccessService urlAccessService;
+	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
@@ -87,7 +90,7 @@ public class ResourceInterceptor extends HandlerInterceptorAdapter {
 						    return false;
 					}
 				}
-				if (!UserUtils.isUrlAccessible(request, url)) {
+				if (!urlAccessService.isUrlAccessible(request, url)) {
 					logger.error(EELFLoggerDelegate.errorLogger, "Error accesing URL. Un-authorized",AlarmSeverityEnum.MINOR);
 					throw new UrlAccessRestrictedException();
 				}

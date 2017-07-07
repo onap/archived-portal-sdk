@@ -24,12 +24,9 @@ import java.util.List;
 import org.openecomp.portalsdk.core.dao.ProfileDao;
 import org.openecomp.portalsdk.core.domain.Profile;
 import org.openecomp.portalsdk.core.domain.User;
-import org.openecomp.portalsdk.core.service.DataAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("profileService")
 @Transactional
 public class ProfileServiceImpl implements ProfileService{
 

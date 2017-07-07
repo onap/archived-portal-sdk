@@ -33,13 +33,17 @@ import org.openecomp.portalsdk.core.menu.MenuBuilder;
 import org.openecomp.portalsdk.core.onboarding.util.CipherUtil;
 import org.openecomp.portalsdk.core.service.DataAccessService;
 import org.openecomp.portalsdk.core.service.DataAccessServiceImpl;
+import org.openecomp.portalsdk.core.service.LocalAccessCondition;
+import org.openecomp.portalsdk.core.service.RestApiRequestBuilder;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.AppUtils;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -135,14 +139,15 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	public MenuBuilder menuBuilder() {
 		return new MenuBuilder();
 	}
-
+	
 	/**
 	 * Creates and returns a new instance of a {@link UserUtils} class.
 	 * 
 	 * @return New instance of {@link UserUtils}.
 	 */
 	@Bean
-	public UserUtils userUtil() {
+	public UserUtils userUtil()
+	{
 		return new UserUtils();
 	}
 

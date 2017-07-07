@@ -29,17 +29,14 @@ import java.util.Set;
 import org.openecomp.portalsdk.core.command.LoginBean;
 import org.openecomp.portalsdk.core.domain.Role;
 import org.openecomp.portalsdk.core.domain.User;
-import org.openecomp.portalsdk.core.domain.UserApp;
 import org.openecomp.portalsdk.core.menu.MenuBuilder;
 import org.openecomp.portalsdk.core.service.support.FusionService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.AppUtils;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("loginService")
 @Transactional
 public class LoginServiceImpl extends FusionService implements LoginService {
 
@@ -113,9 +110,6 @@ public class LoginServiceImpl extends FusionService implements LoginService {
           
 
           // save the above changes to the User and their audit trail
-          
-         
-          
 
           // create the application menu based on the user's privileges
           Set appMenu = getMenuBuilder().getMenu(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_SET_NAME),dataAccessService);
@@ -133,7 +127,8 @@ public class LoginServiceImpl extends FusionService implements LoginService {
     
     private boolean userHasActiveRoles(User user) {
     	boolean hasActiveRole = false;
-        Iterator roles = user.getRoles().iterator();
+        @SuppressWarnings("rawtypes")
+		Iterator roles = user.getRoles().iterator();
         while (roles.hasNext()) {
           Role role = (Role)roles.next();
           if (role.getActive()) {

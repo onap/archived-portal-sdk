@@ -66,6 +66,6 @@ public class RoleFunction extends DomainVo {
 
     private String code;
     private String name;
-    private String editUrl; 
-    
+    private String editUrl;
+
 }

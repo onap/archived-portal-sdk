@@ -27,10 +27,28 @@ import org.openecomp.portalsdk.core.command.*;
 
 public interface LoginService {
 
+	/**
+	 * 
+	 * @param bean
+	 * @param menuPropertiesFilename
+	 * @param additionalParams
+	 * @return returns login user bean
+	 * @throws Exception
+	 */
     // validate user exists in the system
 	@SuppressWarnings("rawtypes")
     LoginBean findUser(LoginBean bean, String menuPropertiesFilename, HashMap additionalParams) throws Exception;
     
+	
+	/**
+	 * 
+	 * @param bean
+	 * @param menuPropertiesFilename
+	 * @param additionalParams
+	 * @param matchPassword
+	 * @return returns login user bean 
+	 * @throws Exception
+	 */
 	@SuppressWarnings("rawtypes")
     LoginBean findUser(LoginBean bean, String menuPropertiesFilename, HashMap additionalParams, boolean matchPassword) throws Exception;
 }

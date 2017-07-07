@@ -32,11 +32,13 @@ import org.json.JSONObject;
 import org.openecomp.portalsdk.core.controller.RestrictedBaseController;
 import org.openecomp.portalsdk.core.domain.Role;
 import org.openecomp.portalsdk.core.domain.RoleFunction;
+import org.openecomp.portalsdk.core.domain.User;
 import org.openecomp.portalsdk.core.logging.aspect.EELFLoggerAdvice;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.RoleService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.JsonMessage;
+import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -53,23 +55,26 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 @Controller
 @RequestMapping("/")
 public class RoleController extends RestrictedBaseController {
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RoleController.class);
 
 	@Autowired
 	RoleService roleService;
 
 	private String viewName;
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RoleController.class);
+
 
 	@RequestMapping(value = { "/role" }, method = RequestMethod.GET)
-	public ModelAndView role(HttpServletRequest request) {
+	public ModelAndView role(HttpServletRequest request) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();
+		User user = UserUtils.getUserSession(request);
 
-		Role role = roleService.getRole(new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
+
+		Role role = roleService.getRole(user.getOrgUserId(),new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
 		logger.info("role_id" + role.getId());
 		try {
-			model.put("availableRoleFunctions", mapper.writeValueAsString(roleService.getRoleFunctions()));
-			model.put("availableRoles", mapper.writeValueAsString(roleService.getAvailableChildRoles(role.getId())));
+			model.put("availableRoleFunctions", mapper.writeValueAsString(roleService.getRoleFunctions(user.getOrgUserId())));
+			model.put("availableRoles", mapper.writeValueAsString(roleService.getAvailableChildRoles(user.getOrgUserId(),role.getId())));
 			model.put("role", mapper.writeValueAsString(role));
 		} catch (Exception e) {
 			logger.error("role: failed", e);
@@ -79,15 +84,16 @@ public class RoleController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/get_role" }, method = RequestMethod.GET)
-	public void getRole(HttpServletRequest request, HttpServletResponse response) {
+	public void getRole(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();
+		User user = UserUtils.getUserSession(request);
 
-		Role role = roleService.getRole(new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
+		Role role = roleService.getRole(user.getOrgUserId(),new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
 		logger.info(EELFLoggerDelegate.applicationLogger, "role_id" + role.getId());
 		try {
-			model.put("availableRoleFunctions", mapper.writeValueAsString(roleService.getRoleFunctions()));
-			model.put("availableRoles", mapper.writeValueAsString(roleService.getAvailableChildRoles(role.getId())));
+			model.put("availableRoleFunctions", mapper.writeValueAsString(roleService.getRoleFunctions(user.getOrgUserId())));
+			model.put("availableRoles", mapper.writeValueAsString(roleService.getAvailableChildRoles(user.getOrgUserId(),role.getId())));
 			model.put("role", mapper.writeValueAsString(role));
 
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
@@ -111,6 +117,7 @@ public class RoleController extends RestrictedBaseController {
 	@RequestMapping(value = { "/role/saveRole" }, method = RequestMethod.POST)
 	public ModelAndView saveRole(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		JSONObject j = null;
+		User user = UserUtils.getUserSession(request);
 		logger.debug(EELFLoggerDelegate.debugLogger, "RoleController.save");
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -127,14 +134,14 @@ public class RoleController extends RestrictedBaseController {
 			Role domainRole = null;
 			if (role.getId() != null) {
 				doAuditLog("saveRole: updating existing role {}", role.getId());
-				domainRole = roleService.getRole(role.getId());
+				domainRole = roleService.getRole(user.getOrgUserId(),role.getId());
 
 				domainRole.setName(role.getName());
 				domainRole.setPriority(role.getPriority());
 			} else {
 				doAuditLog("saveRole: creating new role", role.getName());
 				// check for existing role of same name
-				List<Role> roles = roleService.getAvailableRoles();
+				List<Role> roles = roleService.getAvailableRoles(user.getOrgUserId());
 				for (Role existRole : roles)
 					if (existRole.getName().equalsIgnoreCase(role.getName()))
 						throw new Exception("role already exists: " + existRole.getName());
@@ -154,7 +161,7 @@ public class RoleController extends RestrictedBaseController {
 				}
 			}
 
-			roleService.saveRole(domainRole);
+			roleService.saveRole(user.getOrgUserId(),domainRole);
 
 			String responseString = mapper.writeValueAsString(domainRole);
 			j = new JSONObject("{role: " + responseString + "}");
@@ -173,7 +180,7 @@ public class RoleController extends RestrictedBaseController {
 
 	@RequestMapping(value = { "/role/removeRoleFunction" }, method = RequestMethod.POST)
 	public ModelAndView removeRoleFunction(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
+		User user = UserUtils.getUserSession(request);
 		logger.info(EELFLoggerDelegate.applicationLogger, "RoleController.removeRoleFunction");
 		try {
 
@@ -182,13 +189,13 @@ public class RoleController extends RestrictedBaseController {
 			JsonNode root = mapper.readTree(request.getReader());
 			RoleFunction roleFunction = mapper.readValue(root.get("roleFunction").toString(), RoleFunction.class);
 
-			Role domainRole = roleService.getRole(new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
+			Role domainRole = roleService.getRole(user.getOrgUserId(),new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
 			doAuditLog("Remove role function {} from role {}", roleFunction.getCode(),
 					ServletRequestUtils.getIntParameter(request, "role_id", 0));
 
 			domainRole.removeRoleFunction(roleFunction.getCode());
 
-			roleService.saveRole(domainRole);
+			roleService.saveRole(user.getOrgUserId(),domainRole);
 
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application/json");
@@ -209,7 +216,7 @@ public class RoleController extends RestrictedBaseController {
 
 	@RequestMapping(value = { "/role/addRoleFunction" }, method = RequestMethod.POST)
 	public ModelAndView addRoleFunction(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
+		User user = UserUtils.getUserSession(request);
 		logger.info(EELFLoggerDelegate.applicationLogger, "RoleController.removeRoleFunction");
 		try {
 
@@ -218,11 +225,11 @@ public class RoleController extends RestrictedBaseController {
 			JsonNode root = mapper.readTree(request.getReader());
 			RoleFunction roleFunction = mapper.readValue(root.get("roleFunction").toString(), RoleFunction.class);
 
-			Role domainRole = roleService.getRole(new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
+			Role domainRole = roleService.getRole(user.getOrgUserId(),new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
 
 			domainRole.addRoleFunction(roleFunction);
 
-			roleService.saveRole(domainRole);
+			roleService.saveRole(user.getOrgUserId(),domainRole);
 			doAuditLog("Add role function {} to role {}", roleFunction.getCode(),
 					ServletRequestUtils.getIntParameter(request, "role_id", 0));
 
@@ -245,7 +252,7 @@ public class RoleController extends RestrictedBaseController {
 
 	@RequestMapping(value = { "/role/removeChildRole" }, method = RequestMethod.POST)
 	public ModelAndView removeChildRole(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
+		User user = UserUtils.getUserSession(request);
 		logger.info(EELFLoggerDelegate.applicationLogger, "RoleController.removeChileRole");
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -253,13 +260,13 @@ public class RoleController extends RestrictedBaseController {
 			JsonNode root = mapper.readTree(request.getReader());
 			Role childRole = mapper.readValue(root.get("childRole").toString(), Role.class);
 
-			Role domainRole = roleService.getRole(new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
+			Role domainRole = roleService.getRole(user.getOrgUserId(),new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
 
 			domainRole.removeChildRole(childRole.getId());
 			doAuditLog("remove child role {} from role {}", childRole.getId(),
 					ServletRequestUtils.getIntParameter(request, "role_id", 0));
 
-			roleService.saveRole(domainRole);
+			roleService.saveRole(user.getOrgUserId(),domainRole);
 
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application/json");
@@ -280,7 +287,7 @@ public class RoleController extends RestrictedBaseController {
 
 	@RequestMapping(value = { "/role/addChildRole" }, method = RequestMethod.POST)
 	public ModelAndView addChildRole(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
+		User user = UserUtils.getUserSession(request);
 		logger.info(EELFLoggerDelegate.applicationLogger, "RoleController.addChileRole");
 		try {
 
@@ -288,12 +295,13 @@ public class RoleController extends RestrictedBaseController {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			JsonNode root = mapper.readTree(request.getReader());
 			Role childRole = mapper.readValue(root.get("childRole").toString(), Role.class);
+			long role_id = new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0));
 
-			Role domainRole = roleService.getRole(new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
+			Role domainRole = roleService.getRole(user.getOrgUserId(),role_id );
 
 			domainRole.addChildRole(childRole);
 
-			roleService.saveRole(domainRole);
+			roleService.saveRole(user.getOrgUserId(),domainRole);
 			doAuditLog("Add child role {} to role {}", childRole.getId(),
 					ServletRequestUtils.getIntParameter(request, "role_id", 0));
 

@@ -23,7 +23,7 @@ public class ProfileServiceTest extends MockApplicationContextTestSuite {
 	UserProfileService userProfileService;
 	
 	@Test
-	public void testFindAll() {
+	public void testFindAll() throws Exception{
 		
 		List<Profile> profiles = service.findAll();
 		Assert.assertTrue(profiles.size() > 0);

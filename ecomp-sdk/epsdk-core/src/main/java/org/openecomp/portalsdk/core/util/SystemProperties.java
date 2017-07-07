@@ -209,6 +209,8 @@ public class SystemProperties {
 	public static final String LOGIN_METHOD_WEB_JUNCTION = "login_method_web_junction";
 	public static final String LOGIN_METHOD_BACKDOOR = "login_method_backdoor";
 	public static final String LOGIN_METHOD_ATTRIBUTE_NAME = "login_method_attribute_name";
+	public static final String ROLE_FUNCTION_LIST = "role_function_list";
+	
 
 	// login error message keys
 	public static final String MESSAGE_KEY_LOGIN_ERROR_COOKIE_EMPTY = "login.error.hrid.empty";

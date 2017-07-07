@@ -22,19 +22,12 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 	}
 	
 	$scope.getCacheRegionsList = function(){
-		//	$scope.regions.length=0;
 		 AdminService.getCacheRegions().then(function(data){
 				var j = data;
 		  		$scope.data = JSON.parse(j.data);
-		  /*		for(var i = 0; i< $scope.data.length; i++){
-			  		if($scope.data[i].cacheName !== '[object Object]'){
-			  			$scope.regions.push($scope.data[i]);
-			  		}
-			  		}*/
 		  		$scope.regions =$scope.data;
 			},function(error){
 				console.log("failed");
-				//reloadPageOnce();
 			});
 		}
 	
@@ -110,10 +103,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 				$scope.cancel();
 				if(message.role){
 					$rootScope.$broadcast('updateRoleFunctions',{data:message.role});
-					/*$modal.open({
-						templateUrl: 'app/fusion/scripts/DS2-modal/success_modal.html',
-						sizeClass: 'modal-small',
-					})*/
 				}else{
 					$modal.open({
 						templateUrl: 'app/fusion/scripts/DS2-modal/error_modal.html',
@@ -161,11 +150,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 				var message = msg;
 				$scope.cancel();
 				if(message.role){
-					//$rootScope.$broadcast('updateAvailbleRoles',{data:message.availableRoles});
-					/*$modal.open({
-						templateUrl: 'app/fusion/scripts/DS2-modal/success_modal.html',
-						sizeClass: 'modal-small',
-					})*/
 				}else{
 					$modal.open({
 						templateUrl: 'app/fusion/scripts/DS2-modal/error_modal.html',
@@ -243,10 +227,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 				$scope.cancel();
 				if(message.role){
 					$rootScope.$broadcast('updateRoleFunctions',{data:message.role});
-					/*$modal.open({
-						templateUrl: 'app/fusion/scripts/DS2-modal/success_modal.html',
-						sizeClass: 'modal-small',
-					})*/
 				}else{
 					$modal.open({
 						templateUrl: 'app/fusion/scripts/DS2-modal/error_modal.html',
@@ -272,10 +252,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 				$scope.cancel();
 				if(message.role){
 					$rootScope.$broadcast('updateRoleFunctions',{data:message.role});
-					/*$modal.open({
-						templateUrl: 'app/fusion/scripts/DS2-modal/success_modal.html',
-						sizeClass: 'modal-small',
-					})*/
 				}else{
 					$modal.open({
 						templateUrl: 'app/fusion/scripts/DS2-modal/error_modal.html',
@@ -301,10 +277,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 				$scope.cancel();
 				if(message.availableRoles){
 					$rootScope.$broadcast('updateAvailbleRoles',{data:message.availableRoles});
-					/*$modal.open({
-						templateUrl: 'app/fusion/scripts/DS2-modal/success_modal.html',
-						sizeClass: 'modal-small',
-					})*/
 				}else{
 					$modal.open({
 						templateUrl: 'app/fusion/scripts/DS2-modal/error_modal.html',
@@ -330,10 +302,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 				$scope.cancel();
 				if(message.availableRoles){
 					$rootScope.$broadcast('updateAvailbleRoles',{data:message.availableRoles});
-					/*$modal.open({
-						templateUrl: 'app/fusion/scripts/DS2-modal/success_modal.html',
-						sizeClass: 'modal-small',
-					})*/
 				}else{
 					$modal.open({
 						templateUrl: 'app/fusion/scripts/DS2-modal/error_modal.html',
@@ -359,7 +327,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 		// Cancel for toggle switch on Role Fn  
 	    $scope.cancelRoleFunSwitch = function (msg) {
 	    	$scope.msg.availableRole.selected = !$scope.msg.availableRole.selected;
-	    	//$scope.msg.availableRoleFunctions[$scope.msg.availableRoleFunctions.indexOf($scope.msg.availableRole)] = $scope.selectedRoleFun;
 	        $modalInstance.dismiss('cancel');
 	    };
 	    
@@ -481,7 +448,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 			sizeClass: 'modal-small', 
 			resolve: {
                 items: function () {
-                   // return availableRoleFunction;
                 }
 	        }
 		});
@@ -512,7 +478,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 			var modalInstance = $modal.open({
 				templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-admin/modals/success_modalpopup.html',
 				controller: ModalInstanceCtrl,
-				//sizeClass: 'modal-small', 
 				resolve: {
 					items: function () {
  	        	   var message = {
@@ -534,14 +499,9 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 			 
 				var message = res.data;
 				var msgParsed = JSON.stringify(message);
-			//	alert('1 : '+msgParsed);
 				
 				var messaged = message.data;
-				var msgParsedd = JSON.stringify(messaged);
-				//alert('2 : '+msgParsedd);
-				//console.log('2 '+msgParsedd);
-				//console.log('4 '+msgParsedd.substr(3,msgParsedd.length -2).split('\\n'));
-				
+				var msgParsedd = JSON.stringify(messaged);				
 				
 				if(message.data!=null && message.data!=''){
 					var status = res.status;
@@ -554,7 +514,7 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 						var htmlstring = message.data.toString();
 						var htmlStrReplace = htmlstring.replace(/['"]+/g, '');
 						var htmlStrReplaceSplit = htmlStrReplace.split('\n');
-						var dataStr = htmlStrReplace.replace(/\\n/g, "\n"); //htmlstring.replace(/\n/g, "  ");
+						var dataStr = htmlStrReplace.replace(/\\n/g, "\n"); 
 					$scope.successTestModelPopUp(dataStr);
 					}else{
 						$scope.errorPopUp('');	
@@ -705,11 +665,7 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
     				return message;
                 }
 	        }
-		});
-		
-		/*modalInstance.result.then(function (data) {
-	       $scope.delRole(data);
-        });*/ 
+		});		
 	}
 	
 	// role activation
@@ -727,7 +683,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 			resolve: {
 				items: function () {
 				var message = {
-						//availableRole: $scope.msg.availableRole,
 						text: toggleType,
 						selected:selected,
 						availableRole:availableRole,
@@ -737,10 +692,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 				}
 	        }
 		});
-		
-		/*modalInstance.result.then(function (data) {
-	       $scope.activateRole(data);
-        });*/
 	}
 		
 	$scope.roleFnInit = function(){
@@ -748,12 +699,9 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 				
 				var j = data;
 		  		$scope.data = JSON.parse(j.data);
-		  		
 		  		$scope.role =JSON.parse($scope.data.role);
-		  		// console.log($scope.role);
 		  		
 		  		$scope.ociavailableRoleFunctions =JSON.parse($scope.data.availableRoleFunctions);
-		  		// console.log($scope.ociavailableRoleFunctions);
 		  		$scope.availableRoleFunctions=[];
 		  		
 		  		if($scope.ociavailableRoleFunctions)
@@ -770,25 +718,8 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 		  		
 		
 		  		$scope.ociavailableRoles=JSON.parse($scope.data.availableRoles);
-		  		// console.log($scope.ociavailableRoles);
-		  		//console.log("testing roles if exist");
 		  		$scope.availableRoles=[];
-		  		
-		  		if($scope.ociavailableRoles)
-		  			angular.forEach($scope.ociavailableRoles, function(a,i){ 
-		  				var availableRole = a;
-		  				availableRole.selected = false;
-		  				if($scope.role.childRoles){
-		  			    angular.forEach($scope.role.childRoles, function(b,j){ 
-		  			    	if(a.id === b.id) {
-		  			    		availableRole.selected = true;
-		  			    	}
-		  			    });
-		  				};
-		  			    $scope.availableRoles.push(availableRole);	    
-		  		});
-		  			
-			
+		
 			},function(error){
 				console.log("roleControllerDS2 failed: " + error);
 				reloadPageOnce();
@@ -825,7 +756,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 			return;
 		}
 		for (x in $scope.availableRoles){
-		  // console.log($scope.availableRoles[x].name);
 			if ($scope.availableRoles[x].name==$scope.role.name){
 				errorMsg = 'Role already exists.';
 				var modalInstance = $modal.open({
@@ -849,7 +779,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 			};
 			AdminService.saveRole(postData, $routeParams.roleId).then(function(msg){
 				if(msg.role){
-					//$scope.role = msg.role;
 					sessionStorage.setItem('addCall', true);
 					location.href='admin#/role/'+msg.role.id;
 					$scope.availableRoles.push(msg);
@@ -891,7 +820,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 			resolve: {
                 items: function () {
                 	var message = {
-                			roleFunctions:data,
                 			role:role,
                 			roleId:info.id,
                 			availableRoleFunctions:$scope.ociavailableRoleFunctions
@@ -902,7 +830,8 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 		});
 	}
 		
-	$scope.addNewChildRoleFunctionModalPopup = function(data, role,info) {		
+	$scope.addNewChildRoleFunctionModalPopup = function(data, role,info) {	
+		data = $scope.role;
 		var modalInstance = $modal.open({
 			templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-admin/modals/role-functions-child-roles-modal.html',
 			controller: ModalInstanceCtrl,
@@ -910,7 +839,7 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 			resolve: {
                 items: function () {
                 	var message = {
-                			roleChildFunctions:data,
+                			roleChildFunctions:$scope.ociavailableRoles,
                 			role:role,
                 			roleId:info.id
     						};

@@ -105,6 +105,9 @@
 	<definition name="welcome"
 		template="/app/fusion/scripts/DS2-view-models/welcome.html" />
 
+	<definition name="bootstrap_sample"
+		template="/app/fusion/scripts/DS2-view-models/bootstrap-sample-page.html" />
+
 	<definition extends="ds2_template" name="report_wizard">
 		<put-attribute name="body"
 			value="/WEB-INF/fusion/raptor/report_wizard.jsp"></put-attribute>

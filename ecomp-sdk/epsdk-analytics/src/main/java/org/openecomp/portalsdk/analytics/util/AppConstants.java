@@ -390,13 +390,9 @@ public class AppConstants {
 	public final static String GT_FLEX_TIME_CHARTS = "FlexTimeChart";
 
     // Non-standard chart types
-	public final static String GT_MTD_BAR = "MTDBarChart";
-
-	// JFree latest version only chart type
-	public final static String GT_METER = "MeterChart";
-
+	
 	public final static String GT_STACK_BAR = "StackedBarChart";
-
+	
 	public static Color GREEN_COLOR = new Color(0, 128, 0);
 
 	// chart filter
@@ -582,11 +578,6 @@ public class AppConstants {
 
 	public static final String OJ_JOINED = "JOINED"; // cur_table =
 														// join_table (+)
-
-	// JFree versions
-	public static final String JFV_0911 = "0.9.11";
-
-	public static final String JFV_LATEST = "latest";
 
 	// List of Available Total Functions
 	public static final String TOTAL_SUM_ID = "SUM(";

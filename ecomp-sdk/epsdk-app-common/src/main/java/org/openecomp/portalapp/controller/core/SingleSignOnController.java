@@ -22,6 +22,7 @@ package org.openecomp.portalapp.controller.core;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpSession;
 import org.openecomp.portalsdk.core.auth.LoginStrategy;
 import org.openecomp.portalsdk.core.command.LoginBean;
 import org.openecomp.portalsdk.core.controller.UnRestrictedBaseController;
+import org.openecomp.portalsdk.core.domain.RoleFunction;
 import org.openecomp.portalsdk.core.domain.User;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.menu.MenuProperties;
@@ -38,6 +40,7 @@ import org.openecomp.portalsdk.core.onboarding.listener.PortalTimeoutHandler;
 import org.openecomp.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.openecomp.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.openecomp.portalsdk.core.service.LoginService;
+import org.openecomp.portalsdk.core.service.RoleService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.AppUtils;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
@@ -70,6 +73,9 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 	public void setWelcomeView(String welcomeView) {
 		this.welcomeView = welcomeView;
 	}
+	
+	@Autowired
+	RoleService roleService;
 
 	/**
 	 * Handles requests directed to the single sign-on page by the session
@@ -102,6 +108,7 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 				commandBean = getLoginService().findUser(commandBean,
 						(String) request.getAttribute(MenuProperties.MENU_PROPERTIES_FILENAME_KEY),
 						additionalParamsMap);
+				List<RoleFunction> roleFunctionList=  roleService.getRoleFunctions(user.getLoginId());
 				if (commandBean.getUser() == null) {
 					String loginErrorMessage = (commandBean.getLoginErrorMessage() != null)
 							? commandBean.getLoginErrorMessage()
@@ -123,7 +130,7 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 						loginMethod = SystemProperties.getProperty(SystemProperties.LOGIN_METHOD_WEB_JUNCTION);
 					}
 					UserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(),
-							commandBean.getBusinessDirectMenu(), loginMethod);
+							commandBean.getBusinessDirectMenu(), loginMethod, roleFunctionList);
 					initateSessionMgtHandler(request);
 					logger.debug(EELFLoggerDelegate.debugLogger,
 							"singleSignOnLogin: create new user session for expired user {}; user {} exists in the system",

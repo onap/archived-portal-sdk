@@ -111,8 +111,6 @@ public class Globals extends org.openecomp.portalsdk.analytics.RaptorObject {
     
     private static String sheet_name = "Raptor Reports"; 
 
-	private static String jFreeVersion = AppConstants.JFV_0911;
-
 	private static boolean allowSQLBasedReports = true; // whether to allow
 														// SQL-based report
 														// definition (security
@@ -478,8 +476,6 @@ public class Globals extends org.openecomp.portalsdk.analytics.RaptorObject {
 
 		systemName = nvls(raptorProperties.getProperty("system_name"), "MSA Databank");
 		baseTitle = nvls(raptorProperties.getProperty("base_title"), "ANALYSIS");
-		jFreeVersion = nvls(raptorProperties.getProperty("jfree_version"),
-				AppConstants.JFV_0911);
 
 		allowSQLBasedReports = nvls(
 				raptorProperties.getProperty("allow_sql_based_reports"), "yes")
@@ -656,10 +652,6 @@ public class Globals extends org.openecomp.portalsdk.analytics.RaptorObject {
 
 	public static String getBaseTitle() {
 		return baseTitle;
-	}
-
-	public static String getJFreeVersion() {
-		return jFreeVersion;
 	}
 
 	public static String getSystemName() {

@@ -15,7 +15,7 @@
 					{
 						"input": "text",
 						"name": "reportName",
-						"displayName": "Report Name:",
+						"displayName": "Report Name *:",
 						"defaultValue": ""
 					},
 					{

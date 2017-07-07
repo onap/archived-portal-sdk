@@ -12,15 +12,14 @@
 								<th>Role</th>
 							</tr>
 						</thead>
-						<tbody type="body" ng-repeat="role in role.childRoles">
+						<tbody type="body" ng-repeat="role in msg.roleChildFunctions">
 							<tr>
 								<td>
-									<label ng-click="activateRoleChildConfirmPopUp(roleFunction.selected,roleFunction);" class="btn-switch-label" tabindex="0" role="option">
-										<input type="checkbox" ddh-switches ng-model="roleFunction.selected"
-											size-class="modal-small modal-alert" >
-							    </label>
+									<label class="btn-switch-label" tabindex="0" role="option"> 
+										<input ng-click="activateRoleChildConfirmPopUp(role.active, role);" type="checkbox" b2b-switches ng-model="role.active" size-class="modal-small modal-alert">
+									</label>
 								</td>
-								<td>{{ roleFunction.name }}</td>								
+								<td>{{ role.name }}</td>								
 							</tr>			  
 						</tbody>
 			</table>

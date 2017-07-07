@@ -26,11 +26,35 @@ import org.openecomp.portalsdk.core.domain.User;
 
 
 public interface ProfileService {
-	List<Profile> findAll();
 	
-	Profile getProfile(int id);
+	/**
+	 * 
+	 * @return returns list of profiles
+	 * @throws Exception
+	 */
+	List<Profile> findAll() throws Exception;
 	
-	User getUser(String id);
+	/**
+	 * 
+	 * @param id
+	 * @return returns profile of requested ID
+	 * @throws Exception
+	 */
+	Profile getProfile(int id) throws Exception;
 	
+	
+	/**
+	 * 
+	 * @param id loginId
+	 * @return returns User info of requested ID
+	 * @throws Exception
+	 */
+	User getUser(String id) throws Exception;
+	
+	/**
+	 * 
+	 * @param user
+	 *saveUser method saves the user object
+	 */
 	void saveUser(User user);
 }
