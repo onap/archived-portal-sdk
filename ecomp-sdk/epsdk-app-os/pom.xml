@@ -66,6 +66,8 @@
 	</profiles>
 
 	<build>
+		<!-- The war file name carries no version number -->
+		<finalName>${project.artifactId}</finalName>
 
 		<plugins>
 			<!-- Compile to Java 1.8 class output format -->
