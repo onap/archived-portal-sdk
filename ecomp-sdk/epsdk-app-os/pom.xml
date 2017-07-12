@@ -4,7 +4,7 @@
 
 	<!-- This is the Maven project object model (POM) file for the open-source SDK web app.
 		 This is NOT the Portal - but it is developed and supported by the Portal team. -->
-	<groupId>org.onap.portal.sdk</groupId>
+	<groupId> org.openecomp.ecompsdkos</groupId>
 	<artifactId>epsdk-app-os</artifactId>
 	<version>1.3.0-SNAPSHOT</version>
 	<packaging>war</packaging>
@@ -118,7 +118,7 @@
 					</archive>
 					<overlays>
 						<overlay>
-							<groupId>org.onap.portal.sdk</groupId>
+							<groupId> org.openecomp.ecompsdkos</groupId>
 							<artifactId>epsdk-app-overlay</artifactId>
 						</overlay>
 					</overlays>
@@ -161,30 +161,30 @@
 	<dependencies>
 		<!-- SDK overlay war -->
 		<dependency>
-			<groupId>org.onap.portal.sdk</groupId>
+			<groupId>org.openecomp.ecompsdkos</groupId>
 			<artifactId>epsdk-app-overlay</artifactId>
 			<version>${epsdk.version}</version>
 			<type>war</type>
 		</dependency>
 		<dependency>
-			<groupId>org.onap.portal.sdk</groupId>
+			<groupId>org.openecomp.ecompsdkos</groupId>
 			<artifactId>epsdk-app-common</artifactId>
 			<version>${epsdk.version}</version>
 			<type>jar</type>
 		</dependency>
 		<!-- SDK components -->
 		<dependency>
-			<groupId>org.onap.portal.sdk</groupId>
+			<groupId>org.openecomp.ecompsdkos</groupId>
 			<artifactId>epsdk-core</artifactId>
 			<version>${epsdk.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.onap.portal.sdk</groupId>
+			<groupId>org.openecomp.ecompsdkos</groupId>
 			<artifactId>epsdk-analytics</artifactId>
 			<version>${epsdk.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.onap.portal.sdk</groupId>
+			<groupId>org.openecomp.ecompsdkos</groupId>
 			<artifactId>epsdk-workflow</artifactId>
 			<version>${epsdk.version}</version>
 		</dependency>
