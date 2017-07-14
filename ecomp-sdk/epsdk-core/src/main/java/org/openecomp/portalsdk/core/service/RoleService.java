@@ -63,7 +63,7 @@ public interface RoleService {
 	 * @param domainRole Object to be saved
 	 * Method saveRole saves the Role Object
 	 */
-	void saveRole(String requestedLoginId,Role domainRole);
+	void saveRole(String requestedLoginId,Role domainRole) throws Exception;
 	
 	/**
 	 * 
@@ -71,7 +71,7 @@ public interface RoleService {
 	 * @param domainRole Object to be removed
 	 * Method deleteRole deletes the requested Role Object
 	 */
-	void deleteRole(String requestedLoginId,Role domainRole);
+	void deleteRole(String requestedLoginId,Role domainRole) throws Exception;
 	
 	/**
 	 * 
@@ -109,7 +109,7 @@ public interface RoleService {
 	 * @param domainRoleFunction
 	 * Method saveRoleFunction saves the requested RoleFunction object
 	 */
-	void saveRoleFunction(String requestedLoginId,RoleFunction domainRoleFunction);
+	void saveRoleFunction(String requestedLoginId,RoleFunction domainRoleFunction) throws Exception;
 	
 	/**
 	 * 
@@ -117,7 +117,7 @@ public interface RoleService {
 	 * @param domainRoleFunction
 	 * Method deleteRoleFunction deletes the requested RoleFunction object
 	 */
-	void deleteRoleFunction(String requestedLoginId,RoleFunction domainRoleFunction);
+	void deleteRoleFunction(String requestedLoginId,RoleFunction domainRoleFunction) throws Exception;
 	
 	/**
 	 * 

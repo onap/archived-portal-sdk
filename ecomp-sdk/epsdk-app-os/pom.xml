@@ -4,7 +4,7 @@
 
 	<!-- This is the Maven project object model (POM) file for the open-source SDK web app.
 		 This is NOT the Portal - but it is developed and supported by the Portal team. -->
-	<groupId> org.openecomp.ecompsdkos</groupId>
+	<groupId>org.openecomp.ecompsdkos</groupId>
 	<artifactId>epsdk-app-os</artifactId>
 	<version>1.3.0-SNAPSHOT</version>
 	<packaging>war</packaging>
@@ -118,7 +118,7 @@
 					</archive>
 					<overlays>
 						<overlay>
-							<groupId> org.openecomp.ecompsdkos</groupId>
+							<groupId>org.openecomp.ecompsdkos</groupId>
 							<artifactId>epsdk-app-overlay</artifactId>
 						</overlay>
 					</overlays>

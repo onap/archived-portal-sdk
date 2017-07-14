@@ -6,10 +6,11 @@ import org.openecomp.portalsdk.core.domain.Profile;
 import org.openecomp.portalsdk.core.domain.User;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
+@Transactional
 public class ProfileServiceCentralizedImpl implements ProfileService{
 	
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ProfileServiceCentralizedImpl.class);
@@ -31,16 +32,10 @@ public class ProfileServiceCentralizedImpl implements ProfileService{
 	@Autowired
 	RestApiRequestBuilder restApiRequestBuilder ;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Profile> findAll() throws Exception{	
-	
-		List<Profile> profileList =null;
-		ObjectMapper mapper = new ObjectMapper();
-
-		  String user = restApiRequestBuilder.getViaREST("/findAllProfiles", true,null);
-			profileList = mapper.readValue(user,
-					TypeFactory.defaultInstance().constructCollectionType(List.class, Profile.class));
-		return profileList;	
+		return getDataAccessService().getList(Profile.class, null);
 	}
 
 	@Override

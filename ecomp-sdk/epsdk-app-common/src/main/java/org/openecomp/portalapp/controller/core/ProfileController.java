@@ -36,6 +36,7 @@ import org.openecomp.portalsdk.core.domain.User;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.RoleService;
 import org.openecomp.portalsdk.core.service.UserProfileService;
+import org.openecomp.portalsdk.core.service.UserService;
 import org.openecomp.portalsdk.core.web.support.AppUtils;
 import org.openecomp.portalsdk.core.web.support.JsonMessage;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
@@ -59,12 +60,15 @@ public class ProfileController extends RestrictedBaseController {
 	UserProfileService service;
 	
 	@Autowired
+	UserService userService;
+	
+	@Autowired
 	RoleService roleService;
 
 	private String viewName;
 	
 	@RequestMapping(value = { "/profile" }, method = RequestMethod.GET)
-	public ModelAndView profile(HttpServletRequest request, HttpServletResponse response) {
+	public ModelAndView profile(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
@@ -77,7 +81,7 @@ public class ProfileController extends RestrictedBaseController {
 			profileId = profile.getId();
 		} else {
 			profileId = Long.parseLong(request.getParameter("profile_id"));
-			profile = (User) service.getUser(request.getParameter("profile_id"));
+			profile = (User) userService.getUser(String.valueOf(profileId));
 		}
 
 		try {
@@ -94,7 +98,7 @@ public class ProfileController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/self_profile" }, method = RequestMethod.GET)
-	public ModelAndView self_profile(HttpServletRequest request) {
+	public ModelAndView self_profile(HttpServletRequest request) throws Exception{
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -103,9 +107,6 @@ public class ProfileController extends RestrictedBaseController {
 		User user = UserUtils.getUserSession(request);
 
 		profile = UserUtils.getUserSession(request);
-		profileId = profile.getId();
-		profile = (User) service.getUser(profileId.toString());
-
 		try {
 			model.put("stateList", mapper.writeValueAsString(getStates()));
 			model.put("countries", mapper.writeValueAsString(getCountries()));
@@ -120,7 +121,7 @@ public class ProfileController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/get_self_profile" }, method = RequestMethod.GET)
-	public void getSelfProfile(HttpServletRequest request, HttpServletResponse response) {
+	public void getSelfProfile(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
@@ -128,10 +129,7 @@ public class ProfileController extends RestrictedBaseController {
 		User profile = null;
 		Long profileId = null;
 
-		profile = UserUtils.getUserSession(request);
-		profileId = profile.getId();
-		profile = (User) service.getUser(profileId.toString());
-
+		profile = (User) UserUtils.getUserSession(request);	
 		try {
 			model.put("stateList", mapper.writeValueAsString(getStates()));
 			model.put("countries", mapper.writeValueAsString(getCountries()));
@@ -161,7 +159,8 @@ public class ProfileController extends RestrictedBaseController {
 				profileId = profile.getId();
 			} else {
 				profileId = Long.parseLong(request.getParameter("profile_id"));
-				profile = (User) service.getUser(request.getParameter("profile_id"));
+				profile = (User) userService.getUser(String.valueOf(profileId));
+				
 			}
 			model.put("stateList", mapper.writeValueAsString(getStates()));
 			model.put("countries", mapper.writeValueAsString(getCountries()));
@@ -194,7 +193,7 @@ public class ProfileController extends RestrictedBaseController {
 
 			Long profileId = Long.parseLong(request.getParameter("profile_id"));
 
-			User domainUser = (User) service.getUser(request.getParameter("profile_id"));
+			User domainUser = (User) userService.getUser(String.valueOf(profileId));
 			// user.setRoles(domainUser.getRoles());
 			user.setPseudoRoles(domainUser.getPseudoRoles());
 			user.setUserApps(domainUser.getUserApps());
@@ -248,14 +247,14 @@ public class ProfileController extends RestrictedBaseController {
 			JsonNode root = mapper.readTree(request.getReader());
 			Role role = mapper.readValue(root.get("role").toString(), Role.class);
 
-			// Long profileId = Long.parseLong(request.getParameter("profile_id"));
+			 String profileId = request.getParameter("profile_id");
 
-			User domainUser = (User) service.getUser(request.getParameter("profile_id"));
+			User domainUser = (User) userService.getUser(profileId);
 
 			domainUser.removeRole(role.getId());
 
 			service.saveUser(domainUser);
-			logger.info(EELFLoggerDelegate.auditLogger, "Remove role " + role.getId() + " from user " + request.getParameter("profile_id"));
+			logger.info(EELFLoggerDelegate.auditLogger, "Remove role " + role.getId() + " from user " + profileId);
 
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application / json");
@@ -291,22 +290,17 @@ public class ProfileController extends RestrictedBaseController {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			JsonNode root = mapper.readTree(request.getReader());
 			Role role = mapper.readValue(root.get("role").toString(), Role.class);
-
-			// Long profileId = Long.parseLong(request.getParameter("profile_id"));
-
-			User domainUser = (User) service.getUser(request.getParameter("profile_id"));
-
+			String profileId = request.getParameter("profile_id");
+			User domainUser = (User) userService.getUser(profileId);
 			domainUser.addRole(role);
-
 			service.saveUser(domainUser);
-			logger.info(EELFLoggerDelegate.auditLogger, "Add new role " + role.getName() + " to user " + request.getParameter("profile_id"));
+			logger.info(EELFLoggerDelegate.auditLogger, "Add new role " + role.getName() + " to user " + profileId);
 
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application / json");
 			request.setCharacterEncoding("UTF-8");
 
 			PrintWriter out = response.getWriter();
-
 			Map<String, Object> model = new HashMap<String, Object>();
 			model.put("profile", mapper.writeValueAsString(domainUser));
 			JSONObject j = new JSONObject(mapper.writeValueAsString(domainUser));

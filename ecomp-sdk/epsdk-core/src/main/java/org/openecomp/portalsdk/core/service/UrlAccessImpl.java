@@ -9,14 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.openecomp.portalsdk.core.domain.UrlsAccessible;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class UrlAccessImpl implements UrlAccessService{
 
 	 @Autowired
 	 DataAccessService dataAccessService;
 	
-
-
 	@Override
 	public boolean isUrlAccessible(HttpServletRequest request, String currentUrl) {
 		boolean isAccessible = false;
@@ -27,12 +27,6 @@ public class UrlAccessImpl implements UrlAccessService{
 		// loop through the list of restricted URL's
 		if (list != null && list.size() > 0) {
 			for (int i = 0; i < list.size(); i++) {
-				/*
-				 * Object[] restrictedUrl = (Object[])list.get(i);
-				 * 
-				 * String url = (String)restrictedUrl[0]; String functionCd =
-				 * (String)restrictedUrl[1];
-				 */
 				UrlsAccessible urlFunctions = (UrlsAccessible) list.get(i);
 				// String url = (String) urlFunctions.getUrl();
 				String functionCd = (String) urlFunctions.getFunctionCd();

@@ -19,7 +19,7 @@ public class RestApiRequestBuilder {
 	
 	public static String content_type = "application/json";
 	
-	public String getViaREST(String restEndPoint, boolean isBasicAuth,String userId) {
+	public String getViaREST(String restEndPoint, boolean isBasicAuth,String userId) throws Exception {
 		String appName = "";
 		String requestId = "";
 		String appUserName = "";
@@ -51,13 +51,14 @@ public class RestApiRequestBuilder {
 			response =	RestWebServiceClient.getInstance().getPortalContent(restEndPoint, userId,appName, requestId, appUserName,
 					decryptedPwd, isBasicAuth);
 		} catch (Exception ex) {
-			response = "Failed to get roles " + ex.toString();
+			response = "Failed to perform GET " + ex.toString();
+			throw new Exception(ex.getMessage());
 		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "getRoles response: {}", response);
 		return response;
 	}
 	
-	public void postViaREST(String restEndPoint, boolean isBasicAuth, String content,String userId) {
+	public void postViaREST(String restEndPoint, boolean isBasicAuth, String content,String userId) throws Exception {
 		String appName = "";
 		String requestId = "";
 		String appUserName = "";
@@ -90,12 +91,13 @@ public class RestApiRequestBuilder {
 					decryptedPwd, content_type, content, isBasicAuth);
 		} catch (Exception ex) {
 			logger.error(EELFLoggerDelegate.debugLogger, "POST response: {}", ex);
+			throw new Exception("Save Failed");
 		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "POST response: {}");
 		 
 	}
 	
-	public void deleteViaRest(String restEndPoint, boolean isBasicAuth, String content, String filter , String userId) {
+	public void deleteViaRest(String restEndPoint, boolean isBasicAuth, String content, String filter , String userId) throws Exception {
 		String appName = "";
 		String requestId = "";
 		String appUserName = "";
@@ -128,6 +130,7 @@ public class RestApiRequestBuilder {
 					decryptedPwd, content_type, content, isBasicAuth, filter);
 		} catch (Exception ex) {
 			logger.error(EELFLoggerDelegate.debugLogger, "DELETE response: {}", ex);
+			throw new Exception("Delete Failed");
 		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "DELETE response: {}");
 		 

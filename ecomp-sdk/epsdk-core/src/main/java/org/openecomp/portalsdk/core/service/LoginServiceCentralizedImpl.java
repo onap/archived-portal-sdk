@@ -21,9 +21,12 @@ import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.AppUtils;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
+@Transactional
 public class LoginServiceCentralizedImpl extends FusionService implements LoginService {
 
 	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(LoginServiceCentralizedImpl.class);
@@ -102,7 +105,6 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 				Set appMenu = getMenuBuilder().getMenu(
 						SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_SET_NAME), dataAccessService);
 				bean.setMenu(appMenu != null ? appMenu : new HashSet());
-				System.out.println(appMenu);
 				Set businessDirectMenu = getMenuBuilder().getMenu(
 						SystemProperties.getProperty(SystemProperties.BUSINESS_DIRECT_MENU_SET_NAME),
 						dataAccessService);

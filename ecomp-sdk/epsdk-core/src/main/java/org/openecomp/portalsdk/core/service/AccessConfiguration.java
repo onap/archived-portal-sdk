@@ -58,8 +58,8 @@ public class AccessConfiguration {
 	     */
 	   @Bean
 	   @Conditional(LocalAccessCondition.class)
-	   public UserProfileService userProfileServiceImpl() {
-	      return  new UserProfileServiceImpl();
+	   public UserService userServiceImpl() {
+	      return  new UserServiceImpl();
 	   }
 	   
 	   
@@ -69,8 +69,8 @@ public class AccessConfiguration {
 	     */
 	   @Bean
 	   @Conditional(CentralAccessCondition.class)
-	   public UserProfileService userProfileServiceCentalizedImpl() {
-	      return  new UserProfileServiceCentalizedImpl();
+	   public UserService userServiceCentalizedImpl() {
+	      return  new UserServiceCentalizedImpl();
 	   }
 	   
 	   

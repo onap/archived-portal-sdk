@@ -38,6 +38,7 @@ import org.openecomp.portalsdk.core.domain.User;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.FnMenuService;
 import org.openecomp.portalsdk.core.service.UserProfileService;
+import org.openecomp.portalsdk.core.service.UserService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.JsonMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,9 @@ public class ProfileSearchController extends RestrictedBaseController {
 	
 	@Autowired
 	private UserProfileService service;
+	
+	@Autowired
+	UserService userService;
 	
 	@Autowired
 	private FnMenuService fnMenuService;
@@ -142,7 +146,7 @@ public class ProfileSearchController extends RestrictedBaseController {
 			logger.info(EELFLoggerDelegate.applicationLogger,
 					"Initiating toggleProfileActive in ProfileSearchController");
 			String userId = request.getParameter("profile_id");
-			User user = (User) service.getUser(userId);
+			User user = (User) userService.getUser(userId);
 			user.setActive(!user.getActive());
 			service.saveUser(user);
 			logger.info(EELFLoggerDelegate.auditLogger,

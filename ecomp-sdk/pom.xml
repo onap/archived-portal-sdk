@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- ECOMP Portal SDK Maven parent project -->
-	<groupId> org.openecomp.ecompsdkos</groupId>
+	<groupId>org.openecomp.ecompsdkos</groupId>
 	<artifactId>epsdk-project</artifactId>
 	<version>1.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>

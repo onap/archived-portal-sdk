@@ -149,15 +149,19 @@ public class RoleController extends RestrictedBaseController {
 				domainRole = new Role();
 				domainRole.setName(role.getName());
 				domainRole.setPriority(role.getPriority());
-				if (role.getChildRoles().size() > 0) {
+				if(role.getChildRoles() != null && role.getChildRoles().size() > 0 ){
+//				if (role.getChildRoles().size() > 0 ) {
 					for (Object childRole : childRoles) {
 						domainRole.addChildRole((Role) childRole);
 					}
+//				}
 				}
-				if (role.getRoleFunctions().size() > 0) {
+				if(role.getRoleFunctions() != null && role.getRoleFunctions().size() > 0){
+//				if (role.getRoleFunctions().size() > 0) {
 					for (Object roleFunction : roleFunctions) {
 						domainRole.addRoleFunction((RoleFunction) roleFunction);
 					}
+//				}
 				}
 			}
 

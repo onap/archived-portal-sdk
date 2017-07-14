@@ -26,7 +26,6 @@ import org.openecomp.portalsdk.core.domain.User;
 
 public interface UserProfileService {
 	List<User> findAll();
-	User getUser(String id);
 	User getUserByLoginId(String loginId);
 	void saveUser(User user);
 	public List<User> findAllUserWithOnOffline(String originOrgUserId);

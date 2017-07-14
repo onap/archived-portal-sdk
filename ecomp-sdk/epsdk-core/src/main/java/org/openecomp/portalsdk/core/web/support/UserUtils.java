@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -37,7 +36,6 @@ import javax.servlet.http.HttpSession;
 
 import org.openecomp.portalsdk.core.domain.Role;
 import org.openecomp.portalsdk.core.domain.RoleFunction;
-import org.openecomp.portalsdk.core.domain.UrlsAccessible;
 import org.openecomp.portalsdk.core.domain.User;
 import org.openecomp.portalsdk.core.exception.SessionExpiredException;
 import org.openecomp.portalsdk.core.lm.FusionLicenseManager;
@@ -46,7 +44,6 @@ import org.openecomp.portalsdk.core.menu.MenuBuilder;
 import org.openecomp.portalsdk.core.restful.domain.EcompRole;
 import org.openecomp.portalsdk.core.restful.domain.EcompUser;
 import org.openecomp.portalsdk.core.service.DataAccessService;
-import org.openecomp.portalsdk.core.service.UrlAccessService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -72,9 +69,6 @@ public class UserUtils {
 
 		getRoleFunctions(request);
 
-		// truncate the role (and therefore the role function) data to save
-		// memory in the session
-		user.setRoles(null);
 		session.setAttribute(SystemProperties.getProperty(SystemProperties.USER_NAME), user.getFullName());
 		session.setAttribute(SystemProperties.FIRST_NAME, user.getFirstName());
 		session.setAttribute(SystemProperties.LAST_NAME, user.getLastName());

@@ -76,8 +76,6 @@ public class RoleFunctionListController extends RestrictedBaseController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();	
 		User user = UserUtils.getUserSession(request);
-
-		
 		try {
 			model.put("availableRoleFunctions", mapper.writeValueAsString(service.getRoleFunctions(user.getOrgUserId())));
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
@@ -108,6 +106,7 @@ public class RoleFunctionListController extends RestrictedBaseController {
 		} catch (Exception e) {
 			restCallStatus="fail";
 			logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction failed", e);
+			throw new Exception("failed  while Saving RoleFunction");
 		}
 		JsonMessage msg = new JsonMessage(mapper.writeValueAsString(restCallStatus));
 		JSONObject j = new JSONObject(msg);
@@ -125,10 +124,7 @@ public class RoleFunctionListController extends RestrictedBaseController {
 		try {
 			String data = roleFunc;
 			RoleFunction availableRoleFunction = mapper.readValue(data, RoleFunction.class);		
-			String code = availableRoleFunction.getCode();
-			RoleFunction domainRoleFunction = service.getRoleFunction(user.getOrgUserId(),code);
-			domainRoleFunction.setName(availableRoleFunction.getName());
-			domainRoleFunction.setCode(code); 
+		    String code = availableRoleFunction.getCode();
 			List<RoleFunction> currentRoleFunction = service.getRoleFunctions(user.getOrgUserId());
 			restCallStatus="success";
 			for(RoleFunction roleF:currentRoleFunction){
@@ -139,10 +135,11 @@ public class RoleFunctionListController extends RestrictedBaseController {
 				}
 			}
 			if(canSave)
-				service.saveRoleFunction(user.getOrgUserId(),domainRoleFunction);
+				service.saveRoleFunction(user.getOrgUserId(),availableRoleFunction);
 		} catch (Exception e) {
 			restCallStatus="fail";
 			logger.error(EELFLoggerDelegate.errorLogger, "addRoleFunction failed", e);
+			throw new Exception(e.getMessage());
 		}
 		JsonMessage msg = new JsonMessage(mapper.writeValueAsString(restCallStatus));
 		JSONObject j = new JSONObject(msg);
@@ -169,6 +166,7 @@ public class RoleFunctionListController extends RestrictedBaseController {
 		} catch (Exception e) {
 			restCallStatus="fail";
 			logger.error(EELFLoggerDelegate.errorLogger, "removeRoleFunction failed", e);
+			throw new Exception(e.getMessage());
 		}
 		JsonMessage msg = new JsonMessage(mapper.writeValueAsString(restCallStatus));
 		JSONObject j = new JSONObject(msg);

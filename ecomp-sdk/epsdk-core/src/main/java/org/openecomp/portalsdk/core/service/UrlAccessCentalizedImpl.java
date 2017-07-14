@@ -14,7 +14,9 @@ import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.AppUtils;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class UrlAccessCentalizedImpl implements UrlAccessService {
 	
 	@Autowired

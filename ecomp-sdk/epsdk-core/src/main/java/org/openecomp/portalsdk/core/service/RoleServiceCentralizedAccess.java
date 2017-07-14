@@ -1,5 +1,6 @@
 package org.openecomp.portalsdk.core.service;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -72,41 +73,55 @@ public class RoleServiceCentralizedAccess implements RoleService {
 	@Override
 	public Role getRole(String loginId, Long id) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
-
 		String roleString = restApiRequestBuilder.getViaREST("/role/" + id, true, loginId);
 		Role role = null;
-
 		role = mapper.readValue(roleString, Role.class);
+		if (role.getRoleFunctions() != null) {
+			@SuppressWarnings("unchecked")
+			Set<RoleFunction> roleFunctionList = role.getRoleFunctions();
+			Set<RoleFunction> roleFunctionListNew = new HashSet<>();
+			Iterator<RoleFunction> itetaror = roleFunctionList.iterator();
+			while (itetaror.hasNext()) {
+				Object nextValue = itetaror.next();
+				RoleFunction roleFun = mapper.convertValue(nextValue, RoleFunction.class);
+				roleFunctionListNew.add(roleFun);
+			}
 
+			role.setRoleFunctions(roleFunctionListNew);
+		}
 		logger.info(EELFLoggerDelegate.applicationLogger, "role_id" + role.getId());
 		return role;
 
 	}
 
 	@Override
-	public void saveRole(String loginId, Role domainRole) {
+	public void saveRole(String loginId, Role domainRole) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		String role = mapper.writeValueAsString(domainRole);
 		try {
-			restApiRequestBuilder.postViaREST("/saveRole", true, domainRole.toString(), loginId);
+			restApiRequestBuilder.postViaREST("/saveRole", true, role, loginId);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "saveRole Failed", e);
+			throw new Exception(e.getMessage());
 		}
 	}
 
 	@Override
-	public void deleteRole(String loginId, Role domainRole) {
-
+	public void deleteRole(String loginId, Role domainRole) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		String role = mapper.writeValueAsString(domainRole);
 		String filter = " where active_yn = 'Y' ";
 		try {
-			restApiRequestBuilder.deleteViaRest("/deleteRole", true, domainRole.toString(), filter, loginId);
+			restApiRequestBuilder.deleteViaRest("/deleteRole", true, role, filter, loginId);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "deleteRole Failed", e);
+			throw new Exception(e.getMessage());
 		}
 	}
 
 	@Override
 	public List<Role> getAvailableRoles(String requestedLoginId) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
-
 		String roleList = restApiRequestBuilder.getViaREST("/getRoles", true, requestedLoginId);
 		List<Role> roles = null;
 		roles = mapper.readValue(roleList,
@@ -117,7 +132,7 @@ public class RoleServiceCentralizedAccess implements RoleService {
 	@Override
 	public List<Role> getActiveRoles(String requestedLoginId) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
-		String roleString = restApiRequestBuilder.getViaREST("/activeRoles?active_yn = 'Y'", true, requestedLoginId);
+		String roleString = restApiRequestBuilder.getViaREST("/activeRoles", true, requestedLoginId);
 		List<Role> roles = null;
 		roles = mapper.readValue(roleString,
 				TypeFactory.defaultInstance().constructCollectionType(List.class, Role.class));
@@ -127,38 +142,41 @@ public class RoleServiceCentralizedAccess implements RoleService {
 
 	@Override
 	public RoleFunction getRoleFunction(String requestedLoginId, String code) throws Exception {
-
 		ObjectMapper mapper = new ObjectMapper();
 		String responseString = restApiRequestBuilder.getViaREST("/getRoleFunction/" + code, true, requestedLoginId);
-		RoleFunction roleFunction = null;
-		roleFunction = mapper.readValue(responseString, RoleFunction.class);
+		RoleFunction roleFunction = new RoleFunction();
+		if (!responseString.isEmpty()) {
+			roleFunction = mapper.readValue(responseString, RoleFunction.class);
+		}
 		return roleFunction;
 	}
 
 	@Override
-	public void saveRoleFunction(String requestedLoginId, RoleFunction domainRoleFunction) {
-		try {
-			restApiRequestBuilder.postViaREST("/saveRoleFunction", true, domainRoleFunction.toString(),
-					requestedLoginId);
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction Failed", e);
+	public void saveRoleFunction(String requestedLoginId, RoleFunction domainRoleFunction) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		String roleFunction = mapper.writeValueAsString(domainRoleFunction);
+		try{
+		restApiRequestBuilder.postViaREST("/saveRoleFunction", true, roleFunction, requestedLoginId);
+		}catch(Exception e){
+			logger.error(EELFLoggerDelegate.errorLogger, "deleteDependcyRoleRecord Failed", e);
+			throw new Exception(e.getMessage());
 		}
 	}
 
 	@Override
-	public void deleteRoleFunction(String requestedLoginId, RoleFunction domainRoleFunction) {
-
+	public void deleteRoleFunction(String requestedLoginId, RoleFunction domainRoleFunction) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		String roleFunction = mapper.writeValueAsString(domainRoleFunction);
 		try {
-			restApiRequestBuilder.deleteViaRest("/deleteRoleFucntion", true, domainRoleFunction.toString(), null,
-					requestedLoginId);
+			restApiRequestBuilder.deleteViaRest("/deleteRoleFunction", true, roleFunction, null, requestedLoginId);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "deleteRoleFunction Failed", e);
+			throw new Exception(e.getMessage());
 		}
 	}
 
 	@Override
 	public void deleteDependcyRoleRecord(String requestedLoginId, Long id) {
-
 		try {
 			restApiRequestBuilder.deleteViaRest("/deleteDependcyRoleRecord/" + id, true, null, null, requestedLoginId);
 		} catch (Exception e) {

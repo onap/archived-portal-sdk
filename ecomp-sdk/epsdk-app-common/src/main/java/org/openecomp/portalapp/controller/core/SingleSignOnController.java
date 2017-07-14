@@ -108,7 +108,7 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 				commandBean = getLoginService().findUser(commandBean,
 						(String) request.getAttribute(MenuProperties.MENU_PROPERTIES_FILENAME_KEY),
 						additionalParamsMap);
-				List<RoleFunction> roleFunctionList=  roleService.getRoleFunctions(user.getLoginId());
+				List<RoleFunction> roleFunctionList=  roleService.getRoleFunctions(userId);
 				if (commandBean.getUser() == null) {
 					String loginErrorMessage = (commandBean.getLoginErrorMessage() != null)
 							? commandBean.getLoginErrorMessage()

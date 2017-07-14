@@ -381,5 +381,9 @@
     <query name="deleteReportSecurityRoles">
       delete from ReportUserRole where repId = :report_id and roleId =:role_id
     </query>
+    
+     <query name="getUserByProfileId">
+      select orgUserId from User where id = :user_id
+    </query>
 
 </hibernate-mapping>
