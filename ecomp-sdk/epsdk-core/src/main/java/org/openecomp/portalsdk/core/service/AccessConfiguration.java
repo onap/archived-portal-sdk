@@ -11,7 +11,7 @@ public class AccessConfiguration {
 	
 		/**
 		 * 
-		 * @returns RoleServiceImpl bean if  LocalAccessCondition is true
+		 * @return RoleServiceImpl bean if  LocalAccessCondition is true
 		 */
 	   @Bean
 	   @Conditional(LocalAccessCondition.class)
@@ -22,7 +22,7 @@ public class AccessConfiguration {
 	   
 	   /**
 		 * 
-		 * @returns RoleServiceCentralizedAccess bean if  CentralAccessCondition is true
+		 * @return RoleServiceCentralizedAccess bean if  CentralAccessCondition is true
 		 */
 	   @Bean
 	   @Conditional(CentralAccessCondition.class)
@@ -33,7 +33,7 @@ public class AccessConfiguration {
 	   
 	   /**
 		 * 
-		 * @returns LoginServiceImpl bean if  LocalAccessCondition is true
+		 * @return LoginServiceImpl bean if  LocalAccessCondition is true
 		 */
 	   @Bean
 	   @Conditional(LocalAccessCondition.class)
@@ -44,7 +44,7 @@ public class AccessConfiguration {
 	   
 	   /**
 		 * 
-		 * @returns LoginServiceCentralizedImpl bean if  CentralAccessCondition is true
+		 * @return LoginServiceCentralizedImpl bean if  CentralAccessCondition is true
 		 */
 	   @Bean
 	   @Conditional(CentralAccessCondition.class)
@@ -54,7 +54,7 @@ public class AccessConfiguration {
 	   
 	   /**
 		 * 
-		 * @returns UserProfileServiceImpl bean if  LocalAccessCondition is true
+		 * @return UserProfileServiceImpl bean if  LocalAccessCondition is true
 	     */
 	   @Bean
 	   @Conditional(LocalAccessCondition.class)
@@ -65,7 +65,7 @@ public class AccessConfiguration {
 	   
 	   /**
 		 * 
-		 * @returns returns UserProfileServiceCentalizedImpl bean if  CentralAccessCondition is true
+		 * @return returns UserProfileServiceCentalizedImpl bean if  CentralAccessCondition is true
 	     */
 	   @Bean
 	   @Conditional(CentralAccessCondition.class)
@@ -77,7 +77,7 @@ public class AccessConfiguration {
 
 	   /**
 		 * 
-		 * @returns returns ProfileServiceImpl bean if  LocalAccessCondition is true
+		 * @return returns ProfileServiceImpl bean if  LocalAccessCondition is true
 	     */
 	   @Bean
 	   @Conditional(LocalAccessCondition.class)
@@ -88,7 +88,7 @@ public class AccessConfiguration {
 	   
 	   /**
 		 * 
-		 * @returns returns ProfileServiceCentralizedImpl bean if  CentralAccessCondition is true
+		 * @return returns ProfileServiceCentralizedImpl bean if  CentralAccessCondition is true
 	     */
 	   
 	   @Bean
@@ -99,7 +99,7 @@ public class AccessConfiguration {
 	   
 	   /**
 		 * 
-		 * @returns returns UrlAccessCentalizedImpl bean if  CentralAccessCondition is true
+		 * @return returns UrlAccessCentalizedImpl bean if  CentralAccessCondition is true
 	     */
 	   @Bean
 	   @Conditional(CentralAccessCondition.class)
@@ -110,7 +110,7 @@ public class AccessConfiguration {
 	   
 	   /**
 		 * 
-		 * @returns returns UrlAccessImpl bean if  LocalAccessCondition is true
+		 * @return returns UrlAccessImpl bean if  LocalAccessCondition is true
 	     */
 	   @Bean
 	   @Conditional(LocalAccessCondition.class)
@@ -121,7 +121,7 @@ public class AccessConfiguration {
 	   
 	   /**
 		 * 
-		 * @returns returns RestApiRequestBuilder bean if  CentralAccessCondition is true
+		 * @return returns RestApiRequestBuilder bean if  CentralAccessCondition is true
 	     */
 	   @Bean
 	   @Conditional(CentralAccessCondition.class)

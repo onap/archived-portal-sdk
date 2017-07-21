@@ -86,7 +86,7 @@ public interface RoleService {
 	/**
 	 * 
 	 * @param requestedLoginId
-	 * @return
+	 * @return List of active roles
 	 * @throws Exception
 	 * Method getActiveRoles gets the list of active roles of application
 	 * 
@@ -97,7 +97,7 @@ public interface RoleService {
 	 * 
 	 * @param requestedLoginId
 	 * @param code function code
-	 * @return
+	 * @return RoleFunction of requested function code
 	 * @throws Exception
 	 * Method getRoleFunction returns RoleFunction of requested function code
 	 */

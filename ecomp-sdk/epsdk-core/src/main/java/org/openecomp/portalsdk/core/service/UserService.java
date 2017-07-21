@@ -8,7 +8,7 @@ public interface UserService {
 	/**
 	 * 
 	 * @param id orgUserID
-	 * @return
+	 * @return User object
 	 * @throws Exception
 	 * Method getUser returns the User Object
 	 */
