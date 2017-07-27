@@ -183,8 +183,16 @@ public class RestWebServiceClient {
 		// Create the connection object
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
+		
 		con.setConnectTimeout(3000);
+		// if the portal property is set then gets the timeout value from portal properties
+		if(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_CONNECTION_TIMEOUT)!= null){
+			con.setConnectTimeout(Integer.parseInt(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_CONNECTION_TIMEOUT)));
+	    }
 		con.setReadTimeout(8000);
+		if(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_READ_TIMEOUT)!= null){
+			con.setReadTimeout(Integer.parseInt(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_READ_TIMEOUT)));
+	    }
 
 		// add request header
 		con.setRequestProperty("uebkey", appUebKey);
@@ -325,9 +333,17 @@ public class RestWebServiceClient {
 		// Create the connection object
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("POST");
+		
 		con.setConnectTimeout(3000);
+		// if the portal property is set then gets the timeout value from portal properties
+		if(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_CONNECTION_TIMEOUT)!= null){
+			con.setConnectTimeout(Integer.parseInt(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_CONNECTION_TIMEOUT)));
+	    }
 		con.setReadTimeout(15000);
-
+		if(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_READ_TIMEOUT)!= null){
+			con.setReadTimeout(Integer.parseInt(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_READ_TIMEOUT)));
+	    }
+		
 		// add request header
 		con.setRequestProperty("uebkey", appUebKey);
 		if (appUserName != null)
@@ -414,8 +430,14 @@ public class RestWebServiceClient {
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("DELETE");
 		con.setConnectTimeout(3000);
+		// if the portal property is set then gets the timeout value from portal properties
+		if(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_CONNECTION_TIMEOUT)!= null){
+			con.setConnectTimeout(Integer.parseInt(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_CONNECTION_TIMEOUT)));
+	    }
 		con.setReadTimeout(15000);
-
+		if(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_READ_TIMEOUT)!= null){
+			con.setReadTimeout(Integer.parseInt(PortalApiProperties.getProperty(PortalApiConstants.EXT_REQUEST_READ_TIMEOUT)));
+	    }
 		// add request header
 		con.setRequestProperty("uebkey", appUebKey);
 		if (appUserName != null)

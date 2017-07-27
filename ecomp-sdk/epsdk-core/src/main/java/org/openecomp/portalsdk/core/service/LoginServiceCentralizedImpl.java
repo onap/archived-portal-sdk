@@ -138,7 +138,7 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 		ObjectMapper mapper = new ObjectMapper();
 		HashSet<RoleFunction> rolefun = null;
 
-		String repsonse = restApiRequestBuilder.getViaREST("/getUser/" + bean.getUserid(), true, bean.getUserid());
+		String repsonse = restApiRequestBuilder.getViaREST("/user/" + bean.getUserid(), true, bean.getUserid());
 
 		user = mapper.readValue(repsonse, User.class);
 

@@ -97,27 +97,6 @@ public class AccessConfiguration {
 	      return  new ProfileServiceCentralizedImpl();
 	   }
 	   
-	   /**
-		 * 
-		 * @return returns UrlAccessCentalizedImpl bean if  CentralAccessCondition is true
-	     */
-	   @Bean
-	   @Conditional(CentralAccessCondition.class)
-	   public UrlAccessService userUtilsCentalizedImpl() {
-	      return  new UrlAccessCentalizedImpl();
-	   }
-	   
-	   
-	   /**
-		 * 
-		 * @return returns UrlAccessImpl bean if  LocalAccessCondition is true
-	     */
-	   @Bean
-	   @Conditional(LocalAccessCondition.class)
-	   public UrlAccessService urlAccessImpl() {
-	      return  new UrlAccessImpl();
-	   }
-	   
 	   
 	   /**
 		 * 

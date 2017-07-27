@@ -63,4 +63,6 @@ public interface PortalApiConstants {
     //encrpt key
     public static final String Decryption_Key = "decryption_key";
 
+    public static final String EXT_REQUEST_CONNECTION_TIMEOUT = "ext_req_connection_timeout";
+	public static final String EXT_REQUEST_READ_TIMEOUT = "ext_req_read_timeout";
 }

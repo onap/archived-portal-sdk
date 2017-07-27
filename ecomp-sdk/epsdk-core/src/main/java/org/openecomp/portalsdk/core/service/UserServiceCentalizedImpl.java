@@ -48,7 +48,7 @@ public class UserServiceCentalizedImpl implements UserService {
 		User user = new User();
 		HashSet<RoleFunction> rolefun = null;
 		String orgUserId = getUserByProfileId(id);
-		String responseString = restApiRequestBuilder.getViaREST("/getUser/" + orgUserId, true, id);
+		String responseString = restApiRequestBuilder.getViaREST("/user/" + orgUserId, true, id);
 		user = mapper.readValue(responseString, User.class);
 		
 		@SuppressWarnings("unchecked")

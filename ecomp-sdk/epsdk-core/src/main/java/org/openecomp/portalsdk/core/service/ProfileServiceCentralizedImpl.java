@@ -51,7 +51,7 @@ public class ProfileServiceCentralizedImpl implements ProfileService{
 	public User getUser(String id) throws Exception{
 		ObjectMapper mapper = new ObjectMapper();
 		User user = new User();
-		String responseString =restApiRequestBuilder.getViaREST("/getUser/" + id, true,id);
+		String responseString =restApiRequestBuilder.getViaREST("/user/" + id, true,id);
 			user = mapper.readValue(responseString, User.class);
 		
 		return user;

@@ -9,9 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.openecomp.portalsdk.core.domain.UrlsAccessible;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
+@Service("urlAccessService")
 public class UrlAccessImpl implements UrlAccessService{
 
 	 @Autowired
