@@ -97,7 +97,7 @@ function initFormFields() {
 //-->
 </script>
 <script language="javascript" src="<%= AppUtils.getBaseFolderURL() %>js/other_scripts.js"></script>
-<script type="text/javascript" src="<%= AppUtils.getBaseFolderURL() %>js/CalendarPopup.js"></script> 
+<%-- TODO : need a calendar popup functionality --%>
 <link rel="stylesheet" type="text/css" href="<%= AppUtils.getBaseFolderURL() %>css/calendar.css">
  <iframe id="calendarFrame" class="nav" z-index:199; scrolling="no"  frameborder="0"  width=165px height=165px src="" style="position:absolute; display:none;">
 </iframe>

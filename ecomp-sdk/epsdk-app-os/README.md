@@ -16,6 +16,7 @@ https://www.eclipse.org/m2e-wtp/
 Version 1.3.0
 - [Portal-19] Renaming the Group Id in the POM file to org.onap.portal.sdk
 - [Portal-34] Restore required properties in fusion.properties file
+- [PORTAL-17] removing eye.js and utils.js
 
 Version 1.1.0
 - [Portal-7] Improvements added as part of the rebasing process

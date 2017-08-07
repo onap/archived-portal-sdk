@@ -56,6 +56,9 @@
 .icon-misc-trash:before, 
 .icon-misc-pen:before,
 .ion-navicon:before, 
+.icon-primary-close:before, .close:before, .reset-field:before,
+.icon-datanetwork-softwareasaservice:before,
+.icon-datanetwork-messaging2:before,
 .icon-arrows-upload:before { 
 	display: inline-block; 
 	font-family: "Ionicons"; 
@@ -175,3 +178,14 @@
 .icon-misc-pen:before { content: "\f2bf"; }
 
 .ion-navicon:before { content: "\f20e"; }
+
+.icon-building-home:before { content: "\f144"; }
+
+.icon-content-star:before { content: "\f24e"; }
+
+.icon-primary-close:before, .close:before, .reset-field:before { content: "\f129"; }
+
+.icon-datanetwork-softwareasaservice:before { content: "\f40c"; }
+
+.icon-datanetwork-messaging2:before { content: "\f132"; }
+

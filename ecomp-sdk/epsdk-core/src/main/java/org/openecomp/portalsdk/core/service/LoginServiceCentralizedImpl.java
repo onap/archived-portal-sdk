@@ -139,8 +139,13 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 		HashSet<RoleFunction> rolefun = null;
 
 		String repsonse = restApiRequestBuilder.getViaREST("/user/" + bean.getUserid(), true, bean.getUserid());
+		
 
 		user = mapper.readValue(repsonse, User.class);
+		
+		Set<RoleFunction> roleFunctionListNew = new HashSet<>();
+		Set<RoleFunction> roleFunctionList  = new HashSet<>();
+		SortedSet<UserApp> UserAppSet = new TreeSet<>();
 
 		@SuppressWarnings("unchecked")
 		Set<UserApp> setAppsObj = user.getUserApps();
@@ -153,8 +158,8 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 			rolefun = new HashSet<>();
 			Role role = nextApp.getRole();
 
-			Set<RoleFunction> roleFunctionList = role.getRoleFunctions();
-			Set<RoleFunction> roleFunctionListNew = new HashSet<>();
+			 roleFunctionList = role.getRoleFunctions();
+		
 			Iterator<RoleFunction> itetaror = roleFunctionList.iterator();
 			while (itetaror.hasNext()) {
 				Object nextValue = itetaror.next();
@@ -165,7 +170,7 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 			role.setRoleFunctions(roleFunctionListNew);
 			nextApp.setRole(role);
 			nextApp.getRole().getRoleFunctions();
-			SortedSet<UserApp> UserAppSet = new TreeSet<>();
+			
 			UserAppSet.add(nextApp);
 			user.setUserApps(UserAppSet);
 		}

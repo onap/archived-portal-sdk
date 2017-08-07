@@ -79,7 +79,7 @@ public class FnMenuController extends RestrictedBaseController {
 	public void getFunctionCDList(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			response.getWriter().write(mapper.writeValueAsString(service.getFunctionCDList()));
+			response.getWriter().write(mapper.writeValueAsString(service.getFunctionCDList(request)));
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getFunctionCDList", e);
 			response.setCharacterEncoding("UTF-8");

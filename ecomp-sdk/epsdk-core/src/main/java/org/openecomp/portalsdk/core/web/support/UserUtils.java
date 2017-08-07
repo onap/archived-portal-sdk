@@ -154,9 +154,6 @@ public class UserUtils {
 			session.setAttribute(SystemProperties.getProperty(SystemProperties.ROLE_FUNCTIONS_ATTRIBUTE_NAME),
 					roleFunctions);
 		}
-		
-		
-		
 		return roleFunctions;
 	}
 

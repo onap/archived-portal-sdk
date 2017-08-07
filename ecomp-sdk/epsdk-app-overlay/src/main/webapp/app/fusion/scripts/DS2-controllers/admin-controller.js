@@ -740,6 +740,26 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 	
 	$scope.saveRole = function() {
 		var errorMsg;
+		
+		$scope.role = {
+				'id':null,
+				'created':null,
+				'modified':null,
+				'createdId':null,
+				'modifiedId':null,
+				'rowNum':null,
+				'auditUserId':null,
+				'auditTrail':null,
+				'name':$scope.role.name,
+				'active':false,
+				'priority':$scope.role.priority,
+				'roleFunctions':null,
+				'childRoles':null,
+				'toggleActiveAltText':"Click to Activate Role ",
+				'toggleActiveImage':" / static fusion images inactive.png ",
+				'editUrl':" role.htm ? role_id = null",
+				};
+		
 		// Validate non-empty priority as integer
 		if ($scope.role.priority && $scope.role.priority != '' && isNaN(parseInt($scope.role.priority))) {
 			errorMsg = 'Priority must be an integer.';

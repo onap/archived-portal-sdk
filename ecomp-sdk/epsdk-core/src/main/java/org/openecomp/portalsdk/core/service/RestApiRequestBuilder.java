@@ -52,9 +52,9 @@ public class RestApiRequestBuilder {
 					decryptedPwd, isBasicAuth);
 		} catch (Exception ex) {
 			response = "Failed to perform GET " + ex.toString();
-			throw new Exception(ex.getMessage());
+			throw new Exception("get Failed"+ ex);
 		}
-		logger.debug(EELFLoggerDelegate.debugLogger, "getRoles response: {}", response);
+		logger.debug(EELFLoggerDelegate.errorLogger, "getRoles response: {}", response);
 		return response;
 	}
 	
@@ -90,7 +90,8 @@ public class RestApiRequestBuilder {
 			RestWebServiceClient.getInstance().postPortalContent(restEndPoint, userId, appName, requestId, appUserName,
 					decryptedPwd, content_type, content, isBasicAuth);
 		} catch (Exception ex) {
-			logger.error(EELFLoggerDelegate.debugLogger, "POST response: {}", ex);
+			logger.error(EELFLoggerDelegate.errorLogger, "POST response: {}", ex);
+
 			throw new Exception("Save Failed");
 		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "POST response: {}");
@@ -129,7 +130,7 @@ public class RestApiRequestBuilder {
 			RestWebServiceClient.getInstance().deletePortalContent(restEndPoint, userId, appName, requestId, appUserName,
 					decryptedPwd, content_type, content, isBasicAuth, filter);
 		} catch (Exception ex) {
-			logger.error(EELFLoggerDelegate.debugLogger, "DELETE response: {}", ex);
+			logger.error(EELFLoggerDelegate.errorLogger, "DELETE response: {}", ex);
 			throw new Exception("Delete Failed");
 		}
 		logger.debug(EELFLoggerDelegate.debugLogger, "DELETE response: {}");

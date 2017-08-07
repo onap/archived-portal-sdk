@@ -21,21 +21,20 @@ package org.openecomp.portalsdk.core.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
-import org.openecomp.portalsdk.core.domain.FnMenu;
+import javax.servlet.http.HttpServletRequest;
+
 import org.openecomp.portalsdk.core.domain.Menu;
 import org.openecomp.portalsdk.core.domain.MenuData;
-import org.openecomp.portalsdk.core.domain.Role;
 import org.openecomp.portalsdk.core.domain.RoleFunction;
-import org.openecomp.portalsdk.core.service.DataAccessService;
+import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -46,8 +45,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class FnMenuServiceImpl implements FnMenuService{
 
+	
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FnMenuServiceImpl.class);
 	@Autowired
 	private DataAccessService  dataAccessService;
+	
+	@Autowired
+	private RoleService roleService;
 	
 	@SuppressWarnings("unchecked")	
 	public List<MenuData> getFnMenuItems() {
@@ -100,14 +104,11 @@ public class FnMenuServiceImpl implements FnMenuService{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<RoleFunction> getFunctionCDList() {
-		// TODO Auto-generated method stub
-		//List<String> functioCDlist = new ArrayList<String>();
-		//functioCDlist.add("Mahdy1");
-		//functioCDlist.add("Mahdy2");
-		return getDataAccessService().executeNamedQuery("functionCDlist", null, null);
-		 
-		//return null;
+	public List<RoleFunction> getFunctionCDList(HttpServletRequest request) {
+		Set roleFunctionList = new HashSet<>();
+		roleFunctionList = UserUtils.getRoleFunctions(request);
+		List roleFunctionFinalList = new ArrayList<>(roleFunctionList);
+		return roleFunctionFinalList;
 	}
 
 	@Override

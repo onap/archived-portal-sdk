@@ -87,7 +87,7 @@ function exclusiveCheckBox(which) {
 //-->
 </script>
 <script language="javascript" src="<%= AppUtils.getBaseFolderURL() %>js/other_scripts.js"></script>
-<script type="text/javascript" src="<%= AppUtils.getBaseFolderURL() %>js/CalendarPopup.js"></script> 
+<%-- TODO : need a calendar popup functionality --%>
 <script language="JavaScript" src="<%= AppUtils.getBaseFolderURL() %>js/rounded-corners.js"></script>
 <script language="JavaScript" src="<%= AppUtils.getBaseFolderURL() %>js/form-field-tooltip.js"></script>
 <link rel="stylesheet" type="text/css" href="<%= AppUtils.getBaseFolderURL() %>css/calendar.css">
