@@ -325,43 +325,28 @@
  
   
   <!-- ============================================================================ -->
-  <!--  EELF loggers -->
+  <!--  EELF loggers; prefix com.att matches EELF implementation packages!          -->
   <!-- ============================================================================ -->
-  <logger name="org.openecomp.epsdk.eelf" level="debug" additivity="false">
+
+  <logger name="com.att.eelf" level="info" additivity="false">
     <appender-ref ref="asyncEELF" />
   </logger>
-  
-  <!--
-  <logger name="org.openecomp.epsdk.eelf.security" level="info" additivity="false">
-    <appender-ref ref="asyncEELFSecurity" />
-  </logger>
-  <logger name="org.openecomp.epsdk.eelf.perf" level="info" additivity="false">
-    <appender-ref ref="asyncEELFPerformance" />
-  </logger>
-  <logger name="org.openecomp.epsdk.eelf.server" level="info" additivity="false">
-    <appender-ref ref="asyncEELFServer" />
-  </logger>
-  <logger name="org.openecomp.epsdk.eelf.policy" level="info" additivity="false">
-    <appender-ref ref="asyncEELFPolicy" />
-  </logger>
-  -->
-  
-  <logger name="org.openecomp.epsdk.eelf.audit" level="info" additivity="false">
+
+  <logger name="com.att.eelf.audit" level="info" additivity="false">
     <appender-ref ref="asyncEELFAudit" />
   </logger>
   
-  <logger name="org.openecomp.epsdk.eelf.metrics" level="info" additivity="false">
-        <appender-ref ref="asyncEELFMetrics" />
+  <logger name="com.att.eelf.debug" level="debug" additivity="false">
+    <appender-ref ref="asyncEELFDebug" />
   </logger>
-    
-  <logger name="org.openecomp.epsdk.eelf.error" level="info" additivity="false">
-  	<appender-ref ref="asyncEELFError" />
+	
+  <logger name="com.att.eelf.error" level="info" additivity="false">
+    <appender-ref ref="asyncEELFError" />
   </logger>
-  
-   <logger name="org.openecomp.epsdk.eelf.debug" level="debug" additivity="false">
-        <appender-ref ref="asyncEELFDebug" />
-  </logger>
-  
+
+  <logger name="com.att.eelf.metrics" level="info" additivity="false">
+    <appender-ref ref="asyncEELFMetrics" />
+  </logger>      
     
   <root level="DEBUG">
     <appender-ref ref="asyncEELF" />
