@@ -59,6 +59,7 @@
 .icon-primary-close:before, .close:before, .reset-field:before,
 .icon-datanetwork-softwareasaservice:before,
 .icon-datanetwork-messaging2:before,
+.icon-controls-settingsconnectedactivity:before,
 .icon-arrows-upload:before { 
 	display: inline-block; 
 	font-family: "Ionicons"; 
@@ -189,3 +190,4 @@
 
 .icon-datanetwork-messaging2:before { content: "\f132"; }
 
+.icon-controls-settingsconnectedactivity:before { content: "\f411"; }

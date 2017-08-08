@@ -30,10 +30,11 @@ nor does it require Spring.
 ### ONAP Distributions
 
 Version 1.3.0
-- [Portal-19] Renaming the Group Id in the POM file to org.onap.portal.sdk
+- PORTAL-19 Renaming the Group Id in the POM file to org.onap.portal.sdk
+- PORTAL-64 Single sign-on from Portal fails for some applications
 
 Version 1.1.0
-- [Portal-7] Improvements added as part of the rebasing process
+- PORTAL-7 Improvements added as part of the rebasing process
  
 Version 1.0.0
 - Initial release

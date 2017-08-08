@@ -60,9 +60,6 @@ public interface PortalApiConstants {
     public static final String ECOMP_UEB_UNKNOWN_CONSUME_ERROR = "103: Unknown error during consume";
     public static final String USE_REST_FOR_FUNCTIONAL_MENU = "use_rest_for_functional_menu";
     
-    //encrpt key
-    public static final String Decryption_Key = "decryption_key";
-
     public static final String EXT_REQUEST_CONNECTION_TIMEOUT = "ext_req_connection_timeout";
 	public static final String EXT_REQUEST_READ_TIMEOUT = "ext_req_read_timeout";
 }
