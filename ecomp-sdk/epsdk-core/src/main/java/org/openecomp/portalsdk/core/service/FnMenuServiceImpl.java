@@ -31,11 +31,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.openecomp.portalsdk.core.domain.Menu;
 import org.openecomp.portalsdk.core.domain.MenuData;
 import org.openecomp.portalsdk.core.domain.RoleFunction;
+import org.openecomp.portalsdk.core.domain.User;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 /**
  * Description: this java class is an implementation of services for  Admin to add/edit/delete menu items from FN_MENU
@@ -51,7 +55,7 @@ public class FnMenuServiceImpl implements FnMenuService{
 	private DataAccessService  dataAccessService;
 	
 	@Autowired
-	private RoleService roleService;
+	private RestApiRequestBuilder restApiRequestBuilder;
 	
 	@SuppressWarnings("unchecked")	
 	public List<MenuData> getFnMenuItems() {
@@ -104,10 +108,18 @@ public class FnMenuServiceImpl implements FnMenuService{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<RoleFunction> getFunctionCDList(HttpServletRequest request) {
-		Set roleFunctionList = new HashSet<>();
-		roleFunctionList = UserUtils.getRoleFunctions(request);
-		List roleFunctionFinalList = new ArrayList<>(roleFunctionList);
+	public List<RoleFunction> getFunctionCDList(HttpServletRequest request) throws Exception {
+		User user = UserUtils.getUserSession(request);
+		ObjectMapper mapper = new ObjectMapper();
+		List roleFunctionFinalList = new ArrayList<>();
+		try {
+			String menuList = restApiRequestBuilder.getViaREST("/menuFunctions", true, user.getOrgUserId());
+			roleFunctionFinalList = mapper.readValue(menuList,
+					TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "saveRole Failed", e);
+			throw new Exception(e.getMessage());
+		}
 		return roleFunctionFinalList;
 	}
 

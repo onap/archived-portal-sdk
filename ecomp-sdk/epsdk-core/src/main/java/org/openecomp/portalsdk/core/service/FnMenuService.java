@@ -42,7 +42,7 @@ public interface FnMenuService {
 	List<Long> getParentId(String label);
 	@SuppressWarnings("rawtypes")
 	List<List> getParentList();
-	List<RoleFunction> getFunctionCDList(HttpServletRequest request);
+	List<RoleFunction> getFunctionCDList(HttpServletRequest request) throws Exception;
 	void removeMenuItem(Menu domainFnMenu);
 	Map<String, List<MenuData>> setMenuDataStructure(List<List<MenuData>> childItemList, List<MenuData> parentList, Set<MenuData> menuResult) throws Exception;
 }

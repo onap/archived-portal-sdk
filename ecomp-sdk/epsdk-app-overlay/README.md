@@ -20,6 +20,7 @@ AngularJS version 1.5.0.
 Version 1.3.0
 - [Portal-19] Renaming the Group Id in the POM file to org.onap.portal.sdk
 - [PORTAL-17] removing eye.js and utils.js - rework
+- [PORTAL-21] Increased Role name size in UI  
 
 Version 1.1.0
 [Portal-7] Improvements added as part of the rebasing process

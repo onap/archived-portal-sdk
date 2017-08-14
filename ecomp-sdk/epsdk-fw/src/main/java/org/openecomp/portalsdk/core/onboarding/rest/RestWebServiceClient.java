@@ -361,7 +361,10 @@ public class RestWebServiceClient {
 
 		con.setDoInput(true);
 		con.setDoOutput(true);
+		if( content != null)
+		{
 		con.getOutputStream().write(content.getBytes());
+		}
 		con.getOutputStream().flush();
 		con.getOutputStream().close();
 
@@ -456,7 +459,10 @@ public class RestWebServiceClient {
 
 		con.setDoInput(true);
 		con.setDoOutput(true);
+		if( content != null)
+		{
 		con.getOutputStream().write(content.getBytes());
+		}
 		con.getOutputStream().flush();
 		con.getOutputStream().close();
 
