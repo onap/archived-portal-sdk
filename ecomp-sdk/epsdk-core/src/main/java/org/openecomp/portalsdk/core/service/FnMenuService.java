@@ -1,6 +1,6 @@
 /*-
  * ================================================================================
- * eCOMP Portal SDK
+ * ECOMP Portal SDK
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property
  * ================================================================================
@@ -23,26 +23,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.openecomp.portalsdk.core.domain.Menu;
 import org.openecomp.portalsdk.core.domain.MenuData;
-import org.openecomp.portalsdk.core.domain.RoleFunction;
 
 /**
- * Description: this java class is an interface of services for  Admin to add/edit/delete menu items from FN_MENU
+ * Services for Admin to add/edit/delete menu items from FN_MENU
  */
 public interface FnMenuService {
 	List<MenuData> getFnMenuItems();
+
 	void saveFnMenuData(MenuData domainFnMenu);
+
 	void saveFnMenu(Menu domainFnMenu);
+
 	void removeMenuItem(MenuData domainFnMenu);
+
 	MenuData getMenuItemRow(Long id);
+
 	Menu getMenuItem(Long id);
+
 	List<Long> getParentId(String label);
+
 	@SuppressWarnings("rawtypes")
 	List<List> getParentList();
-	List<RoleFunction> getFunctionCDList(HttpServletRequest request) throws Exception;
+
 	void removeMenuItem(Menu domainFnMenu);
-	Map<String, List<MenuData>> setMenuDataStructure(List<List<MenuData>> childItemList, List<MenuData> parentList, Set<MenuData> menuResult) throws Exception;
+
+	Map<String, List<MenuData>> setMenuDataStructure(List<List<MenuData>> childItemList, List<MenuData> parentList,
+			Set<MenuData> menuResult) throws Exception;
 }

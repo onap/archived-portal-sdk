@@ -2,8 +2,7 @@
 	<header class="b2b-header-tabs" b2b-header-responsive ng-show="{{showHeader}}">
 		<ul class="header__items" role="navigation">
 			<li class="header__item icon__item" tabindex="0" ng-click="returnToPortal()">
-				<span class="icon-primary-att-globe"></span> 
-				<span class="globe-text">ECOMP Portal</span>
+				<div ng-include src="'app/fusion/scripts/DS2-view-models/header-logo.html'"></div>             
 			</li>
 			<li b2b-header-menu class="header__item b2b-headermenu"	ng-repeat="item in menuItems" role="presentation">
 				<a href="javascript:void(0);"	class="menu__item" role="menuitem" ng-bind="item.text"></a>

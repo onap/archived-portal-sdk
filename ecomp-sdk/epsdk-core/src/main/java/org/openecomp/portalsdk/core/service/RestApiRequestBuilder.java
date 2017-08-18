@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class RestApiRequestBuilder {
 	
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RoleServiceCentralizedAccess.class);
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RestApiRequestBuilder.class);
 	
 	@Autowired
 	AppService appService;

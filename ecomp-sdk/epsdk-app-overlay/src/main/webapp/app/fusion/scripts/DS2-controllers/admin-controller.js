@@ -741,6 +741,7 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 	$scope.saveRole = function() {
 		var errorMsg;
 		
+		if($scope.role.id == null || $scope.role.id == undefined ){
 		$scope.role = {
 				'id':null,
 				'created':null,
@@ -759,7 +760,7 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 				'toggleActiveImage':" / static fusion images inactive.png ",
 				'editUrl':" role.htm ? role_id = null",
 				};
-		
+		}
 		// Validate non-empty priority as integer
 		if ($scope.role.priority && $scope.role.priority != '' && isNaN(parseInt($scope.role.priority))) {
 			errorMsg = 'Priority must be an integer.';

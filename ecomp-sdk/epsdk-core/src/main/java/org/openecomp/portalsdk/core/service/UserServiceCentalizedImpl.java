@@ -44,41 +44,10 @@ public class UserServiceCentalizedImpl implements UserService {
 	
 	@Override
 	public User getUser(String id) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		User user = new User();
-		HashSet<RoleFunction> rolefun = null;
+		User user = null;
 		String orgUserId = getUserByProfileId(id);
 		String responseString = restApiRequestBuilder.getViaREST("/user/" + orgUserId, true, id);
-		user = mapper.readValue(responseString, User.class);
-		
-		@SuppressWarnings("unchecked")
-		Set<UserApp> setAppsObj = user.getUserApps();
-
-		Iterator<UserApp> it = setAppsObj.iterator();
-		while (it.hasNext()) {
-			Object next = it.next();
-
-			UserApp nextApp = mapper.convertValue(next, UserApp.class);
-			rolefun = new HashSet<>();
-			Role role = nextApp.getRole();
-
-			Set<RoleFunction> roleFunctionList = role.getRoleFunctions();
-			Set<RoleFunction> roleFunctionListNew = new HashSet<>();
-			Iterator<RoleFunction> itetaror = roleFunctionList.iterator();
-			while (itetaror.hasNext()) {
-				Object nextValue = itetaror.next();
-				RoleFunction roleFunction = mapper.convertValue(nextValue, RoleFunction.class);
-				roleFunctionListNew.add(roleFunction);
-			}
-
-			role.setRoleFunctions(roleFunctionListNew);
-			nextApp.setRole(role);
-			nextApp.getRole().getRoleFunctions();
-			SortedSet<UserApp> UserAppSet = new TreeSet<>();
-			UserAppSet.add(nextApp);
-			user.setUserApps(UserAppSet);
-		}
-		
+		user = userMapper(responseString);
 		return user;
 	}
 
@@ -91,6 +60,42 @@ public class UserServiceCentalizedImpl implements UserService {
 		if (list != null && !list.isEmpty())
 			orgUserId = (String) list.get(0);
 		return orgUserId;
+	}
+
+	@Override
+	public User userMapper(String res) throws Exception
+	{
+		User  user= new User();
+		ObjectMapper mapper = new ObjectMapper();
+		HashSet<RoleFunction> rolefun = null;
+        user = mapper.readValue(res, User.class);
+		Set<RoleFunction> roleFunctionListNew = new HashSet<>();
+		Set<RoleFunction> roleFunctionList  = new HashSet<>();
+		SortedSet<UserApp> UserAppSet = new TreeSet<>();
+		@SuppressWarnings("unchecked")
+		Set<UserApp> setAppsObj = user.getUserApps();
+		Iterator<UserApp> it = setAppsObj.iterator();
+		while (it.hasNext()) {
+			Object next = it.next();
+
+			UserApp nextApp = mapper.convertValue(next, UserApp.class);
+			rolefun = new HashSet<>();
+			Role role = nextApp.getRole();
+			roleFunctionList = role.getRoleFunctions();
+			Iterator<RoleFunction> itetaror = roleFunctionList.iterator();
+			while (itetaror.hasNext()) {
+				Object nextValue = itetaror.next();
+				RoleFunction roleFunction = mapper.convertValue(nextValue, RoleFunction.class);
+				roleFunctionListNew.add(roleFunction);
+			}
+			role.setRoleFunctions(roleFunctionListNew);
+			nextApp.setRole(role);
+			nextApp.getRole().getRoleFunctions();
+			
+			UserAppSet.add(nextApp);
+			user.setUserApps(UserAppSet);
+		}
+		return user;
 	}
 
 }

@@ -10,18 +10,14 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private DataAccessService  dataAccessService;
 	
-	public DataAccessService getDataAccessService() {
-		return dataAccessService;
-	}
-
-	public void setDataAccessService(DataAccessService dataAccessService) {
-		this.dataAccessService = dataAccessService;
-	}
-
 	@Override
 	public User getUser(String id) {
-		return (User) getDataAccessService().getDomainObject(User.class, Long.parseLong(id), null);
-
+		return (User) dataAccessService.getDomainObject(User.class, Long.parseLong(id), null);
+	}
+	
+	@Override
+	public User userMapper(String response) throws Exception {
+		throw new UnsupportedOperationException("method cannot be used");
 	}
 
 }

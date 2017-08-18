@@ -34,6 +34,7 @@ import org.openecomp.portalsdk.core.domain.Menu;
 import org.openecomp.portalsdk.core.domain.MenuData;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.FnMenuService;
+import org.openecomp.portalsdk.core.service.FunctionalMenuListService;
 import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.JsonMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,9 @@ public class FnMenuController extends RestrictedBaseController {
 
 	@Autowired
 	FnMenuService service;
+	
+	@Autowired
+	FunctionalMenuListService functionalMenuListService;
 
 	private String viewName;
 
@@ -79,7 +83,7 @@ public class FnMenuController extends RestrictedBaseController {
 	public void getFunctionCDList(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			response.getWriter().write(mapper.writeValueAsString(service.getFunctionCDList(request)));
+			response.getWriter().write(mapper.writeValueAsString(functionalMenuListService.getFunctionCDList(request)));
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getFunctionCDList", e);
 			response.setCharacterEncoding("UTF-8");

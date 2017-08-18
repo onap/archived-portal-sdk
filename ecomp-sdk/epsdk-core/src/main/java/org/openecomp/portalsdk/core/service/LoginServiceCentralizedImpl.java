@@ -6,14 +6,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.openecomp.portalsdk.core.command.LoginBean;
 import org.openecomp.portalsdk.core.domain.Role;
-import org.openecomp.portalsdk.core.domain.RoleFunction;
 import org.openecomp.portalsdk.core.domain.User;
-import org.openecomp.portalsdk.core.domain.UserApp;
 import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.menu.MenuBuilder;
 import org.openecomp.portalsdk.core.service.support.FusionService;
@@ -22,8 +18,6 @@ import org.openecomp.portalsdk.core.web.support.AppUtils;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Transactional
@@ -39,6 +33,9 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 	
 	@Autowired
 	RestApiRequestBuilder restApiRequestBuilder;
+	
+	@Autowired
+	UserService userService;
 
 	@SuppressWarnings("unused")
 	private MenuBuilder menuBuilder;
@@ -132,51 +129,12 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 
 	@SuppressWarnings("null")
 	public User findUser(LoginBean bean) throws Exception {
-
 		User user = null;
-
-		ObjectMapper mapper = new ObjectMapper();
-		HashSet<RoleFunction> rolefun = null;
-
 		String repsonse = restApiRequestBuilder.getViaREST("/user/" + bean.getUserid(), true, bean.getUserid());
-		
-
-		user = mapper.readValue(repsonse, User.class);
-		
-		Set<RoleFunction> roleFunctionListNew = new HashSet<>();
-		Set<RoleFunction> roleFunctionList  = new HashSet<>();
-		SortedSet<UserApp> UserAppSet = new TreeSet<>();
-
-		@SuppressWarnings("unchecked")
-		Set<UserApp> setAppsObj = user.getUserApps();
-
-		Iterator<UserApp> it = setAppsObj.iterator();
-		while (it.hasNext()) {
-			Object next = it.next();
-
-			UserApp nextApp = mapper.convertValue(next, UserApp.class);
-			rolefun = new HashSet<>();
-			Role role = nextApp.getRole();
-
-			 roleFunctionList = role.getRoleFunctions();
-		
-			Iterator<RoleFunction> itetaror = roleFunctionList.iterator();
-			while (itetaror.hasNext()) {
-				Object nextValue = itetaror.next();
-				RoleFunction roleFunction = mapper.convertValue(nextValue, RoleFunction.class);
-				roleFunctionListNew.add(roleFunction);
-			}
-
-			role.setRoleFunctions(roleFunctionListNew);
-			nextApp.setRole(role);
-			nextApp.getRole().getRoleFunctions();
-			
-			UserAppSet.add(nextApp);
-			user.setUserApps(UserAppSet);
-		}
-
+		user = userService.userMapper(repsonse);
 		return user;
 	}
+	
 
 	public User findUser(String loginId, String password) {
 
