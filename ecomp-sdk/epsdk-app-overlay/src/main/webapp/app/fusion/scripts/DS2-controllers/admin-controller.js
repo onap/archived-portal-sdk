@@ -7,17 +7,21 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 	$scope.nextSort="";
 	$scope.showLoader = false;
 	$scope.tableData=[];
+	$scope.showLoader=false;
 	$scope.routeRoleId = $routeParams.roleId;
 	$scope.regions = [];
 	/*function*/
 	$scope.getFunctionList = function(){
 		$scope.tableData.length=0;
+		$scope.showLoader=true;
 		AdminService.getRoleFunctionList().then(function(data){	
 			var j = data;
 			$scope.data = JSON.parse(j.data);
 			$scope.tableData =JSON.parse($scope.data.availableRoleFunctions);
 		},function(error){
 			console.log("failed");
+		}).finally(function() {
+			$scope.showLoader=false; // Always execute this on both error and success
 		});
 	}
 	
@@ -605,29 +609,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 		}
 	    
 	    
-	    /*$scope.showItemDetails = function(cacheName,key) {
-			$http.get("jcs_admin/showItemDetails?keyName="+key+"&cacheName="+cacheName).success(function(response){ 
-				var message = "CacheName: "+ response.cacheName 
-					+"\nkey: "+response.key
-					+"\nIS_SPOOL: "+response.attr.IS_SPOOL
-					+"\nIS_LATERAL: "+response.attr.IS_LATERAL
-					+"\nIS_REMOTE: "+response.attr.IS_REMOTE
-					+"\nIS_ETERNAL: "+response.attr.IS_ETERNAL
-					+"\nversion: "+response.attr.version
-					+"\nmaxLifeSeconds: "+response.attr.maxLifeSeconds
-					+"\nmaxIdleTimeSeconds: "+response.attr.maxIdleTimeSeconds
-					+"\nsize: "+response.attr.size
-					+"\ncreateTime: "+response.attr.createTime
-					+"\nlastAccessTime: "+response.attr.lastAccessTime
-					+"\nidleTime: "+response.attr.idleTime
-					+"\ntimeToLiveSeconds: "+response.attr.timeToLiveSeconds
-					+"\nisSpool: "+response.attr.isSpool
-					+"\nisLateral: "+response.attr.isLateral
-					+"\nisRemote: "+response.attr.isRemote
-					+"\nisEternal: "+response.attr.isEternal;
-				modalService.showSuccess('',message);});
-	};*/
-	    
 	
 	$scope.showItemDetails = function(cacheName, key){
 		AdminService.showItemDetails(cacheName, key).then(function(msg){	
@@ -695,35 +676,38 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 	}
 		
 	$scope.roleFnInit = function(){
+		$scope.showLoader=true;
 		AdminService.getRole($routeParams.roleId).then(function(data){
-				
-				var j = data;
-		  		$scope.data = JSON.parse(j.data);
-		  		$scope.role =JSON.parse($scope.data.role);
-		  		
-		  		$scope.ociavailableRoleFunctions =JSON.parse($scope.data.availableRoleFunctions);
-		  		$scope.availableRoleFunctions=[];
-		  		
-		  		if($scope.ociavailableRoleFunctions)
-		  			angular.forEach($scope.ociavailableRoleFunctions, function(a,i){ 
-		  				var availableRoleFunction = a;
-		  				availableRoleFunction.selected = false;
-		  			   angular.forEach($scope.role.roleFunctions, function(b,j){ 
-		  			    	if(a.code === b.code) {
-		  			    		availableRoleFunction.selected = true;
-		  			    	}
-		  			    });
-		  			    $scope.availableRoleFunctions.push(availableRoleFunction);	    
-		  		});	
-		  		
-		
-		  		$scope.ociavailableRoles=JSON.parse($scope.data.availableRoles);
-		  		$scope.availableRoles=[];
-		
-			},function(error){
-				console.log("roleControllerDS2 failed: " + error);
-				reloadPageOnce();
-			});
+			
+			var j = data;
+	  		$scope.data = JSON.parse(j.data);
+	  		$scope.role =JSON.parse($scope.data.role);
+	  		
+	  		$scope.ociavailableRoleFunctions =JSON.parse($scope.data.availableRoleFunctions);
+	  		$scope.availableRoleFunctions=[];
+	  		
+	  		if($scope.ociavailableRoleFunctions)
+	  			angular.forEach($scope.ociavailableRoleFunctions, function(a,i){ 
+	  				var availableRoleFunction = a;
+	  				availableRoleFunction.selected = false;
+	  			   angular.forEach($scope.role.roleFunctions, function(b,j){ 
+	  			    	if(a.code === b.code) {
+	  			    		availableRoleFunction.selected = true;
+	  			    	}
+	  			    });
+	  			    $scope.availableRoleFunctions.push(availableRoleFunction);	    
+	  		});	
+	  		
+	
+	  		$scope.ociavailableRoles=JSON.parse($scope.data.availableRoles);
+	  		$scope.availableRoles=[];
+	
+		},function(error){
+			console.log("roleControllerDS2 failed: " + error);
+			reloadPageOnce();
+		}).finally(function() {
+			$scope.showLoader=false; // Always execute this on both error and success
+		});
 	}
 	
 	// updating roles on role list page after deletion of a role
@@ -740,7 +724,7 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 	
 	$scope.saveRole = function() {
 		var errorMsg;
-		
+		$scope.showLoader=true; 
 		if($scope.role.id == null || $scope.role.id == undefined ){
 		$scope.role = {
 				'id':null,
@@ -828,7 +812,9 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 				}
 			},function(error){
 				console.log("error msg");
-			})
+			}).finally(function() {
+				$scope.showLoader=false; // Always execute this on both error and success
+			});
 					
 		}
 	}
@@ -838,6 +824,7 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 			templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-admin/modals/role-functions-modal.html',
 			controller: ModalInstanceCtrl,
 			sizeClass: 'modal-large', 
+			windowClass:"modal-docked",
 			resolve: {
                 items: function () {
                 	var message = {

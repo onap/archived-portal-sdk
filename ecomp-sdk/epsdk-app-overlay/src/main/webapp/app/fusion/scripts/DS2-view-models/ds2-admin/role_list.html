@@ -2,13 +2,16 @@
 	<div>
 		<h1 class="heading-page" id="Roles">Roles</h1>
 	</div>
-
-	<div>
-		 <button type="submit" onClick="window.location='admin#/role/0';" class="btn btn-alt btn-small">Add New Role</button>
+	<div ng-show="showLoader" class="span loader-container">
+		<i class="icon-primary-spinner" role="img"
+			aria-label="Please wait while we load your content"></i>
 	</div>
-	<h2 class="heading-small">Click on a Role to view its details.</h2>
-		
-	<table class="striped" ng-if="availableRoleFunctions" style="width: auto;">
+	<div ng-hide="showLoader">
+		<div>
+			 <button type="submit" onClick="window.location='admin#/role/0';" class="btn btn-alt btn-small">Add New Role</button>
+		</div>
+		<h2 class="heading-small">Click on a Role to view its details.</h2>
+			<table class="striped" ng-if="availableRoleFunctions" style="width: auto;">
 				<thead> 
 					<tr>
 						<th>Name</th>
@@ -38,5 +41,5 @@
 					</tr>
 				</tbody>
 			</table>
-			
+	</div>
 </div>

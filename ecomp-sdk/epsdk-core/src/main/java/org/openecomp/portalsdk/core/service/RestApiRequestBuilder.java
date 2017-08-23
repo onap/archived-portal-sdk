@@ -98,7 +98,7 @@ public class RestApiRequestBuilder {
 		 
 	}
 	
-	public void deleteViaRest(String restEndPoint, boolean isBasicAuth, String content, String filter , String userId) throws Exception {
+	public void deleteViaRest(String restEndPoint, boolean isBasicAuth, String content, String userId) throws Exception {
 		String appName = "";
 		String requestId = "";
 		String appUserName = "";
@@ -128,7 +128,7 @@ public class RestApiRequestBuilder {
 		
 		try {
 			RestWebServiceClient.getInstance().deletePortalContent(restEndPoint, userId, appName, requestId, appUserName,
-					decryptedPwd, content_type, content, isBasicAuth, filter);
+					decryptedPwd, content_type, content, isBasicAuth);
 		} catch (Exception ex) {
 			logger.error(EELFLoggerDelegate.errorLogger, "DELETE response: {}", ex);
 			throw new Exception("Delete Failed");

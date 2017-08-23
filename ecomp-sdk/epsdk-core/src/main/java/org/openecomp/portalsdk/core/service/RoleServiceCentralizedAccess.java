@@ -108,11 +108,9 @@ public class RoleServiceCentralizedAccess implements RoleService {
 
 	@Override
 	public void deleteRole(String loginId, Role domainRole) throws Exception {
-		ObjectMapper mapper = new ObjectMapper();
-		String role = mapper.writeValueAsString(domainRole);
 		String roleName = domainRole.getName().replaceAll(" ", "%20");
 		try {
-			restApiRequestBuilder.deleteViaRest("/deleteRole/"+ roleName, true, role, null, loginId);
+			restApiRequestBuilder.deleteViaRest("/deleteRole/"+ roleName, true, null, loginId);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "deleteRole Failed", e);
 			throw new Exception(e.getMessage());
@@ -165,10 +163,8 @@ public class RoleServiceCentralizedAccess implements RoleService {
 	@Override
 	public void deleteRoleFunction(String requestedLoginId, RoleFunction domainRoleFunction) throws Exception {
 		String code = domainRoleFunction.getCode();
-		ObjectMapper mapper = new ObjectMapper();
-		String roleFunction = mapper.writeValueAsString(domainRoleFunction);
 		try {
-			restApiRequestBuilder.deleteViaRest("/roleFunction/"+ code, true, roleFunction, null, requestedLoginId);
+			restApiRequestBuilder.deleteViaRest("/roleFunction/"+ code, true, null, requestedLoginId);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "deleteRoleFunction Failed ", e);
 			throw new Exception(e.getMessage());
@@ -178,7 +174,7 @@ public class RoleServiceCentralizedAccess implements RoleService {
 	@Override
 	public void deleteDependcyRoleRecord(String requestedLoginId, Long id) {
 		try {
-			restApiRequestBuilder.deleteViaRest("/deleteDependcyRoleRecord/" + id, true, null, null, requestedLoginId);
+			restApiRequestBuilder.deleteViaRest("/deleteDependcyRoleRecord/" + id, true, null, requestedLoginId);
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "deleteDependcyRoleRecord Failed", e);
 		}

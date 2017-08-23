@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 import org.openecomp.portalsdk.core.controller.RestrictedBaseController;
@@ -37,6 +38,7 @@ import org.openecomp.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.openecomp.portalsdk.core.service.RoleService;
 import org.openecomp.portalsdk.core.service.UserProfileService;
 import org.openecomp.portalsdk.core.service.UserService;
+import org.openecomp.portalsdk.core.util.SystemProperties;
 import org.openecomp.portalsdk.core.web.support.AppUtils;
 import org.openecomp.portalsdk.core.web.support.JsonMessage;
 import org.openecomp.portalsdk.core.web.support.UserUtils;
@@ -254,6 +256,11 @@ public class ProfileController extends RestrictedBaseController {
 			domainUser.removeRole(role.getId());
 
 			service.saveUser(domainUser);
+			/*If adding new roles on the current logged in user, we need to update the user value in session*/
+			if(UserUtils.getUserId(request)==Integer.valueOf(profileId)){
+				HttpSession session = request.getSession(true);
+				session.setAttribute(SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME), domainUser);
+			}
 			logger.info(EELFLoggerDelegate.auditLogger, "Remove role " + role.getId() + " from user " + profileId);
 
 			response.setCharacterEncoding("UTF-8");
@@ -294,6 +301,11 @@ public class ProfileController extends RestrictedBaseController {
 			User domainUser = (User) userService.getUser(profileId);
 			domainUser.addRole(role);
 			service.saveUser(domainUser);
+			/*If removing roles on the current logged in user, we need to update the user value in session*/
+			if(UserUtils.getUserId(request)==Integer.valueOf(profileId)){
+				HttpSession session = request.getSession(true);
+				session.setAttribute(SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME), domainUser);
+			}
 			logger.info(EELFLoggerDelegate.auditLogger, "Add new role " + role.getName() + " to user " + profileId);
 
 			response.setCharacterEncoding("UTF-8");

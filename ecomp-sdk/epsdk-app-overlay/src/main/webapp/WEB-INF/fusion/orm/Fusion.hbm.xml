@@ -385,5 +385,9 @@
      <query name="getUserByProfileId">
       select orgUserId from User where id = :user_id
     </query>
+    
+     <query name="getUserIdByorgUserId">
+      select id from User where orgUserId = :orgUserId
+    </query>
 
 </hibernate-mapping>

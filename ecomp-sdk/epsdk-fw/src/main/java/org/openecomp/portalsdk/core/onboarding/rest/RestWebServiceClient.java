@@ -393,7 +393,7 @@ public class RestWebServiceClient {
 	
 	
 	public String deletePortalContent(String restPath, String userId, String appName, String requestId,
-			String appUserName, String appPassword, String contentType, String content, boolean isBasicAuth ,String filter) throws Exception {
+			String appUserName, String appPassword, String contentType, String content, boolean isBasicAuth) throws Exception {
 		String restURL = PortalApiProperties.getProperty(PortalApiConstants.ECOMP_REST_URL);
 
 		if (restURL == null) {
@@ -415,11 +415,11 @@ public class RestWebServiceClient {
 		final String separator = restURL.endsWith("/") || restPath.startsWith("/") ? "" : "/";
 		final String restEndpointUrl = restURL + separator + restPath;
 		return delete(restEndpointUrl, userId, appName, requestId, appUebKey, appUserName, appPassword, contentType,
-				content,isBasicAuth,filter);
+				content,isBasicAuth);
 	}
 	
 	public String delete(String url, String loginId, String appName, String requestId, String appUebKey,
-			String appUserName, String appPassword, String contentType, String content,boolean isBasicAuth ,String filter) throws Exception {
+			String appUserName, String appPassword, String contentType, String content,boolean isBasicAuth) throws Exception {
 
 		if (logger.isDebugEnabled())
 			logger.debug("RestWebServiceClient.post to URL " + url);
@@ -451,7 +451,6 @@ public class RestWebServiceClient {
 		con.setRequestProperty("user-agent", appName);
 		con.setRequestProperty("X-ECOMP-RequestID", requestId);
 		con.setRequestProperty("Content-Type", contentType);
-		con.setRequestProperty("filter", filter);
 		if(isBasicAuth){
 			String encoding = Base64.getEncoder().encodeToString((appUserName + ":" + appPassword).getBytes());
 			con.setRequestProperty("Authorization", "Basic "+ encoding);

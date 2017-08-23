@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openecomp.portalsdk.core.command.LoginBean;
@@ -132,7 +133,19 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 		User user = null;
 		String repsonse = restApiRequestBuilder.getViaREST("/user/" + bean.getUserid(), true, bean.getUserid());
 		user = userService.userMapper(repsonse);
+		user.setId(getUserIdByOrgUserId(user.getOrgUserId()));
 		return user;
+	}
+	
+	public Long getUserIdByOrgUserId(String orgUserId) {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("orgUserId", orgUserId);
+		@SuppressWarnings("rawtypes")
+		List list = getDataAccessService().executeNamedQuery("getUserIdByorgUserId", params, null);
+		Long userId = null;
+		if (list != null && !list.isEmpty())
+			userId = (Long) list.get(0);
+		return userId;
 	}
 	
 
