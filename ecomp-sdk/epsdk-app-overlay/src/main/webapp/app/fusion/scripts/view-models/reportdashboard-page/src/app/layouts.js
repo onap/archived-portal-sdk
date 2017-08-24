@@ -49,8 +49,8 @@ app
 					console.log($scope.reports);					
 					$scope.report1 = $scope.reports[1];
 				});	  
-
-	  $scope.rcloud_url= "https://rcloud.research.att.com/mini.html?notebook=c131ea997453e75303588699936d1896";	    
+	  // Can this be removed?
+	  $scope.rcloud_url= "https://tbd.onap.org/mini.html?notebook=c131ea997453e75303588699936d1896";	    
     $scope.layoutOptions = {
       storageId: 'demo-layouts-explicit-save',
       storage: localStorage,

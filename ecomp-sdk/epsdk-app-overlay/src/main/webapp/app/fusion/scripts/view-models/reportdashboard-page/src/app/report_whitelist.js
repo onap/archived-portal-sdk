@@ -1,3 +1,3 @@
 app.config(function ($sceDelegateProvider) {
-	$sceDelegateProvider.resourceUrlWhitelist(['self','https://rcloud.research.att.com/**']);
+	$sceDelegateProvider.resourceUrlWhitelist(['self','https://tbd.onap.org/**']);
 });

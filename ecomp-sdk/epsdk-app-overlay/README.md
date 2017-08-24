@@ -22,6 +22,7 @@ Version 1.3.0
 - Portal-19 Renaming the Group Id in the POM file to org.onap.portal.sdk
 - Portal-21 Increased Role name size in UI  
 - Portal-81 Add ONAP logo to header in app overlay
+- PORTAL-86 Remove internal company URLs
 
 Version 1.1.0
 - Portal-7 Improvements added as part of the rebasing process

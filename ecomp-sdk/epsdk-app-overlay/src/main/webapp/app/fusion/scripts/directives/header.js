@@ -351,16 +351,16 @@ app.directive('qHeader', function () {
                                    	  {
                                    	    "menuId": 94,
                                    	    "column": 2,
-                                   	    "text": "HROneStop",
+                                   	    "text": "ONAP test link",
                                    	    "parentMenuId": 4,
-                                   	    "url": "http://ebiz.sbc.com/hronestop"
+                                   	    "url": "http://tbd.onap.org/testlink"
                                    	  },
                                    	  {
                                    	    "menuId": 95,
                                    	    "column": 2,
                                    	    "text": "4th Level App4a R16",
                                    	    "parentMenuId": 4,
-                                   	    "url": "http://www.e-access.att.com/ecomp_portal_ist/ecompportal/widgets"
+                                   	    "url": "http://app4ar16.onap.org/testlink"
                                    	  },
                                    	  {
                                    	    "menuId": 96,
