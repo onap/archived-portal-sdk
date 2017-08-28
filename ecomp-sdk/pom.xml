@@ -27,25 +27,29 @@
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
+		<stagingNexusPath>content/repositories/staging/</stagingNexusPath>
 		<releaseNexusPath>content/repositories/releases/</releaseNexusPath>
 	</properties>
 
 	<repositories>
 		<repository>
-			<!-- Releases repository has ECOMP release artifacts -->
-			<id>ecomp-releases</id>
-			<name>OpenECOMP - Release Repository</name>
+			<id>releases</id>
+			<name>ONAP - Release Repository</name>
 			<url>${nexusproxy}/${releaseNexusPath}</url>
 		</repository>
 		<repository>
-			<!-- Snapshots repository has ECOMP snapshot artifacts -->
-			<id>ecomp-snapshots</id>
-			<name>OpenECOMP - Snapshot Repository</name>
+			<id>staging</id>
+			<name>ONAP - Staging Repository</name>
+			<url>${nexusproxy}/${stagingNexusPath}</url>
+		</repository>
+		<repository>
+			<id>snapshots</id>
+			<name>ONAP - Snapshot Repository</name>
 			<url>${nexusproxy}/${snapshotNexusPath}</url>
 		</repository>
 		<repository>
-			<id>ecomp-public</id>
-			<name>ecomp onap public Repository</name>
+			<id>public</id>
+			<name>ONAP public Repository</name>
 			<url>https://nexus.onap.org/content/groups/public</url>
 		</repository>
 	</repositories>
@@ -128,6 +132,18 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<nexusUrl>${nexusproxy}</nexusUrl>
+					<stagingProfileId>176c31dfe190a</stagingProfileId>
+					<serverId>staging</serverId>
+				</configuration>
 			</plugin>
 
 			<plugin>
