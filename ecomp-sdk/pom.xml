@@ -50,7 +50,7 @@
 		<repository>
 			<id>public</id>
 			<name>ONAP public Repository</name>
-			<url>https://nexus.onap.org/content/groups/public</url>
+			<url>${nexusproxy}/content/groups/public</url>
 		</repository>
 	</repositories>
 
