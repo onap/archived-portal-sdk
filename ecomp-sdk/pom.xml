@@ -201,12 +201,12 @@
 	<distributionManagement>
 		<!-- The id below must match .m2/settings.xml/servers/server/id -->
 		<repository>
-			<id>ecomp-releases</id>
+			<id>releases</id>
 			<name>OpenECOMP - Release Repository</name>
 			<url>${nexusproxy}/${releaseNexusPath}</url>
 		</repository>
 		<snapshotRepository>
-			<id>ecomp-snapshots</id>
+			<id>snapshots</id>
 			<name>OpenECOMP - Snapshot Repository</name>
 			<url>${nexusproxy}/${snapshotNexusPath}</url>
 		</snapshotRepository>
