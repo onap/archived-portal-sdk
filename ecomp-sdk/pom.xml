@@ -3,13 +3,23 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<!-- ECOMP Portal SDK Maven parent project -->
+	<!-- Portal SDK Maven parent project -->
 	<groupId>org.onap.portal.sdk</groupId>
 	<artifactId>epsdk-project</artifactId>
-	<version>1.3.0-SNAPSHOT</version>
+	<version>1.4.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>ECOMP Portal SDK Project (parent)</name>
+	<name>ONAP Portal SDK Project (parent)</name>
 	<url>https://wiki.onap.org/display/DW/Portal</url>
+
+	<!-- OParent provides license audit, code audit, distribution management, 
+		etc.
+	But jenkins build fails, so comment out for now.
+	<parent>
+		<groupId>org.onap.oparent</groupId>
+		<artifactId>oparent</artifactId>
+		<version>0.1.0</version>
+	</parent>
+	-->
 
 	<modules>
 		<module>epsdk-fw</module>
@@ -25,28 +35,33 @@
 		<encoding>UTF-8</encoding>
 		<springframework.version>4.2.0.RELEASE</springframework.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
+		<skiptests>true</skiptests>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
+		<stagingNexusPath>content/repositories/staging/</stagingNexusPath>
 		<releaseNexusPath>content/repositories/releases/</releaseNexusPath>
 	</properties>
 
 	<repositories>
 		<repository>
-			<!-- Releases repository has ECOMP release artifacts -->
-			<id>ecomp-releases</id>
-			<name>OpenECOMP - Release Repository</name>
+			<id>releases</id>
+			<name>ONAP - Release Repository</name>
 			<url>${nexusproxy}/${releaseNexusPath}</url>
 		</repository>
 		<repository>
-			<!-- Snapshots repository has ECOMP snapshot artifacts -->
-			<id>ecomp-snapshots</id>
-			<name>OpenECOMP - Snapshot Repository</name>
+			<id>staging</id>
+			<name>ONAP - Staging Repository</name>
+			<url>${nexusproxy}/${stagingNexusPath}</url>
+		</repository>
+		<repository>
+			<id>snapshots</id>
+			<name>ONAP - Snapshot Repository</name>
 			<url>${nexusproxy}/${snapshotNexusPath}</url>
 		</repository>
 		<repository>
-			<id>ecomp-public</id>
-			<name>ecomp onap public Repository</name>
-			<url>https://nexus.onap.org/content/groups/public</url>
+			<id>public</id>
+			<name>ONAP public Repository</name>
+			<url>${nexusproxy}/content/groups/public</url>
 		</repository>
 	</repositories>
 
@@ -73,6 +88,37 @@
 	</profiles>
 
 	<build>
+
+		<pluginManagement>
+			<plugins>
+				<!-- Silence Eclipse/m2e complaints about checkstyle plugin brought in by OParent -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-checkstyle-plugin</artifactId>
+										<versionRange>2.17,)</versionRange>
+										<goals>
+											<goal>check</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 
 			<!-- Compile to Java 1.8 class output format -->
@@ -128,6 +174,18 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<nexusUrl>${nexusproxy}</nexusUrl>
+					<stagingProfileId>176c31dfe190a</stagingProfileId>
+					<serverId>ecomp-staging</serverId>
+				</configuration>
 			</plugin>
 
 			<plugin>

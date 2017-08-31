@@ -5,71 +5,22 @@
 	<parent>
 		<groupId>org.onap.portal.sdk</groupId>
 		<artifactId>epsdk-project</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.4.0-SNAPSHOT</version>
 	</parent>
 
 	<!-- GroupId is inherited from parent -->
 	<artifactId>epsdk-app-common</artifactId>
 	<!-- Version is inherited from parent -->
 	<packaging>jar</packaging>
-	<name>ECOMP Portal SDK Webapp Common Classes</name>
-	<description>ECOMP Portal SDK Web Application common classes</description>
+	<name>ONAP Portal SDK Webapp Common Classes</name>
+	<description>ONAP Portal SDK Web Application common classes</description>
 	<url>https://wiki.onap.org/display/DW/Portal</url>
 
-	<properties>
-		<encoding>UTF-8</encoding>
-		<springframework.version>4.2.0.RELEASE</springframework.version>
-		<hibernate.version>4.3.11.Final</hibernate.version>
-		<!-- Skip assembling the zip; assemble via mvn -Dskipassembly=false .. -->
-		<skipassembly>true</skipassembly>
-		<!-- Tests usually require some setup that maven cannot do, so skip. -->
-		<skiptests>true</skiptests>
-		<nexusproxy>https://nexus.onap.org</nexusproxy>
-		<snapshotNexusPath>/content/repositories/snapshots/</snapshotNexusPath>
-		<releaseNexusPath>/content/repositories/releases/</releaseNexusPath>
-	</properties>
+	<!-- properties inherited from parent -->
 
-	<repositories>
-		<repository>
-			<!-- Releases repository has ECOMP release artifacts -->
-			<id>ecomp-releases</id>
-			<name>OpenECOMP - Release Repository</name>
-			<url>${nexusproxy}/${releaseNexusPath}</url>
-		</repository>
-		<repository>
-			<!-- Snapshots repository has ECOMP snapshot artifacts -->
-			<id>ecomp-snapshots</id>
-			<name>OpenECOMP - Snapshot Repository</name>
-			<url>${nexusproxy}/${snapshotNexusPath}</url>
-		</repository>
-		<repository>
-			<id>oss-snapshots</id>
-			<name>oss Central - Snapshots</name>
-			<url>https://oss.sonatype.org/service/local/repositories/releases/content/</url>
-		</repository>
-	</repositories>
+	<!-- repositories inherited from parent -->
 
-	<profiles>
-		<!-- disable doclint, a new feature in Java 8, when generating javadoc -->
-		<profile>
-			<id>doclint-java8-disable</id>
-			<activation>
-				<jdk>[1.8,)</jdk>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.10.4</version>
-						<configuration>
-							<additionalparam>-Xdoclint:none</additionalparam>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+	<!-- profiles inherited from parent -->
 
 	<build>
 

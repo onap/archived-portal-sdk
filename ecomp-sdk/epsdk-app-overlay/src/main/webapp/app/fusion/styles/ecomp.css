@@ -175,3 +175,9 @@ p,a{
 #role-popup-footer{
 	height:100px;	
 }
+
+#role-double-popup{
+	max-height:300px; 
+	overflow:auto; 
+	display:block
+}

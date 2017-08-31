@@ -1,8 +1,8 @@
-# ECOMP Portal SDK Core
+# ONAP Portal SDK Core
 
 ## Overview
 
-This is the Maven project for the ECOMP Portal SDK Core library,
+This is the Maven project for the ONAP Portal SDK Core library,
 which is distributed as epsdk-core-N.N.N.jar.  This library 
 requires Hibernate and Spring, and provides many features 
 such as data access, session management, logging, on-boarding 
@@ -13,11 +13,18 @@ ECOMP SDK web application.
 
 ### ONAP Distributions
 
-Version 1.3.0
-- [Portal-19] Renaming the Group Id in the POM file to org.onap.portal.sdk
+Version 1.4.0
+- PORTAL-19 Rename Java package base to org.onap
+- PORTAL-42 Use OParent as parent POM
+- PORTAL-72 Address Sonar Scan code issues
+- PORTAL-90 Use approved ONAP license text
+* Put new entries here *
+
+Version 1.3.0, 28 August 2017
+- Portal-19 Renaming the Group Id in the POM file to org.onap.portal.sdk
 
 Version 1.1.0
-- [Portal-7] Improvements added as part of the rebasing process
+- Portal-7 Improvements added as part of the rebasing process
  
 Version 1.0.0
 - Initial release

@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>org.onap.portal.sdk</groupId>
 		<artifactId>epsdk-project</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.4.0-SNAPSHOT</version>
 	</parent>
 
 	<!-- GroupId is inherited from parent -->
 	<artifactId>epsdk-core</artifactId>
 	<!-- Version is inherited from parent -->
 	<packaging>jar</packaging>
-	<name>ECOMP Portal SDK Core</name>
+	<name>ONAP Portal SDK Core</name>
 	<description>Core SDK library with controllers, interceptors, utilities, etc.</description>
 	<url>https://wiki.onap.org/display/DW/Portal</url>
 
@@ -41,52 +41,8 @@
 						<container.classpath>classpath:</container.classpath>
 					</systemPropertyVariables>
 				</configuration>
-
 			</plugin>
 			
-			<!-- 	 
-			<plugin>
-			    <groupId>org.codehaus.mojo</groupId>
-			    <artifactId>license-maven-plugin</artifactId>
-			    <version>1.10</version>
-			    <configuration>
-		              <encoding>UTF-8</encoding>
-			        <licenseName>my_license</licenseName>
-			        <licenseResolver>${project.baseUri}/license</licenseResolver>
-			        <inceptionYear>2017</inceptionYear>
-				<organizationName>AT&amp;T Intellectual Property</organizationName>
-				<projectName>eCOMP Portal SDK</projectName> 
-				<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage> 
-     				<processStartTag>================================================================================</processStartTag>
-     				<sectionDelimiter>================================================================================</sectionDelimiter>
-     				<processEndTag>================================================================================</processEndTag> 
-			    	<roots>
-					<root>src/main</root>
-					<root>src/test</root>
-				</roots>
-				<excludes>
-					<exclude>*.png</exclude>
-					<exclude>*.drl</exclude>
-					<exclude>*.gif</exclude>
-					<exclude>*.jpeg</exclude>
-					<exclude>*.jpg</exclude>
-					<exclude>*.bmp</exclude>
-					<exclude>*.ico</exclude>
-					<exclude>*.svg</exclude>
-				</excludes>
-			    </configuration>
-			    <executions>
-			        <execution>
-			            <id>first</id>
-			            <goals>
-			                <goal>update-file-header</goal>
-			            </goals>
-			            <phase>process-sources</phase>
-			        </execution>
-			    </executions>
-			</plugin>
-			
-			-->
 		</plugins>
 	</build>
 
@@ -385,22 +341,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-<!-- 		<dependency>
-			<groupId>com.att.nsa</groupId>
-			<artifactId>highlandParkCore</artifactId>
-			<version>0.3.2</version>
-			<exclusions>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency> -->
-		
 	</dependencies>
 	
 </project>

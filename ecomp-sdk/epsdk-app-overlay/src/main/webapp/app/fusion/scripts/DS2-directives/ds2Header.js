@@ -15,6 +15,7 @@ appDS2.directive('ds2Header', function () {
 			$scope.contactUsUrl;
 			$scope.getAccessUrl;
 			$scope.menuItems = [];
+			$scope.isAppCentralized;
         	$scope.showHeader = ($cookieStore.get("show_app_header") == undefined ? true : $cookies.get("show_app_header") );
 
         	
@@ -30,6 +31,7 @@ appDS2.directive('ds2Header', function () {
 					$scope.userFirstName = res.firstName;
 					$scope.redirectUrl = res.portalUrl;
 					$scope.getAccessUrl = res.getAccessUrl;
+					$scope.isAppCentralized = res.isAppCentralized;
 				});
 			}
 			

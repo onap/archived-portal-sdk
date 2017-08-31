@@ -13,7 +13,15 @@ https://www.eclipse.org/m2e-wtp/
 
 ## Release Notes
 
-Version 1.3.0
+Version 1.4.0, <?day> <?month> 2017
+- PORTAL-19 Rename Java package base to org.onap
+- PORTAL-42 Use OParent as parent POM
+- PORTAL-72 Address Sonar Scan code issues
+- PORTAL-79 remove unwanted SDK left menu under Report-sample dashboard
+- PORTAL-90 Use approved ONAP license text
+* Put new entries here *
+
+Version 1.3.0, 28 August 2017
 - PORTAL-17 removing eye.js and utils.js
 - PORTAL-19 Renaming the Group Id in the POM file to org.onap.portal.sdk
 - PORTAL-34 Restore required properties in fusion.properties file

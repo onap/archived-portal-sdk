@@ -106,7 +106,7 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 				var message = msg;
 				$scope.cancel();
 				if(message.role){
-					$rootScope.$broadcast('updateRoleFunctions',{data:message.role});
+					$rootScope.$broadcast('updateRoleFunctions',{data:message.role,removedRoleFunc: roleFunction.name});
 				}else{
 					$modal.open({
 						templateUrl: 'app/fusion/scripts/DS2-modal/error_modal.html',
@@ -718,6 +718,12 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 	// updating role functions on roles page after deletion of a role function
 	$rootScope.$on('updateRoleFunctions',function(e,d){
 			$scope.role = d.data;
+			if (typeof d.removedRoleFunc != 'undefined' && d.removedRoleFunc!=''){
+				for(var i=0;i<$scope.ociavailableRoleFunctions.length;i++){
+					if($scope.ociavailableRoleFunctions[i].name==d.removedRoleFunc)
+						$scope.ociavailableRoleFunctions[i].selected=false;
+				}
+			}
 	})
 
 	$scope.roleFnInit();
@@ -824,7 +830,6 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 			templateUrl: 'app/fusion/scripts/DS2-view-models/ds2-admin/modals/role-functions-modal.html',
 			controller: ModalInstanceCtrl,
 			sizeClass: 'modal-large', 
-			windowClass:"modal-docked",
 			resolve: {
                 items: function () {
                 	var message = {

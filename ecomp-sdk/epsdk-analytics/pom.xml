@@ -5,65 +5,21 @@
 	<parent>
 		<groupId>org.onap.portal.sdk</groupId>
 		<artifactId>epsdk-project</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.4.0-SNAPSHOT</version>
 	</parent>
 	
 	<!-- GroupId is inherited from parent -->
 	<artifactId>epsdk-analytics</artifactId>
 	<!-- Version is inherited from parent -->
 	<packaging>jar</packaging>
-	<name>ECOMP Portal SDK Analytics</name>
+	<name>ONAP Portal SDK Analytics</name>
 	<description>Provides analytics features for SDK applications</description>
 	<url>https://wiki.onap.org/display/DW/Portal</url>
 
+	<!-- properties are inherited from parent -->
+
 	<!-- repositories are inherited from parent -->
 	
-	<build>
-	<plugins>
-	<!--  
-	<plugin>
-			    <groupId>org.codehaus.mojo</groupId>
-			    <artifactId>license-maven-plugin</artifactId>
-			    <version>1.10</version>
-			    <configuration>
-		              <encoding>UTF-8</encoding>
-			        <licenseName>my_license</licenseName>
-			        <licenseResolver>${project.baseUri}/license</licenseResolver>
-			        <inceptionYear>2017</inceptionYear>
-				<organizationName>AT&amp;T Intellectual Property</organizationName>
-				<projectName>eCOMP Portal SDK</projectName> 
-				<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage> 
-     				<processStartTag>================================================================================</processStartTag>
-     				<sectionDelimiter>================================================================================</sectionDelimiter>
-     				<processEndTag>================================================================================</processEndTag> 
-			    	<roots>
-					<root>src/main</root>
-				</roots>
-				<excludes>
-					<exclude>*.png</exclude>
-					<exclude>*.drl</exclude>
-					<exclude>*.gif</exclude>
-					<exclude>*.jpeg</exclude>
-					<exclude>*.jpg</exclude>
-					<exclude>*.bmp</exclude>
-					<exclude>*.ico</exclude>
-					<exclude>*.svg</exclude>
-				</excludes>
-			    </configuration>
-			    <executions>
-			        <execution>
-			            <id>first</id>
-			            <goals>
-			                <goal>update-file-header</goal>
-			            </goals>
-			            <phase>process-sources</phase>
-			        </execution>
-			    </executions>
-			</plugin>
-			-->
-	</plugins>
-	</build>
-
 	<dependencies>
 	
 		<!-- sdk-core -->

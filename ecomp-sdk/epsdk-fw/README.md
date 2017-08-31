@@ -1,8 +1,8 @@
-# ECOMP Portal SDK Framework
+# ONAP Portal SDK Framework
 
 ## Overview
 
-This is the Maven project for the ECOMP Portal SDK Framework library,
+This is the Maven project for the ONAP Portal SDK Framework library,
 which is distributed as epsdk-fw-N.N.N.jar.  This library 
 (once called third-party onboarding) provides features to 
 partner applications that use a J2EE Servlet 3.0 container
@@ -29,7 +29,14 @@ nor does it require Spring.
 
 ### ONAP Distributions
 
-Version 1.3.0
+Version 1.4.0
+- PORTAL-19 Rename Java package base to org.onap
+- PORTAL-42 Use OParent as parent POM
+- PORTAL-72 Address Sonar Scan code issues
+- PORTAL-90 Use approved ONAP license text
+* Put new entries here *
+
+Version 1.3.0, 28 August 2017
 - PORTAL-19 Renaming the Group Id in the POM file to org.onap.portal.sdk
 - PORTAL-64 Single sign-on from Portal fails for some applications
 

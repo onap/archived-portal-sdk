@@ -1,17 +1,14 @@
-# ECOMP Portal SDK
+# ONAP Portal SDK
 
-This is the parent Maven project for the following
-ECOMP Portal SDK child Maven projects:
+This is the parent Maven project for the following child Maven modules:
 
-* SDK Framework library
-* SDK Core library
-* SDK Analytics library
-* SDK Workflow library
-* SDK Common Application library
-* SDK Common Overlay Web Application
+* Portal SDK Framework library
+* Portal SDK Core library
+* Portal SDK Analytics library
+* Portal SDK Workflow library
+* Portal SDK Common Application library
+* Portal SDK Common Overlay Web Application
 
-This area also includes ECOMP Portal SDK web application projects
-for AT&T internal use and open source distribution, but they are 
-not child Maven projects.
+This area also includes ECOMP Portal SDK web application projects.
 
 Release notes are published in each project.

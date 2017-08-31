@@ -17,7 +17,14 @@ AngularJS version 1.5.0.
 
 ### ONAP Distributions
 
-Version 1.3.0
+Version 1.4.0
+- PORTAL-19 Rename Java package base to org.onap
+- PORTAL-42 Use OParent as parent POM
+- PORTAL-72 Address Sonar Scan code issues
+- PORTAL-90 Use approved ONAP license text
+* Put new entries here *
+
+Version 1.3.0, 28 August 2017
 - Portal-17 removing eye.js and utils.js - rework
 - Portal-19 Renaming the Group Id in the POM file to org.onap.portal.sdk
 - Portal-21 Increased Role name size in UI  

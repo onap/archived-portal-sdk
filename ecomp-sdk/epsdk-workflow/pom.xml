@@ -5,15 +5,17 @@
 	<parent>
 		<groupId>org.onap.portal.sdk</groupId>
 		<artifactId>epsdk-project</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.4.0-SNAPSHOT</version>
 	</parent>
 	
 	<!-- GroupId is inherited from parent -->
 	<artifactId>epsdk-workflow</artifactId>
 	<!-- Version is inherited from parent -->
 	<packaging>jar</packaging>
-	<name>ECOMP Portal SDK Workflow</name>
+	<name>ONAP Portal SDK Workflow</name>
 	<description>Provides workflow features for SDK applications</description>
+
+	<!-- properties are inherited from parent -->
 
 	<!-- repositories are inherited from parent -->
 
