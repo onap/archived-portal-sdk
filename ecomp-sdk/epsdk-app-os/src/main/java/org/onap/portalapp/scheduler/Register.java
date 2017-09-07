@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -40,7 +40,6 @@ package org.onap.portalapp.scheduler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.onap.portalapp.scheduler.LogRegistry;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.scheduler.Registerable;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -55,8 +54,8 @@ public class Register implements Registerable {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(Register.class);
 
-	private List<Trigger> scheduleTriggers = new ArrayList<Trigger>();
-	Trigger trigger[] = new Trigger[1];
+	private List<Trigger> scheduleTriggers = new ArrayList<>();
+	Trigger[] trigger = new Trigger[1];
 
 	@Autowired
 	private LogRegistry logRegistry;
@@ -68,15 +67,12 @@ public class Register implements Registerable {
 
 	@Override
 	public void registerTriggers() {
-		// if the property value is not available; the cron will not be added
-		// and can be ignored. its safe to ignore the exceptions
-		try {
-			if (SystemProperties.getProperty(SystemProperties.LOG_CRON) != null)
-				getScheduleTriggers().add(logRegistry.getTrigger());
-		} catch (IllegalStateException ies) {
-			logger.info(EELFLoggerDelegate.debugLogger, ("Log Cron not available"));
+		// if the property value is not available; the cron will not be added.
+		if (SystemProperties.containsProperty(SystemProperties.LOG_CRON)) {
+			logger.debug(EELFLoggerDelegate.debugLogger,
+					"Adding log registry for cron property {}", SystemProperties.getProperty(SystemProperties.LOG_CRON));
+			getScheduleTriggers().add(logRegistry.getTrigger());
 		}
-
 	}
 
 	public List<Trigger> getScheduleTriggers() {

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,9 +37,10 @@
  */
 package org.onap.portalapp.controller.core;
 
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,7 +68,7 @@ public class UsageListController extends RestrictedBaseController {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value = { "/usage_list" }, method = RequestMethod.GET)
 	public ModelAndView usageList(HttpServletRequest request) {
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 
 		HttpSession httpSession = request.getSession();
 		HashMap activeUsers = (HashMap) httpSession.getServletContext().getAttribute("activeUsers");
@@ -75,7 +76,7 @@ public class UsageListController extends RestrictedBaseController {
 			activeUsers.put(httpSession.getId(), httpSession);
 			httpSession.getServletContext().setAttribute("activeUsers", activeUsers);
 		}
-		ArrayList<UserRowBean> rows = UsageUtils.getActiveUsers(activeUsers);
+		List<UserRowBean> rows = UsageUtils.getActiveUsers(activeUsers);
 		JSONArray ja = new JSONArray();
 		try {
 			for (UserRowBean userRowBean : rows) {
@@ -112,7 +113,7 @@ public class UsageListController extends RestrictedBaseController {
 			activeUsers.put(httpSession.getId(), httpSession);
 			httpSession.getServletContext().setAttribute("activeUsers", activeUsers);
 		}
-		ArrayList<UserRowBean> rows = UsageUtils.getActiveUsers(activeUsers);
+		List<UserRowBean> rows = UsageUtils.getActiveUsers(activeUsers);
 		JSONArray ja = new JSONArray();
 		try {
 			for (UserRowBean userRowBean : rows) {
@@ -146,14 +147,14 @@ public class UsageListController extends RestrictedBaseController {
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/usage_list/removeSession" }, method = RequestMethod.GET)
-	public void removeSession(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public void removeSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HashMap activeUsers = (HashMap) request.getSession().getServletContext().getAttribute("activeUsers");
 		UserRowBean data = new UserRowBean();
 		data.setSessionId(request.getParameter("deleteSessionId"));
 		UsageUtils.getActiveUsersAfterDelete(activeUsers, data);
 
 		HttpSession httpSession = request.getSession();
-		ArrayList<UserRowBean> rows = UsageUtils.getActiveUsers(activeUsers);
+		List<UserRowBean> rows = UsageUtils.getActiveUsers(activeUsers);
 		JSONArray ja = new JSONArray();
 		try {
 			for (UserRowBean userRowBean : rows) {

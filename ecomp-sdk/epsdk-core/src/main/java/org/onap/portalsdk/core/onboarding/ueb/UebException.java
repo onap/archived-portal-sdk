@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -43,15 +43,20 @@ package org.onap.portalsdk.core.onboarding.ueb;
 public class UebException extends Exception {
 
 	private static final long serialVersionUID = 1L;
-	private String topicName = null;
-	private String msgId = null;
-	private String msg = null;
+	private final String topicName;
+	private final String msgId;
+	private final String msg;
+
+	public UebException(Throwable ex) {
+		this(null, ex);
+	}
+
+	public UebException(String msg, Throwable ex) {
+		this(null, ex, null, null, msg);
+	}
 
 	public UebException(String errorMsg, String topicName, String msgId, String msg) {
-		super(errorMsg);
-		this.topicName = topicName;
-		this.msgId = msgId;
-		this.msg = msg;
+		this(errorMsg, null, topicName, msgId, msg);
 	}
 
 	public UebException(String errorMsg, Throwable ex, String topicName, String msgId, String msg) {
@@ -59,14 +64,6 @@ public class UebException extends Exception {
 		this.topicName = topicName;
 		this.msgId = msgId;
 		this.msg = msg;
-	}
-
-	public UebException(String msg, Throwable ex) {
-		super(msg, ex);
-	}
-	
-	public UebException(Throwable ex) {
-		super(ex);
 	}
 
 	public String getUebMsg() {

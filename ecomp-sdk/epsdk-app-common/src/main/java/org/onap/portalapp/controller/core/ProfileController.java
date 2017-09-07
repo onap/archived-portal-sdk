@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -39,7 +39,6 @@ package org.onap.portalapp.controller.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,31 +76,30 @@ public class ProfileController extends RestrictedBaseController {
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ProfileController.class);
 
 	@Autowired
-	UserProfileService service;
+	private UserProfileService service;
 	
 	@Autowired
-	UserService userService;
+	private UserService userService;
 	
 	@Autowired
-	RoleService roleService;
+	private RoleService roleService;
 
 	private String viewName;
 	
 	@RequestMapping(value = { "/profile" }, method = RequestMethod.GET)
-	public ModelAndView profile(HttpServletRequest request, HttpServletResponse response) throws Exception{
+	public ModelAndView profile(HttpServletRequest request) throws IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
 
-		User profile = null;
-		Long profileId = null;
-
+		User profile;
+		Long profileId;
 		if (request.getRequestURI().indexOf("self_profile.htm") > -1) {
 			profile = UserUtils.getUserSession(request);
 			profileId = profile.getId();
 		} else {
 			profileId = Long.parseLong(request.getParameter("profile_id"));
-			profile = (User) userService.getUser(String.valueOf(profileId));
+			profile = userService.getUser(String.valueOf(profileId));
 		}
 
 		try {
@@ -118,15 +116,13 @@ public class ProfileController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/self_profile" }, method = RequestMethod.GET)
-	public ModelAndView self_profile(HttpServletRequest request) throws Exception{
-		Map<String, Object> model = new HashMap<String, Object>();
+	public ModelAndView selfProfile(HttpServletRequest request) throws Exception{
+		Map<String, Object> model = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 
-		User profile = null;
 		Long profileId = null;
 		User user = UserUtils.getUserSession(request);
-
-		profile = UserUtils.getUserSession(request);
+		User profile = UserUtils.getUserSession(request);
 		try {
 			model.put("stateList", mapper.writeValueAsString(getStates()));
 			model.put("countries", mapper.writeValueAsString(getCountries()));
@@ -135,21 +131,19 @@ public class ProfileController extends RestrictedBaseController {
 			model.put("profile", mapper.writeValueAsString(profile));
 			model.put("profileId", mapper.writeValueAsString(profileId));
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "self_profile: failed to write JSON" + e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "self_profile: failed to write JSON", e);
 		}
 		return new ModelAndView("profile", "model", model);
 	}
 
 	@RequestMapping(value = { "/get_self_profile" }, method = RequestMethod.GET)
-	public void getSelfProfile(HttpServletRequest request, HttpServletResponse response) throws Exception{
+	public void getSelfProfile(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
 
-		User profile = null;
 		Long profileId = null;
-
-		profile = (User) UserUtils.getUserSession(request);	
+		User profile = UserUtils.getUserSession(request);	
 		try {
 			model.put("stateList", mapper.writeValueAsString(getStates()));
 			model.put("countries", mapper.writeValueAsString(getCountries()));
@@ -161,26 +155,25 @@ public class ProfileController extends RestrictedBaseController {
 			JSONObject j = new JSONObject(msg);
 			response.getWriter().write(j.toString());
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getSelfProfile: failed to write JSON" + e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "getSelfProfile: failed to write JSON", e);
 		}
 
 	}
 
 	@RequestMapping(value = { "/get_profile" }, method = RequestMethod.GET)
-	public void GetUser(HttpServletRequest request, HttpServletResponse response) {
-		Map<String, Object> model = new HashMap<String, Object>();
+	public void getUser(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> model = new HashMap<>();
 		User user = UserUtils.getUserSession(request);
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			User profile = null;
-			Long profileId = null;
+			User profile;
+			Long profileId;
 			if (request.getRequestURI().indexOf("self_profile.htm") > -1) {
 				profile = UserUtils.getUserSession(request);
 				profileId = profile.getId();
 			} else {
 				profileId = Long.parseLong(request.getParameter("profile_id"));
-				profile = (User) userService.getUser(String.valueOf(profileId));
-				
+				profile = userService.getUser(String.valueOf(profileId));				
 			}
 			model.put("stateList", mapper.writeValueAsString(getStates()));
 			model.put("countries", mapper.writeValueAsString(getCountries()));
@@ -193,7 +186,7 @@ public class ProfileController extends RestrictedBaseController {
 			response.getWriter().write(j.toString());
 
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "GetUser: failed to write JSON" + e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "getUser: failed to write JSON", e);
 		}
 	}
 
@@ -213,7 +206,6 @@ public class ProfileController extends RestrictedBaseController {
 			Long profileId = Long.parseLong(request.getParameter("profile_id"));
 
 			User domainUser = (User) userService.getUser(String.valueOf(profileId));
-			// user.setRoles(domainUser.getRoles());
 			user.setPseudoRoles(domainUser.getPseudoRoles());
 			user.setUserApps(domainUser.getUserApps());
 			if (!selectedCountry.equals("")) {
@@ -226,13 +218,14 @@ public class ProfileController extends RestrictedBaseController {
 				user.setTimeZoneId(Long.parseLong(selectedTimeZone));
 			}
 			service.saveUser(user);
-			logger.info(EELFLoggerDelegate.auditLogger, "Save user's profile for user " + profileId);
+			logger.info(EELFLoggerDelegate.auditLogger, "Save profile for user {}", profileId);
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application / json");
 			PrintWriter out = response.getWriter();
 			out.write("" + profileId);
 			return null;
 		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "saveProfile failed", e);
 			response.setCharacterEncoding("UTF-8");			
 			try {
 				PrintWriter 	out = response.getWriter();
@@ -245,7 +238,7 @@ public class ProfileController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/profile/removeRole" }, method = RequestMethod.POST)
-	public ModelAndView removeRole(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView removeRole(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		logger.info(EELFLoggerDelegate.debugLogger, "ProfileController.save");
 		try {
@@ -257,7 +250,7 @@ public class ProfileController extends RestrictedBaseController {
 
 			 String profileId = request.getParameter("profile_id");
 
-			User domainUser = (User) userService.getUser(profileId);
+			User domainUser = userService.getUser(profileId);
 
 			domainUser.removeRole(role.getId());
 
@@ -275,7 +268,7 @@ public class ProfileController extends RestrictedBaseController {
 
 			PrintWriter out = response.getWriter();
 
-			Map<String, Object> model = new HashMap<String, Object>();
+			Map<String, Object> model = new HashMap<>();
 			model.put("profile", mapper.writeValueAsString(domainUser));
 			JSONObject j = new JSONObject(mapper.writeValueAsString(domainUser));
 
@@ -283,18 +276,16 @@ public class ProfileController extends RestrictedBaseController {
 
 			return null;
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "removeRole" + e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "removeRole failed", e);
 			response.setCharacterEncoding("UTF-8");
-			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
 			out.write(e.getMessage());
 			return null;
 		}
-
 	}
 
 	@RequestMapping(value = { "/profile/addNewRole" }, method = RequestMethod.POST)
-	public ModelAndView addNewRole(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView addNewRole(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		logger.info(EELFLoggerDelegate.debugLogger, "ProfileController.save" );
 		try {
@@ -304,7 +295,7 @@ public class ProfileController extends RestrictedBaseController {
 			JsonNode root = mapper.readTree(request.getReader());
 			Role role = mapper.readValue(root.get("role").toString(), Role.class);
 			String profileId = request.getParameter("profile_id");
-			User domainUser = (User) userService.getUser(profileId);
+			User domainUser = userService.getUser(profileId);
 			domainUser.addRole(role);
 			service.saveUser(domainUser);
 			/*If removing roles on the current logged in user, we need to update the user value in session*/
@@ -319,7 +310,7 @@ public class ProfileController extends RestrictedBaseController {
 			request.setCharacterEncoding("UTF-8");
 
 			PrintWriter out = response.getWriter();
-			Map<String, Object> model = new HashMap<String, Object>();
+			Map<String, Object> model = new HashMap<>();
 			model.put("profile", mapper.writeValueAsString(domainUser));
 			JSONObject j = new JSONObject(mapper.writeValueAsString(domainUser));
 
@@ -327,7 +318,7 @@ public class ProfileController extends RestrictedBaseController {
 
 			return null;
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "addNewRole" + e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "addNewRole failed", e);
 			response.setCharacterEncoding("UTF-8");
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
@@ -337,10 +328,12 @@ public class ProfileController extends RestrictedBaseController {
 
 	}
 
+	@Override
 	public String getViewName() {
 		return viewName;
 	}
 
+	@Override
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
 	}
@@ -361,7 +354,7 @@ public class ProfileController extends RestrictedBaseController {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public List getAvailableRoles(String requestedLoginId) throws Exception {
+	public List getAvailableRoles(String requestedLoginId) throws IOException {
 		return roleService.getAvailableRoles(requestedLoginId);
 	}
 

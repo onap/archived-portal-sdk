@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,12 +37,16 @@
  */
 package org.onap.portalsdk.analytics.config;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Properties;
 
-import org.onap.portalsdk.analytics.controller.*;
-import org.onap.portalsdk.analytics.util.*;
+import javax.servlet.ServletContext;
+
+import org.onap.portalsdk.analytics.controller.Action;
+import org.onap.portalsdk.analytics.controller.ActionMapping;
+import org.onap.portalsdk.analytics.util.Log;
 
 public class ConfigLoader {
 	// public static final String RAPTOR_ACTION_MAP =

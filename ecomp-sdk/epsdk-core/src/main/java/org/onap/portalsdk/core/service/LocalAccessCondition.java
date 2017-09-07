@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -43,14 +43,16 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class LocalAccessCondition implements Condition{
-	
+public class LocalAccessCondition implements Condition {
+
 	/**
 	 * returns true if the application is not centralized
 	 */
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {	
-		return PortalApiProperties.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED) == null || (PortalApiProperties.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED) != null && ! PortalApiProperties.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED).equals("remote"));
-	}		
+	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		return PortalApiProperties.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED) == null
+				|| (PortalApiProperties.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED) != null && !"remote"
+						.equals(PortalApiProperties.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED)));
+	}
 
 }

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -36,9 +36,10 @@
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 package org.onap.portalsdk.core.domain;
+
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
-public class Profile extends DomainVo{
+public class Profile extends DomainVo {
 
 	private static final long serialVersionUID = 3409056457412656883L;
 
@@ -49,18 +50,16 @@ public class Profile extends DomainVo{
 	private String orgManagerUserId;
 	private String active_yn;
 	private String orgUserId;
-    public Profile() {}
 
-
+	@Override
 	public Long getId() {
 		return id;
 	}
 
-
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 
 	public String getFirst_name() {
 		return first_name;
@@ -109,6 +108,5 @@ public class Profile extends DomainVo{
 	public void setOrgUserId(String orgUserId) {
 		this.orgUserId = orgUserId;
 	}
-	
-	
+
 }

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -56,7 +56,7 @@ public class PortalTimeoutBindingListener implements HttpSessionBindingListener,
 	@Override
 	public void valueBound(HttpSessionBindingEvent event) {
 		final HttpSession session = event.getSession();
-		PortalTimeoutHandler.sessionMap.put((String) session.getAttribute(PortalApiConstants.PORTAL_JSESSION_ID),
+		PortalTimeoutHandler.getSessionMap().put((String) session.getAttribute(PortalApiConstants.PORTAL_JSESSION_ID),
 				session);
 	}
 
@@ -65,7 +65,7 @@ public class PortalTimeoutBindingListener implements HttpSessionBindingListener,
 		final HttpSession session = event.getSession();
 		String portalJSessionId = (String) session.getAttribute(PortalApiConstants.PORTAL_JSESSION_ID);
 		logger.debug(portalJSessionId + " getting removed");
-		PortalTimeoutHandler.sessionMap.remove(portalJSessionId);
+		PortalTimeoutHandler.getSessionMap().remove(portalJSessionId);
 	}
 
 }

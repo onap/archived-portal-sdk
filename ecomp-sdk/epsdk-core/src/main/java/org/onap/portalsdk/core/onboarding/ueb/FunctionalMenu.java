@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -61,18 +61,17 @@ public class FunctionalMenu {
 	public static String get(String userId) throws UebException {
 		String returnString = null;
 		logger.info("Making use of UEB communication and Requesting functional menu for user " + userId);
-		UebMsg funcMenuUebMsg = null;
 		UebMsg msg = new UebMsg();
 		msg.putMsgType(UebMsgTypes.UEB_MSG_TYPE_GET_FUNC_MENU);
 		msg.putUserId(userId);
-		funcMenuUebMsg = UebManager.getInstance().requestReply(msg);
+		UebMsg funcMenuUebMsg = UebManager.getInstance().requestReply(msg);
 		if (funcMenuUebMsg != null) {
 			if (funcMenuUebMsg.getPayload().startsWith("Error:")) {
 				logger.error("getFunctionalMenu received an error in UEB msg = " + funcMenuUebMsg.getPayload());
 			} else {
 				returnString = funcMenuUebMsg.getPayload();
 			}
-		}		
+		}
 		return returnString;
 	}
 

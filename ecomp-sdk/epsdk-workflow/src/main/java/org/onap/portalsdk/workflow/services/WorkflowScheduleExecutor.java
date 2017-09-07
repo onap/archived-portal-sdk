@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -48,7 +48,7 @@ import java.nio.charset.Charset;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 
 public class WorkflowScheduleExecutor {
-	
+
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WorkflowScheduleExecutor.class);
 
 	private String serverURL;
@@ -56,22 +56,18 @@ public class WorkflowScheduleExecutor {
 	private String myUrl;
 	private String payload;
 
-	//constructor
-	public WorkflowScheduleExecutor(String serverURL,String workflowKey){
+	public WorkflowScheduleExecutor(String serverURL, String workflowKey) {
 		this.serverURL = serverURL;
 		this.workflowKey = workflowKey;
-		this.myUrl = this.serverURL + "/engine-rest/process-definition/key/" + this.workflowKey + "/submit-form";;
-        this.payload="{\"variables\":{}}";
+		this.myUrl = this.serverURL + "/engine-rest/process-definition/key/" + this.workflowKey + "/submit-form";
+		;
+		this.payload = "{\"variables\":{}}";
 	}
-	
-	public static void main(String [] args)  throws Exception {		
 
-	}
-	
 	public void execute() {
-		POST_fromURL(myUrl,payload);
+		POST_fromURL(myUrl, payload);
 	}
-	
+
 	public static String get_fromURL(String myURL) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "get_fromURL: Requested URL {}", myURL);
 		StringBuilder sb = new StringBuilder();
@@ -83,8 +79,7 @@ public class WorkflowScheduleExecutor {
 			if (urlConn != null)
 				urlConn.setReadTimeout(60 * 1000);
 			if (urlConn != null && urlConn.getInputStream() != null) {
-				in = new InputStreamReader(urlConn.getInputStream(),
-						Charset.defaultCharset());
+				in = new InputStreamReader(urlConn.getInputStream(), Charset.defaultCharset());
 				BufferedReader bufferedReader = new BufferedReader(in);
 				int cp;
 				while ((cp = bufferedReader.read()) != -1)
@@ -93,46 +88,43 @@ public class WorkflowScheduleExecutor {
 				in.close();
 			}
 		} catch (Exception e) {
-		    	logger.error(EELFLoggerDelegate.errorLogger, "get_fromURL failed", e);
-			throw new RuntimeException("Exception while calling URL:"+ myURL, e);
-		} 
-		finally {
+			logger.error(EELFLoggerDelegate.errorLogger, "get_fromURL failed", e);
+			throw new RuntimeException("Exception while calling URL:" + myURL, e);
+		} finally {
 			try {
 				if (in != null)
 					in.close();
-				} catch (Exception e) {
-					logger.error(EELFLoggerDelegate.errorLogger, "get_fromURL close failed", e);
-				}
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "get_fromURL close failed", e);
+			}
 		}
 		return sb.toString();
 	}
-	
-	
-	public static String POST_fromURL(String myURL, String payload) {
-		   	String line;
-		    StringBuffer jsonString = new StringBuffer();
-		    try {
-		        URL url = new URL(myURL);
 
-		        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		        connection.setDoInput(true);
-		        connection.setDoOutput(true);
-		        connection.setRequestMethod("POST");
-		        connection.setRequestProperty("Accept", "application/json");
-		        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-		        OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
-		        writer.write(payload);
-		        writer.close();
-		        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		        while ((line = br.readLine()) != null) {
-		                jsonString.append(line);
-		        }
-		        br.close();
-		        connection.disconnect();
-		    } catch (Exception e) {
-		    	logger.error(EELFLoggerDelegate.errorLogger, "POST_fromURL failed", e);
-		    	throw new RuntimeException(e.getMessage());
-		    }
-		    return jsonString.toString();
-		}					
+	public static String POST_fromURL(String myURL, String payload) {
+		String line;
+		StringBuilder jsonString = new StringBuilder();
+		try {
+			URL url = new URL(myURL);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Accept", "application/json");
+			connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+			OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
+			writer.write(payload);
+			writer.close();
+			BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			while ((line = br.readLine()) != null) {
+				jsonString.append(line);
+			}
+			br.close();
+			connection.disconnect();
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "POST_fromURL failed", e);
+			throw new RuntimeException(e.getMessage());
+		}
+		return jsonString.toString();
+	}
 }

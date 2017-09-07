@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -36,10 +36,7 @@
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
 
-
 package org.onap.portalsdk.rnotebookintegration.controller;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.onap.portalsdk.core.controller.RestrictedBaseController;
 import org.springframework.stereotype.Controller;
@@ -48,13 +45,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/")  
-public class NotebookTestController  extends RestrictedBaseController{
-	
-	@RequestMapping(value = {"/nbooktest" }, method = RequestMethod.GET)
-	public ModelAndView noteBook(HttpServletRequest request) {
+@RequestMapping("/")
+public class NotebookTestController extends RestrictedBaseController {
+
+	@RequestMapping(value = { "/nbooktest" }, method = RequestMethod.GET)
+	public ModelAndView noteBook() {
 		return new ModelAndView(getViewName());
 	}
-	
-	
+
 }

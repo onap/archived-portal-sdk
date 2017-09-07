@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -44,20 +44,21 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.onap.portalsdk.core.util.SystemProperties.SecurityEventTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 @Aspect
 @org.springframework.context.annotation.Configuration
 public class EELFLoggerAspect {
-	
+
 	@Autowired
-	EELFLoggerAdvice advice;
-			
+	private EELFLoggerAdvice advice;
+
 	/*
 	 * Point-cut expression to handle all INCOMING_REST_MESSAGES
 	 */
 	@Pointcut("execution(public * org.onap.portalsdk.core.controller.*.*(..))")
-	public void incomingAuditMessages() {}
-	
+	public void incomingAuditMessages() {
+		// Nothing is logged on incoming message
+	}
+
 	@Around("incomingAuditMessages() && @annotation(auditLog)")
 	public Object logAuditMethodAround(ProceedingJoinPoint joinPoint, AuditLog auditLog) throws Throwable {
 		return this.logAroundMethod(joinPoint, SecurityEventTypeEnum.INCOMING_REST_MESSAGE);
@@ -67,40 +68,44 @@ public class EELFLoggerAspect {
 	public Object logAuditMethodClassAround(ProceedingJoinPoint joinPoint, AuditLog auditLog) throws Throwable {
 		return this.logAroundMethod(joinPoint, SecurityEventTypeEnum.INCOMING_REST_MESSAGE);
 	}
-	
+
 	/*
 	 * Point cut expression to capture metrics logging
 	 */
 	@Pointcut("execution(public * *(..))")
-    public void publicMethod() {}
-	
+	public void publicMethod() {
+		// By default do nothing
+	}
+
 	@Around("publicMethod() && @within(metricsLog)")
 	public Object logMetricsClassAround(ProceedingJoinPoint joinPoint, MetricsLog metricsLog) throws Throwable {
 		return this.logAroundMethod(joinPoint, null);
 	}
-	
+
 	@Around("publicMethod() && @annotation(metricsLog)")
 	public Object logMetricsMethodAround(ProceedingJoinPoint joinPoint, MetricsLog metricsLog) throws Throwable {
 		return this.logAroundMethod(joinPoint, null);
 	}
-	
-	private Object logAroundMethod(ProceedingJoinPoint joinPoint, SecurityEventTypeEnum securityEventType) throws Throwable {
-		//Before
-		Object[] passOnArgs = new Object[] {joinPoint.getSignature().getDeclaringType().getName(),joinPoint.getSignature().getName()};
+
+	private Object logAroundMethod(ProceedingJoinPoint joinPoint, SecurityEventTypeEnum securityEventType)
+			throws Throwable {
+		// Before
+		Object[] passOnArgs = new Object[] { joinPoint.getSignature().getDeclaringType().getName(),
+				joinPoint.getSignature().getName() };
 		Object[] returnArgs = advice.before(securityEventType, joinPoint.getArgs(), passOnArgs);
-		
-		//Execute the actual method
+
+		// Execute the actual method
 		Object result = null;
 		String restStatus = "COMPLETE";
 		try {
 			result = joinPoint.proceed();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			restStatus = "ERROR";
 		}
-		
-		//After
+
+		// After
 		advice.after(securityEventType, restStatus, joinPoint.getArgs(), returnArgs, passOnArgs);
-		
+
 		return result;
 	}
 }

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,16 +37,26 @@
  */
 package org.onap.portalsdk.analytics.model.runtime;
 
-import java.util.*;
-import javax.servlet.http.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.onap.portalsdk.analytics.error.RaptorException;
-import org.onap.portalsdk.analytics.model.*;
-import org.onap.portalsdk.analytics.model.base.*;
-import org.onap.portalsdk.analytics.model.definition.*;
-import org.onap.portalsdk.analytics.system.*;
-import org.onap.portalsdk.analytics.util.*;
-import org.onap.portalsdk.analytics.xmlobj.*;
+import org.onap.portalsdk.analytics.model.DataCache;
+import org.onap.portalsdk.analytics.model.base.ReportWrapper;
+import org.onap.portalsdk.analytics.system.AppUtils;
+import org.onap.portalsdk.analytics.system.ConnectionUtils;
+import org.onap.portalsdk.analytics.system.Globals;
+import org.onap.portalsdk.analytics.util.AppConstants;
+import org.onap.portalsdk.analytics.util.DataSet;
+import org.onap.portalsdk.analytics.util.Utils;
+import org.onap.portalsdk.analytics.xmlobj.ColFilterType;
+import org.onap.portalsdk.analytics.xmlobj.DataColumnType;
+import org.onap.portalsdk.analytics.xmlobj.FormFieldType;
 
 public class ReportFormFields extends Vector {
 	private int nextElemIdx = 0;

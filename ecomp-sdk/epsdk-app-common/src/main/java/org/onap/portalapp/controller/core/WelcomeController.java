@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,8 +37,6 @@
  */
 package org.onap.portalapp.controller.core;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.onap.portalsdk.core.controller.RestrictedBaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +52,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/")
 public class WelcomeController extends RestrictedBaseController {
 	@RequestMapping(value = { "/welcome" }, method = RequestMethod.GET)
-	public ModelAndView welcome(HttpServletRequest request) {
+	public ModelAndView welcome() {
 		final String defaultViewName = null;
 		return new ModelAndView(defaultViewName);
 	}

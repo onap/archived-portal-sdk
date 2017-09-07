@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -59,20 +59,15 @@ public class RegistryAdapter {
 
 	private SchedulerFactoryBean schedulerBean;
 
-	Trigger trigger[] = new Trigger[1];
+	Trigger [] trigger = new Trigger[1];
 
 	public Trigger[] getTriggers() {
-
 		registry.registerTriggers();
-
-		List<Trigger> allTriggers = new ArrayList<Trigger>();
-
+		List<Trigger> allTriggers = new ArrayList<>();
 		List<Trigger> coreTriggers = addCoreTriggers();
 		final Trigger[] extTriggerArray = registry.getTriggers();
-
 		allTriggers.addAll(Arrays.asList(extTriggerArray));
 		allTriggers.addAll(coreTriggers);
-
 		return allTriggers.toArray(trigger);
 	}
 
@@ -83,8 +78,8 @@ public class RegistryAdapter {
 		return triggers;
 	}
 
-	public void setSchedulerBean(SchedulerFactoryBean _schedulerBean) {
-		schedulerBean = _schedulerBean;
+	public void setSchedulerBean(final SchedulerFactoryBean schedulerBean) {
+		this.schedulerBean = schedulerBean;
 	}
 
 	public SchedulerFactoryBean getSchedulerBean() {

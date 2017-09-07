@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,106 +37,99 @@
  */
 package org.onap.portalsdk.core.domain;
 
-import java.util.*;
+import java.util.Date;
 
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 public class BroadcastMessage extends DomainVo {
-	
-	/**
-	 * 
-	 */
-	
-  private static final long serialVersionUID = 1L;
-  public BroadcastMessage() {
-  }
 
-  public static final String ID_MESSAGE_LOCATION_LOGIN   = "10";
-  public static final String ID_MESSAGE_LOCATION_WELCOME = "20";
+	private static final long serialVersionUID = 1L;
 
-  private String  messageText;
-  private Integer locationId;
-  private Date    startDate;
-  private Date    endDate;
-  private Integer sortOrder;
-  private Boolean active;
-  private String siteCd;
+	public static final String ID_MESSAGE_LOCATION_LOGIN = "10";
+	public static final String ID_MESSAGE_LOCATION_WELCOME = "20";
 
-  public Boolean getActive() {
-      return active;
-  }
+	private String messageText;
+	private Integer locationId;
+	private Date startDate;
+	private Date endDate;
+	private Integer sortOrder;
+	private Boolean active;
+	private String siteCd;
 
-  public Date getEndDate() {
-      return endDate;
-  }
+	public Boolean getActive() {
+		return active;
+	}
 
-  public Integer getLocationId() {
-      return locationId;
-  }
+	public Date getEndDate() {
+		return endDate;
+	}
 
-  public String getMessageText() {
-      return messageText;
-  }
+	public Integer getLocationId() {
+		return locationId;
+	}
 
-  public Integer getSortOrder() {
-      return sortOrder;
-  }
+	public String getMessageText() {
+		return messageText;
+	}
 
-  public Date getStartDate() {
-      return startDate;
-  }
+	public Integer getSortOrder() {
+		return sortOrder;
+	}
 
-    public String getSiteCd() {
-        return siteCd;
-    }
+	public Date getStartDate() {
+		return startDate;
+	}
 
+	public String getSiteCd() {
+		return siteCd;
+	}
 
-    public void setActive(Boolean active) {
-      this.active = active;
-  }
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
 
-  public void setEndDate(Date endDate) {
-      this.endDate = endDate;
-  }
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 
-  public void setLocationId(Integer locationId) {
-      this.locationId = locationId;
-  }
+	public void setLocationId(Integer locationId) {
+		this.locationId = locationId;
+	}
 
-  public void setMessageText(String messageText) {
-      this.messageText = messageText;
-  }
+	public void setMessageText(String messageText) {
+		this.messageText = messageText;
+	}
 
-  public void setSortOrder(Integer sortOrder) {
-      this.sortOrder = sortOrder;
-  }
+	public void setSortOrder(Integer sortOrder) {
+		this.sortOrder = sortOrder;
+	}
 
-  public void setStartDate(Date startDate) {
-      this.startDate = startDate;
-  }
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
 
-  public void setSiteCd(String siteCd) {
-      this.siteCd = siteCd;
-  }
+	public void setSiteCd(String siteCd) {
+		this.siteCd = siteCd;
+	}
 
+	@Override
+	public int compareTo(Object obj) {
+		Integer c1 = getLocationId();
+		Integer c2 = ((BroadcastMessage) obj).getLocationId();
 
-  public int compareTo(Object obj){
-    Integer c1 = getLocationId();
-    Integer c2 = ((BroadcastMessage)obj).getLocationId();
+		if (c1.compareTo(c2) == 0) {
+			c1 = getSortOrder();
+			c2 = ((BroadcastMessage) obj).getSortOrder();
 
-    if (c1.compareTo(c2) == 0) {
-      c1 = getSortOrder();
-      c2 = ((BroadcastMessage)obj).getSortOrder();
+			if (c1.compareTo(c2) == 0) {
+				Long c3 = getId();
+				Long c4 = ((BroadcastMessage) obj).getId();
 
-      if (c1.compareTo(c2) == 0) {
-        Long c3 = getId();
-        Long c4 = ((BroadcastMessage)obj).getId();
+				return c3.compareTo(c4);
+			}
+		}
 
-        return c3.compareTo(c4);
-      }
-    }
-
-    return c1.compareTo(c2);
-  }
+		return c1.compareTo(c2);
+	}
 
 }

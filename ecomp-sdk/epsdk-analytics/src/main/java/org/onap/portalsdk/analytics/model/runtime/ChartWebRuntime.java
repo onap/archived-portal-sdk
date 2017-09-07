@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -53,13 +53,10 @@ import javax.servlet.http.HttpSession;
 
 import org.onap.portalsdk.analytics.error.RaptorException;
 import org.onap.portalsdk.analytics.model.ReportHandler;
-import org.onap.portalsdk.analytics.model.runtime.ReportRuntime;
 import org.onap.portalsdk.analytics.system.AppUtils;
 import org.onap.portalsdk.analytics.util.AppConstants;
 import org.onap.portalsdk.analytics.view.ReportData;
 import org.onap.portalsdk.core.web.support.UserUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 
 public class ChartWebRuntime implements Serializable {
@@ -95,7 +92,7 @@ public class ChartWebRuntime implements Serializable {
 		private String drilldown_index = "0";
 		
 		public List getRolesCommaSeperated(HttpServletRequest request) {
-			HashMap roles = UserUtils.getRoles(request);
+			Map roles = UserUtils.getRoles(request);
 			List roleList =  null;
 			StringBuffer roleBuf = new StringBuffer("");
 			int count = 0;

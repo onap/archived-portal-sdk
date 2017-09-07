@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -61,7 +61,7 @@ public class RoleServiceImpl implements RoleService {
 	@Autowired
 	private DataAccessService dataAccessService;
 
-	DataSource dataSource;
+	private DataSource dataSource;
 
 	public DataSource getDataSource() {
 		return dataSource;
@@ -72,22 +72,23 @@ public class RoleServiceImpl implements RoleService {
 		this.dataSource = dataSource;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<RoleFunction> getRoleFunctions(String loginId) {
-		// List msgDB = getDataAccessService().getList(Profile.class, null);
 		return getDataAccessService().getList(RoleFunction.class, null);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	public List<Role> getAvailableChildRoles(String loginId,Long roleId) {
+	public List<Role> getAvailableChildRoles(String loginId, Long roleId) {
 		List<Role> availableChildRoles = (List<Role>) getDataAccessService().getList(Role.class, null);
 		if (roleId == null || roleId == 0) {
 			return availableChildRoles;
 		}
 
 		Role currentRole = (Role) getDataAccessService().getDomainObject(Role.class, roleId, null);
-		Set<Role> allParentRoles = new TreeSet<Role>();
-		allParentRoles = getAllParentRolesAsList(loginId,currentRole, allParentRoles);
+		Set<Role> allParentRoles = new TreeSet<>();
+		allParentRoles = getAllParentRolesAsList(loginId, currentRole, allParentRoles);
 
 		Iterator<Role> availableChildRolesIterator = availableChildRoles.iterator();
 		while (availableChildRolesIterator.hasNext()) {
@@ -100,47 +101,54 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Set<Role> getAllParentRolesAsList(String loginId,Role role, Set<Role> allParentRoles) {
+	private Set<Role> getAllParentRolesAsList(String loginId, Role role, Set<Role> allParentRoles) {
 		Set<Role> parentRoles = role.getParentRoles();
 		allParentRoles.addAll(parentRoles);
 		Iterator<Role> parentRolesIterator = parentRoles.iterator();
 		while (parentRolesIterator.hasNext()) {
-			getAllParentRolesAsList( loginId,parentRolesIterator.next(), allParentRoles);
+			getAllParentRolesAsList(loginId, parentRolesIterator.next(), allParentRoles);
 		}
 		return allParentRoles;
 	}
 
-	public RoleFunction getRoleFunction(String loginId,String code) {
+	@Override
+	public RoleFunction getRoleFunction(String loginId, String code) {
 		return (RoleFunction) getDataAccessService().getDomainObject(RoleFunction.class, code, null);
 	}
 
-	public void saveRoleFunction(String loginId,RoleFunction domainRoleFunction) {
+	@Override
+	public void saveRoleFunction(String loginId, RoleFunction domainRoleFunction) {
 		getDataAccessService().saveDomainObject(domainRoleFunction, null);
 	}
 
-	public void deleteRoleFunction(String loginId,RoleFunction domainRoleFunction) {
+	@Override
+	public void deleteRoleFunction(String loginId, RoleFunction domainRoleFunction) {
 		getDataAccessService().deleteDomainObject(domainRoleFunction, null);
 	}
 
-	public Role getRole(String loginId,Long id) {
+	@Override
+	public Role getRole(String loginId, Long id) {
 		return (Role) getDataAccessService().getDomainObject(Role.class, id, null);
 	}
 
-	public void saveRole(String loginId,Role domainRole) {
+	@Override
+	public void saveRole(String loginId, Role domainRole) {
 		getDataAccessService().saveDomainObject(domainRole, null);
 	}
 
-	public void deleteRole(String loginId,Role domainRole) {
+	@Override
+	public void deleteRole(String loginId, Role domainRole) {
 		getDataAccessService().deleteDomainObject(domainRole, null);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Role> getAvailableRoles(String loginId) {
 		return getDataAccessService().getList(Role.class, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<Role> getActiveRoles(String loginId) {
 		String filter = " where active_yn = 'Y' ";
 		return getDataAccessService().getList(Role.class, filter, null, null);
@@ -155,7 +163,7 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public void deleteDependcyRoleRecord(String loginId,Long id) {
+	public void deleteDependcyRoleRecord(String loginId, Long id) {
 		Connection conn = null;
 		Statement stmt = null;
 		try {
@@ -163,22 +171,16 @@ public class RoleServiceImpl implements RoleService {
 			stmt = conn.createStatement();
 			String sql = "delete from fn_user_role where role_id = '" + id + "'";
 			stmt.executeUpdate(sql);
-			stmt.close();
-			conn.close();
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "deleteDependcyRoleRecord failed", e);
 		} finally {
 			try {
 				if (stmt != null)
 					stmt.close();
-			} catch (SQLException se2) {
-				logger.error(EELFLoggerDelegate.errorLogger, "deleteDependcyRoleRecord failed", se2);
-			}
-			try {
 				if (conn != null)
 					conn.close();
 			} catch (SQLException se) {
-				logger.error(EELFLoggerDelegate.errorLogger, "deleteDependcyRoleRecord failed", se);
+				logger.error(EELFLoggerDelegate.errorLogger, "deleteDependcyRoleRecord failed to close", se);
 			}
 		}
 

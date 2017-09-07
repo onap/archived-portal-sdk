@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -44,56 +44,56 @@ import org.onap.portalsdk.core.domain.support.NameValueId;
 
 public class Lookup extends FusionVo implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-    private NameValueId nameValueId = new NameValueId();
+	private NameValueId nameValueId = new NameValueId();
 
-    public Lookup() {}
+	public Lookup() {
+		super();
+	}
 
-    public Lookup(String label, String value) {
-      this();
-      setLabel(label);
-      setValue(value);
-    }
+	public Lookup(String label, String value) {
+		this();
+		setLabel(label);
+		setValue(value);
+	}
 
-    public String getValue() {
-      return getNameValueId().getVal();
-    }
+	public String getValue() {
+		return getNameValueId().getVal();
+	}
 
-    public String getLabel() {
-      return getNameValueId().getLab();
-    }
+	public String getLabel() {
+		return getNameValueId().getLab();
+	}
 
-    public void setValue(String value) {
-      getNameValueId().setVal(value);
-    }
+	public void setValue(String value) {
+		getNameValueId().setVal(value);
+	}
 
-    public void setLabel(String label) {
-      getNameValueId().setLab(label);
-    }
+	public void setLabel(String label) {
+		getNameValueId().setLab(label);
+	}
 
-    public NameValueId getNameValueId() {
-        return nameValueId;
-    }
+	public NameValueId getNameValueId() {
+		return nameValueId;
+	}
 
-    public void setNameValueId(NameValueId nameValueId) {
-        this.nameValueId = nameValueId;
-    }
+	public void setNameValueId(NameValueId nameValueId) {
+		this.nameValueId = nameValueId;
+	}
 
-    // required by ZK for to set the selectedItems of Listboxes (used heavily for <select>-style drop-downs)
-    @Override
-    public int hashCode() {
-    		return Objects.hash(getValue(), getLabel());
-    }
+	// required by ZK for to set the selectedItems of Listboxes (used heavily for
+	// <select>-style drop-downs)
+	@Override
+	public int hashCode() {
+		return Objects.hash(getValue(), getLabel());
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-      if (obj == null || !(obj instanceof Lookup))
-    	  	return false;  
-      Lookup lookup = (Lookup)obj;
-      return Objects.equals(lookup.getValue(), getValue()) && Objects.equals(lookup.getLabel(), getLabel());
-    }
-    
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof Lookup))
+			return false;
+		Lookup lookup = (Lookup) obj;
+		return Objects.equals(lookup.getValue(), getValue()) && Objects.equals(lookup.getLabel(), getLabel());
+	}
+
 }

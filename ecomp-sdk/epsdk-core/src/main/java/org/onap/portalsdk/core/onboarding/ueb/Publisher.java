@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -40,7 +40,7 @@ package org.onap.portalsdk.core.onboarding.ueb;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.security.GeneralSecurityException;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -56,13 +56,13 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 /**
  * Provides a publisher that sends messages to a UEB topic.
  * 
- * Utilizes AT&T's UEB/Cambria subscriber/publisher messaging service. 
+ * Utilizes AT&T's UEB/Cambria subscriber/publisher messaging service.
  */
 public class Publisher {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-	protected final LinkedList<String> urlList = Helper.uebUrlList();
+	protected final List<String> urlList = Helper.uebUrlList();
 
 	private final String topicName;
 	private final String publisherKey;
@@ -86,11 +86,11 @@ public class Publisher {
 	}
 
 	/**
-	 * Creates a publisher, subscribes to the topic, sends the specified message
-	 * to the topic, then closes the publisher. This ensures that the single
-	 * message goes immediately. UEB is designed for high throughput and tries
-	 * to batch up multiple messages in each send, but this method wants the
-	 * single message to go immediately.
+	 * Creates a publisher, subscribes to the topic, sends the specified message to
+	 * the topic, then closes the publisher. This ensures that the single message
+	 * goes immediately. UEB is designed for high throughput and tries to batch up
+	 * multiple messages in each send, but this method wants the single message to
+	 * go immediately.
 	 * 
 	 * @param uebMsg
 	 *            Message object to send as the payload.
@@ -103,12 +103,9 @@ public class Publisher {
 
 		CambriaBatchingPublisher pub;
 		try {
-			pub = new CambriaClientBuilders.PublisherBuilder()
-					.authenticatedBy(publisherKey, publisherSecret).usingHosts(urlList).onTopic(topicName).build();
-		} catch (MalformedURLException e1) {
-			logger.error("pub.build Exception ", e1);
-			throw new UebException(PortalApiConstants.ECOMP_UEB_UNKNOWN_PUBLISH_ERROR, e1, topicName, null, msg);
-		} catch (GeneralSecurityException e1) {
+			pub = new CambriaClientBuilders.PublisherBuilder().authenticatedBy(publisherKey, publisherSecret)
+					.usingHosts(urlList).onTopic(topicName).build();
+		} catch (MalformedURLException | GeneralSecurityException e1) {
 			logger.error("pub.build Exception ", e1);
 			throw new UebException(PortalApiConstants.ECOMP_UEB_UNKNOWN_PUBLISH_ERROR, e1, topicName, null, msg);
 		}

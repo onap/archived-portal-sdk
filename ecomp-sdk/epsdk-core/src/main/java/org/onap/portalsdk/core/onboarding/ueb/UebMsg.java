@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -63,17 +63,16 @@ public class UebMsg {
 	private String sourceHostName;
 
 	/**
-	 * Creates a new object and populates the fields source IP, source topic,
-	 * time stamp, version, and message id.
+	 * Creates a new object and populates the fields source IP, source topic, time
+	 * stamp, version, and message id.
 	 */
 	public UebMsg() {
 		InetAddress ip;
 		try {
 			ip = InetAddress.getLocalHost();
-			// Do not attempt to get name, why wait on DNS every time?
-			// sourceHostName = ip.getHostName();
 			sourceIP = ip.getHostAddress();
 		} catch (UnknownHostException e) {
+			logger.warn("UebMsg::ctor failed", e);
 			sourceHostName = "unknown";
 			sourceIP = "unknown";
 		}
@@ -82,7 +81,7 @@ public class UebMsg {
 		this.version = "1.0";
 		this.msgId = PortalApiConstants.ECOMP_DEFAULT_MSG_ID;
 		this.payload = "empty payload content";
-		this.sourceTopicName = PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_INBOUND_MAILBOX_NAME);		
+		this.sourceTopicName = PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_INBOUND_MAILBOX_NAME);
 		if (this.sourceTopicName == null)
 			logger.error("Failed to get property " + PortalApiConstants.UEB_APP_INBOUND_MAILBOX_NAME);
 	}

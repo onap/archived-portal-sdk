@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -38,7 +38,6 @@
 package org.onap.portalsdk.core.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,43 +47,34 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.representer.Representer;
 
 public class YamlUtils {
-	
-	static Yaml yaml;
-	
-	static {
 
-		Representer representer = new Representer();
-		//representer.addClassTag(Domain.class, Tag.MAP);
-		
-		
-		 yaml = new Yaml(representer);
-		
+	private YamlUtils() {
+		// Class has only static methods
 	}
-	
-	public static void writeYamlFile(String filePath, String fileName,
-			Map<String, Object> model) throws IOException {
+
+	private static Yaml yaml;
+
+	static {
+		Representer representer = new Representer();
+		yaml = new Yaml(representer);
+	}
+
+	public static void writeYamlFile(String filePath, String fileName, Map<String, Object> model) throws IOException {
 		FileWriter writer = new FileWriter(filePath + File.separator + fileName);
-		yaml.dump(model, writer); 
+		yaml.dump(model, writer);
 		writer.close();
 	}
-	
-	public static String returnYaml(
-			Map<String, Object> model) throws IOException {
-		
-		return yaml.dump(model); 
-	
+
+	public static String returnYaml(Map<String, Object> model) throws IOException {
+		return yaml.dump(model);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Map<String, Object> readYamlFile(
-			String filePath, String fileName) throws FileNotFoundException,
-			IOException {
+	public static Map<String, Object> readYamlFile(String filePath, String fileName) throws IOException {
 		FileReader reader = new FileReader(filePath + File.separator + fileName);
-		
-		Map<String,Object> callFlowBs = (Map<String,Object>)yaml.load(reader);
+		Map<String, Object> callFlowBs = (Map<String, Object>) yaml.load(reader);
 		reader.close();
 		return callFlowBs;
 	}
-
 
 }

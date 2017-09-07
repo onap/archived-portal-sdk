@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,19 +37,19 @@
  */
 package org.onap.portalsdk.core.domain.sessionmgt;
 
-public class  TimeoutVO implements Comparable<TimeoutVO>{
-	
+public class TimeoutVO implements Comparable<TimeoutVO> {
+
 	private String jSessionId;
 	private Long sessionTimOutMilliSec;
-	
-	public TimeoutVO(){
-		
+
+	public TimeoutVO() {
+		super();
 	}
-	
+
 	public TimeoutVO(String _jSessionId, Long _sessionTimOutMilliSec) {
 		setjSessionId(_jSessionId);
 		setSessionTimOutMilliSec(_sessionTimOutMilliSec);
-				
+
 	}
 
 	public String getjSessionId() {
@@ -69,13 +69,20 @@ public class  TimeoutVO implements Comparable<TimeoutVO>{
 	}
 
 	@Override
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		if (other == null)
+			return false;
+		if (!(other instanceof TimeoutVO))
+			return false;
+		TimeoutVO castOther = (TimeoutVO) other;
+		return this.getSessionTimOutMilliSec() == castOther.getSessionTimOutMilliSec();
+	}
+
+	@Override
 	public int compareTo(TimeoutVO o) {
 		return sessionTimOutMilliSec.compareTo(o.sessionTimOutMilliSec);
 	}
-	
-	
-	
-	
-	
-	
+
 }

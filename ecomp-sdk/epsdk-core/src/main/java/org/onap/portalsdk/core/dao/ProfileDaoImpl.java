@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -41,29 +41,24 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.onap.portalsdk.core.dao.AbstractDao;
 import org.onap.portalsdk.core.domain.Profile;
 import org.springframework.stereotype.Repository;
 
 @Repository("profileDao")
-public class ProfileDaoImpl extends AbstractDao<Integer, Profile> implements ProfileDao{
+public class ProfileDaoImpl extends AbstractDao<Integer, Profile> implements ProfileDao {
 
-	
+	@Override
+	@SuppressWarnings("unchecked")
 	public List<Profile> findAll() {
 		Criteria crit = getSession().createCriteria(Profile.class);
-		@SuppressWarnings("unchecked")
-		List<Profile> p = crit.list();
-		
-		return p;
+		return crit.list();
 	}
 
-	
+	@Override
 	public Profile getProfile(int id) {
 		Criteria crit = getSession().createCriteria(Profile.class);
 		crit.add(Restrictions.eq("id", id));
-		Profile profile = (Profile) crit.uniqueResult();
-		
-		return profile;
+		return (Profile) crit.uniqueResult();
 	}
 
 }

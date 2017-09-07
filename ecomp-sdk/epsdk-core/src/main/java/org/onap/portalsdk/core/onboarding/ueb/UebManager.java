@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -39,8 +39,8 @@ package org.onap.portalsdk.core.onboarding.ueb;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.logging.Log;
@@ -68,11 +68,9 @@ public class UebManager {
 
 	private Publisher appPublisher;
 	private Thread listenerThread;
-	private boolean bThisIsEcompPortalServer = false;
 
 	/**
-	 * Constructor initializes fields and validates values obtained from
-	 * properties.
+	 * Constructor initializes fields and validates values obtained from properties.
 	 * 
 	 * The picture below is a simplified view of the relationships among ECOMP
 	 * Portal and applications communicating via UEB:
@@ -115,11 +113,12 @@ public class UebManager {
 		if (appUebSecret == null || appUebSecret.length() == 0)
 			throw new UebException("Failed to get property " + PortalApiConstants.UEB_APP_SECRET, null, null, null);
 		List<String> uebUrlList = Helper.uebUrlList();
-		if (uebUrlList == null || uebUrlList.size() == 0)
+		if (uebUrlList == null || uebUrlList.isEmpty())
 			throw new UebException("Failed to get property" + PortalApiConstants.UEB_URL_LIST, null, null, null);
 		// A bit of magic: if consumer group is a magic token, generate one.
-		consumerGroupName = (PortalApiConstants.UEB_APP_CONSUMER_GROUP_NAME_GENERATOR.equals(consGrp)
-				? UUID.randomUUID().toString() : consGrp);
+		consumerGroupName = PortalApiConstants.UEB_APP_CONSUMER_GROUP_NAME_GENERATOR.equals(consGrp)
+				? UUID.randomUUID().toString()
+				: consGrp;
 	}
 
 	/**
@@ -152,8 +151,9 @@ public class UebManager {
 	 * @param inboxQueue
 	 *            Queue supplied to the consumer. If not null, the consumer will
 	 *            enqueue every message it receives.
+	 * @throws UebException 
 	 */
-	public void initListener(ConcurrentLinkedQueue<UebMsg> inboxQueue) throws UebException {
+	public void initListener(Queue<UebMsg> inboxQueue) throws UebException {
 		waitingRequestersQueueList = new WaitingRequestersQueueList();
 		Consumer runnable = new Consumer(appUebKey, appUebSecret, inTopicName, consumerGroupName, inboxQueue,
 				waitingRequestersQueueList);
@@ -167,13 +167,13 @@ public class UebManager {
 
 		/*
 		 * ECOMP Portal manages a dynamic list of outbound topics and so the
-		 * outTopicName is initialized in this logic with the same value as the
-		 * inbound topic. The real outbound topics name will be added to the
-		 * publisher list for ECOMP Portal. For an SDK/App instance only one
-		 * publisher is needed, appPublisher.
+		 * outTopicName is initialized in this logic with the same value as the inbound
+		 * topic. The real outbound topics name will be added to the publisher list for
+		 * ECOMP Portal. For an SDK/App instance only one publisher is needed,
+		 * appPublisher.
 		 */
 		if (inTopicName.equalsIgnoreCase(outTopicName)) {
-			this.bThisIsEcompPortalServer = true;
+			// This is ECOMP POrtal server.1
 		} else {
 			appPublisher = new Publisher(appUebKey, appUebSecret, outTopicName);
 			Helper.sleep(400);
@@ -181,9 +181,9 @@ public class UebManager {
 	}
 
 	/**
-	 * Creates and adds a publisher to the list for the specified topic. This
-	 * should only be called by the ECOMP Portal App, other Apps have just one
-	 * publisher and use appPublisher
+	 * Creates and adds a publisher to the list for the specified topic. This should
+	 * only be called by the ECOMP Portal App, other Apps have just one publisher
+	 * and use appPublisher
 	 * 
 	 * @param topicName
 	 */
@@ -196,8 +196,8 @@ public class UebManager {
 	/**
 	 * Removes a publisher from the list for the specified topic.
 	 *
-	 * This should only be called by the ECOMP Portal App, other Apps have just
-	 * one publisher and use appPublisher
+	 * This should only be called by the ECOMP Portal App, other Apps have just one
+	 * publisher and use appPublisher
 	 * 
 	 * @param topicName
 	 */
@@ -207,8 +207,8 @@ public class UebManager {
 	}
 
 	/**
-	 * Adds the default ECOMP message ID to the message and sends the message to
-	 * the topic.
+	 * Adds the default ECOMP message ID to the message and sends the message to the
+	 * topic.
 	 * 
 	 * @param msg
 	 * @throws UebException
@@ -230,8 +230,7 @@ public class UebManager {
 	}
 
 	/**
-	 * Sends the message using the appropriate publisher for the specified
-	 * topic.
+	 * Sends the message using the appropriate publisher for the specified topic.
 	 * 
 	 * @param msg
 	 * @param topicName
@@ -246,8 +245,7 @@ public class UebManager {
 	}
 
 	/**
-	 * Publishes a reply using the appropriate publisher for the specified
-	 * topic.
+	 * Publishes a reply using the appropriate publisher for the specified topic.
 	 * 
 	 * @param msg
 	 * @param topicName
@@ -262,9 +260,9 @@ public class UebManager {
 	}
 
 	/**
-	 * Sends the specified message using the specified publisher, and waits for
-	 * a reply. Retransmits if no reply is received in 5 seconds; gives up after
-	 * 3 retries.
+	 * Sends the specified message using the specified publisher, and waits for a
+	 * reply. Retransmits if no reply is received in 5 seconds; gives up after 3
+	 * retries.
 	 * 
 	 * @param msg
 	 * @param publisher
@@ -281,10 +279,10 @@ public class UebManager {
 			msg.putMsgId(UUID.randomUUID().toString());
 
 			/*
-			 * Create a queue for this request, the consumer thread will insert
-			 * the reply on this queue
+			 * Create a queue for this request, the consumer thread will insert the reply on
+			 * this queue
 			 */
-			LinkedBlockingQueue<UebMsg> replyQueue = new LinkedBlockingQueue<UebMsg>();
+			LinkedBlockingQueue<UebMsg> replyQueue = new LinkedBlockingQueue<>();
 			waitingRequestersQueueList.addQueueToMap(msg.getMsgId(), replyQueue);
 
 			/*
@@ -332,8 +330,8 @@ public class UebManager {
 	}
 
 	/**
-	 * Sends the specified message using the publisher appropriate for the
-	 * specified topic name, and waits for a reply.
+	 * Sends the specified message using the publisher appropriate for the specified
+	 * topic name, and waits for a reply.
 	 * 
 	 * @param msg
 	 * @param topicName

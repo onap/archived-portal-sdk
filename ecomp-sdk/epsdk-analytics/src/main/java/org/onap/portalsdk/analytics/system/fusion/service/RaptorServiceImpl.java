@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,33 +37,13 @@
  */
 package org.onap.portalsdk.analytics.system.fusion.service;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import javax.sql.DataSource;
-
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.onap.portalsdk.analytics.system.fusion.domain.CR_Report;
-import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.service.support.FusionService;
-import org.onap.portalsdk.core.util.SystemProperties;
-import org.onap.portalsdk.core.web.support.UserUtils;
 import org.springframework.context.ApplicationContext;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 public class RaptorServiceImpl extends FusionService implements RaptorService {
 

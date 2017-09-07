@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -41,63 +41,50 @@ import org.onap.portalsdk.core.domain.User;
 
 public class UserRowBean extends User {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2724597119083972190L;
-    private String  sessionId;
-    private String  lastAccess;
-    private String  remaining;
-    private String 	loginTime;
-    private String 	LastLoginTime;
+	private String sessionId;
+	private String lastAccess;
+	private String remaining;
+	private String loginTime;
+	private String lastLoginTime;
 
-    
-    public String getLastAccess(){
-        return this.lastAccess;
-    }
+	public String getLastAccess() {
+		return this.lastAccess;
+	}
 
-    
-    public void setLastAccess(String lastAccess){
-        this.lastAccess = lastAccess;
-    }
+	public void setLastAccess(final String lastAccess) {
+		this.lastAccess = lastAccess;
+	}
 
+	public String getRemaining() {
+		return this.remaining;
+	}
 
-    public String getRemaining(){
-        return this.remaining;
-    }
-
-    
-    public void setRemaining(String remaining){
-        this.remaining = remaining;
-    }
-
+	public void setRemaining(final String remaining) {
+		this.remaining = remaining;
+	}
 
 	public String getSessionId() {
 		return sessionId;
 	}
 
-
-	public void setSessionId(String sessionId) {
+	public void setSessionId(final String sessionId) {
 		this.sessionId = sessionId;
 	}
-
 
 	public String getLoginTime() {
 		return loginTime;
 	}
 
-
-	public void setLoginTime(String loginTime) {
+	public void setLoginTime(final String loginTime) {
 		this.loginTime = loginTime;
 	}
 
-
 	public String getLastLoginTime() {
-		return LastLoginTime;
+		return lastLoginTime;
 	}
 
-
-	public void setLastLoginTime(String lastLoginTime) {
-		LastLoginTime = lastLoginTime;
+	public void setLastLoginTime(final String lastLoginTime) {
+		this.lastLoginTime = lastLoginTime;
 	}
 }

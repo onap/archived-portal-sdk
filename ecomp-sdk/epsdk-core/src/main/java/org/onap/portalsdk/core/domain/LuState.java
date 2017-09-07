@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,52 +37,42 @@
  */
 package org.onap.portalsdk.core.domain;
 
-
-import org.onap.portalsdk.core.domain.support.*;
-
-
 /**
- * <p>State.java</p>
- *
- * <p>Represents a state data object.</p>
+ * <p>
+ * Represents a state data object.
+ * </p>
  *
  * @version 1.0
  */
 public class LuState extends DomainVo {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	
-    LuState() {}
 
-    public String getState() {
-        return state;
-    }
+	private String abbr;
+	private String state;
 
-    public String getAbbr() {
-        return abbr;
-    }
+	public String getState() {
+		return state;
+	}
 
-    public void setState(String state) {
-        this.state = state;
-    }
+	public String getAbbr() {
+		return abbr;
+	}
 
-    public void setAbbr(String abbr) {
-        this.abbr = abbr;
-    }
+	public void setState(String state) {
+		this.state = state;
+	}
 
+	public void setAbbr(String abbr) {
+		this.abbr = abbr;
+	}
 
-    public int compareTo(Object obj){
-      String c1 = getState();
-      String c2 = ((LuState)obj).getState();
+	@Override
+	public int compareTo(Object obj) {
+		String c1 = getState();
+		String c2 = ((LuState) obj).getState();
 
-      return c1.compareTo(c2);
-    }
-
-
-    private String abbr;
-    private String state;
+		return c1.compareTo(c2);
+	}
 
 }

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,12 +37,7 @@
  */
 package org.onap.portalsdk.rnotebookintegration.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.onap.portalsdk.core.controller.RestrictedBaseController;
-import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
-import org.onap.portalsdk.core.service.UserProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,16 +48,8 @@ import org.springframework.web.servlet.ModelAndView;
 public class NotebookController  extends RestrictedBaseController{
 	
 	@RequestMapping(value = {"/notebook" }, method = RequestMethod.GET)
-	public ModelAndView noteBook(HttpServletRequest request) {
-		
-		try {
-			
-		} catch (Exception e) {
-			
-
-		} 
+	public ModelAndView noteBook() {
 		return new ModelAndView(getViewName());
 	}
-	
 	
 }

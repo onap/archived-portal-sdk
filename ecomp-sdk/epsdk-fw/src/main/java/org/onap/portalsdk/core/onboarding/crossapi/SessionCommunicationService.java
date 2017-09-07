@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -47,7 +47,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class SessionCommunicationService {
 
-	protected static final Log logger = LogFactory.getLog(SessionCommunicationService.class);
+	private static final Log logger = LogFactory.getLog(SessionCommunicationService.class);
 
 	/**
 	 * Calls the ECOMP Portal to retrieve the session slot check interval.
@@ -87,13 +87,12 @@ public class SessionCommunicationService {
 				logger.debug("getSessionSlotCheckInterval: Response Code : " + responseCode);
 			}
 
-			StringBuffer response = new StringBuffer();			
+			StringBuilder response = new StringBuilder();
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"))) {
 				String inputLine;
 				while ((inputLine = in.readLine()) != null)
 					response.append(inputLine);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				logger.error("getSessionSlotCheckInterval failed to read stream", ex);
 			}
 			return response.toString();
@@ -124,7 +123,6 @@ public class SessionCommunicationService {
 			String uebKey, String sessionTimeoutMap) {
 
 		try {
-
 			String url = ecompRestURL + "/extendSessionTimeOuts";
 			URL obj = new URL(url);
 
@@ -145,16 +143,14 @@ public class SessionCommunicationService {
 			con.getOutputStream().flush();
 			con.getOutputStream().close();
 
-			// con.set
-
 			int responseCode = con.getResponseCode();
 			if (logger.isDebugEnabled()) {
 				logger.debug("requestPortalSessionTimeoutExtension: Sending 'GET' request to URL : " + url);
 				logger.debug("requestPortalSessionTimeoutExtension: Response Code : " + responseCode);
 			}
 
-			StringBuffer response = new StringBuffer();
-			try (BufferedReader       in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+			StringBuilder response = new StringBuilder();
+			try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 				String inputLine;
 				while ((inputLine = in.readLine()) != null) {
 					response.append(inputLine);

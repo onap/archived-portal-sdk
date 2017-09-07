@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -52,6 +52,7 @@ import org.apache.commons.logging.LogFactory;
  * Primarily for the UebManager to track requests while it waits for responses.
  */
 public class WaitingRequestersQueueList {
+	
 	private final Log logger = LogFactory.getLog(getClass());
 
 	private final Map<String, LinkedBlockingQueue<UebMsg>> map;
@@ -59,7 +60,7 @@ public class WaitingRequestersQueueList {
 	public WaitingRequestersQueueList() {
 		map = new ConcurrentHashMap<>();
 	}
-	
+
 	public void addQueueToMap(String msgId, LinkedBlockingQueue<UebMsg> queue) {
 		this.map.put(msgId, queue);
 	}
@@ -77,13 +78,12 @@ public class WaitingRequestersQueueList {
 		this.map.remove(msgId);
 	}
 
+	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("Map contains " + this.map.size() + " Publishers.");
 		for (Map.Entry<String, LinkedBlockingQueue<UebMsg>> entry : this.map.entrySet()) {
-			String key = entry.getKey().toString();
-			LinkedBlockingQueue<UebMsg> queue = entry.getValue();
-			sb.append("Entry msgId, " + key + " queue " + queue);
+			sb.append("Entry msgId, " + entry.getKey() + " queue " + entry.getValue());
 		}
 		return sb.toString();
 	}

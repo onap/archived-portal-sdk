@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,26 +37,19 @@
  */
 package org.onap.portalsdk.core.drools;
 
-
 /**
  * 
  * This is POC test class to execute sample rules
  */
-public class DroolsRuleServiceImpl implements DroolsRuleService{
-	
-	
+public class DroolsRuleServiceImpl implements DroolsRuleService {
+
 	private String state;
 	private String resultsString;
 
-	public DroolsRuleServiceImpl() {
-		
-	}
-	
+	@Override
 	public void init(String... params) {
 		this.state = params[0];
 	}
-
-	
 
 	public String getState() {
 		return state;
@@ -66,6 +59,7 @@ public class DroolsRuleServiceImpl implements DroolsRuleService{
 		return "Drools POC Test";
 	}
 
+	@Override
 	public String getResultsString() {
 		return resultsString;
 	}

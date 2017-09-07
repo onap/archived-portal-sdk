@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -42,55 +42,54 @@ import java.util.Objects;
 
 public class UrlsAccessible extends FusionVo implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-    private UrlsAccessibleKey urlsAccessibleKey = new UrlsAccessibleKey();
+	private UrlsAccessibleKey urlsAccessibleKey = new UrlsAccessibleKey();
 
-    public UrlsAccessible() {}
+	public UrlsAccessible() {
+		super();
+	}
 
-    public UrlsAccessible(String url, String functionCd) {
-      this();
-      setUrl(url);
-      setFunctionCd(functionCd);
-    }
+	public UrlsAccessible(String url, String functionCd) {
+		this();
+		setUrl(url);
+		setFunctionCd(functionCd);
+	}
 
-    public String getUrl() {
-      return getUrlsAccessibleKey().getUrl();
-    }
+	public String getUrl() {
+		return getUrlsAccessibleKey().getUrl();
+	}
 
-    public String getFunctionCd() {
-      return getUrlsAccessibleKey().getFunctionCd();
-    }
+	public String getFunctionCd() {
+		return getUrlsAccessibleKey().getFunctionCd();
+	}
 
-    public void setUrl(String url) {
-    	getUrlsAccessibleKey().setUrl(url);
-    }
+	public void setUrl(String url) {
+		getUrlsAccessibleKey().setUrl(url);
+	}
 
-    public void setFunctionCd(String functionCd) {
-    	getUrlsAccessibleKey().setFunctionCd(functionCd);
-    }
+	public void setFunctionCd(String functionCd) {
+		getUrlsAccessibleKey().setFunctionCd(functionCd);
+	}
 
-    public UrlsAccessibleKey getUrlsAccessibleKey() {
-        return urlsAccessibleKey;
-    }
+	public UrlsAccessibleKey getUrlsAccessibleKey() {
+		return urlsAccessibleKey;
+	}
 
-    public void setUrlsAccessibleKey(UrlsAccessibleKey urlsAccessibleKey) {
-        this.urlsAccessibleKey = urlsAccessibleKey;
-    }
+	public void setUrlsAccessibleKey(UrlsAccessibleKey urlsAccessibleKey) {
+		this.urlsAccessibleKey = urlsAccessibleKey;
+	}
 
-    @Override
-    public int hashCode() {
-    		return Objects.hash(getUrl(), getFunctionCd());
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(getUrl(), getFunctionCd());
+	}
 
-    @Override
-    public boolean equals( Object obj ) {
-      if (obj == null || !(obj instanceof UrlsAccessible))
-    	  	return false;  
-      UrlsAccessible ua = (UrlsAccessible)obj;
-      return Objects.equals(ua.getUrl(), getUrl()) && Objects.equals(ua.getFunctionCd(), getFunctionCd());
-    }
-   
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof UrlsAccessible))
+			return false;
+		UrlsAccessible ua = (UrlsAccessible) obj;
+		return Objects.equals(ua.getUrl(), getUrl()) && Objects.equals(ua.getFunctionCd(), getFunctionCd());
+	}
+
 }

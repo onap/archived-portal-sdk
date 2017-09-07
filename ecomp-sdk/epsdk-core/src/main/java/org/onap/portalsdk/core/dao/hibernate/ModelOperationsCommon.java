@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -67,7 +67,6 @@ public abstract class ModelOperationsCommon extends FusionDao {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List _getList(Class domainClass, String filterClause, Integer fromIndex, Integer toIndex, String orderBy) {
-		List list = null;
 		String className = domainClass.getName();
 
 		Session session = getSessionFactory().getCurrentSession();
@@ -76,19 +75,15 @@ public abstract class ModelOperationsCommon extends FusionDao {
 				+ ((fromIndex != null) ? " from rows " + fromIndex.toString() + " to " + toIndex.toString() : "")
 				+ "...");
 
-
-		if (filterClause != null && filterClause.length() > 0) {
+		if (filterClause != null && filterClause.length() > 0)
 			logger.info(EELFLoggerDelegate.debugLogger, "Filtering " + className + " by: " + filterClause);
 
-		}
-
-		list = session.createQuery("from " + className + Utilities.nvl(filterClause, "")
+		List list = session.createQuery("from " + className + Utilities.nvl(filterClause, "")
 				+ ((orderBy != null) ? " order by " + orderBy : "")).list();
 		list = (fromIndex != null) ? list.subList(fromIndex.intValue() - 1, toIndex.intValue()) : list;
 
-		if (orderBy == null && list != null) {
+		if (orderBy == null && list != null)
 			Collections.sort(list);
-		}
 
 		return list;
 	}
@@ -121,9 +116,8 @@ public abstract class ModelOperationsCommon extends FusionDao {
 
 		if (fetchModeMap != null) {
 			Iterator<String> itr = fetchModeMap.keySet().iterator();
-			String key = null;
 			while (itr.hasNext()) {
-				key = itr.next();
+				String key = itr.next();
 				criteria.setFetchMode(key, fetchModeMap.get(key));
 			}
 
@@ -133,21 +127,20 @@ public abstract class ModelOperationsCommon extends FusionDao {
 
 	@SuppressWarnings("rawtypes")
 	public DomainVo _get(Class domainClass, Serializable id) {
-		DomainVo vo = null;
 
 		Session session = getSessionFactory().getCurrentSession();
 
-		logger.info(EELFLoggerDelegate.debugLogger, "Getting " + domainClass.getName() + " record for id - " + id.toString());
+		logger.info(EELFLoggerDelegate.debugLogger,
+				"Getting " + domainClass.getName() + " record for id - " + id.toString());
 
-
-		vo = (DomainVo) session.get(domainClass, id);
+		DomainVo vo = (DomainVo) session.get(domainClass, id);
 
 		if (vo == null) {
 			try {
 				vo = (DomainVo) domainClass.newInstance();
 			} catch (Exception e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed while instantiating a class of " + domainClass.getName() + e.getMessage());
-
+				logger.error(EELFLoggerDelegate.errorLogger,
+						"Failed while instantiating a class of " + domainClass.getName(), e);
 			}
 		}
 
@@ -156,7 +149,7 @@ public abstract class ModelOperationsCommon extends FusionDao {
 
 	@SuppressWarnings("rawtypes")
 	public List _getLookupList(String dbTable, String dbValueCol, String dbLabelCol, String dbFilter, String dbOrderBy,
-			HashMap additionalParams) {
+			Map additionalParams) {
 		logger.info(EELFLoggerDelegate.debugLogger, "Retrieving " + dbTable + " lookup list...");
 
 		List list = null;
@@ -164,7 +157,7 @@ public abstract class ModelOperationsCommon extends FusionDao {
 
 		Session session = getSessionFactory().getCurrentSession();
 
-		// default the orderBy if null;
+		// default the orderBy if null
 		if (Utilities.nvl(dbOrderBy).length() == 0) {
 			dbOrderByCol = dbLabelCol;
 			dbOrderBy = dbLabelCol;
@@ -174,8 +167,7 @@ public abstract class ModelOperationsCommon extends FusionDao {
 			}
 		}
 
-		StringBuffer sql = new StringBuffer();
-
+		StringBuilder sql = new StringBuilder();
 		sql.append("select distinct ").append(dbLabelCol).append(" as lab, ").append(dbValueCol).append(" as val, ")
 				.append(dbOrderByCol).append(" as sortOrder ").append("from ").append(dbTable).append(" ")
 				.append((Utilities.nvl(dbFilter).length() == 0) ? "" : (" where " + dbFilter)).append(" order by ")
@@ -185,19 +177,23 @@ public abstract class ModelOperationsCommon extends FusionDao {
 			list = session.createSQLQuery(sql.toString()).addEntity(Lookup.class).list();
 		} catch (Exception e) {
 			list = null;
-			logger.info(EELFLoggerDelegate.debugLogger, "The results for the lookup list query [" + sql + "] were empty.");
+			logger.error(EELFLoggerDelegate.errorLogger, "_getLookupList failed on SQL: [" + sql + "]", e);
 		}
 
 		return list;
 	} // getLookupList
 
-	/* This method is used to execute SQL queries */
+	/**
+	 * This method is used to execute SQL queries
+	 */
 	@SuppressWarnings("rawtypes")
 	protected final List _executeSQLQuery(String sql, Class domainClass) {
 		return _executeSQLQuery(sql, domainClass, null, null);
 	}
 
-	/* This method is used to execute SQL queries with paging */
+	/**
+	 * This method is used to execute SQL queries with paging
+	 */
 	@SuppressWarnings("rawtypes")
 	protected final List _executeSQLQuery(String sql, Class domainClass, Integer fromIndex, Integer toIndex) {
 		Session session = getSessionFactory().getCurrentSession();
@@ -213,13 +209,17 @@ public abstract class ModelOperationsCommon extends FusionDao {
 		return query.list();
 	}
 
-	/* This method is used to execute HQL queries */
+	/**
+	 * This method is used to execute HQL queries
+	 */
 	@SuppressWarnings("rawtypes")
 	protected final List _executeQuery(String sql) {
 		return _executeQuery(sql, null, null);
 	}
 
-	/* This method is used to execute HQL queries with paging */
+	/**
+	 * This method is used to execute HQL queries with paging
+	 */
 	@SuppressWarnings("rawtypes")
 	protected final List _executeQuery(String sql, Integer fromIndex, Integer toIndex) {
 		Session session = getSessionFactory().getCurrentSession();
@@ -235,22 +235,22 @@ public abstract class ModelOperationsCommon extends FusionDao {
 		return query.list();
 	}
 
-	/*
+	/**
 	 * This method can be used to execute both HQL or SQL named queries. The
-	 * distinction will come in the hbm.xml mapping file defining the named
-	 * query. Named HQL queries use the <query> tag while named SQL queries use
-	 * the <sql-query> tag.
+	 * distinction will come in the hbm.xml mapping file defining the named query.
+	 * Named HQL queries use the <query> tag while named SQL queries use the
+	 * <sql-query> tag.
 	 */
 	@SuppressWarnings("rawtypes")
 	protected final List _executeNamedQuery(String queryName, Map params) {
 		return _executeNamedQuery(queryName, params, null, null);
 	}
 
-	/*
-	 * This method can be used to execute both HQL or SQL named queries with
-	 * paging. The distinction will come in the hbm.xml mapping file defining
-	 * the named query. Named HQL queries use the <query> tag while named SQL
-	 * queries use the <sql-query> tag.
+	/**
+	 * This method can be used to execute both HQL or SQL named queries with paging.
+	 * The distinction will come in the hbm.xml mapping file defining the named
+	 * query. Named HQL queries use the <query> tag while named SQL queries use the
+	 * <sql-query> tag.
 	 */
 	@SuppressWarnings("rawtypes")
 	protected final List _executeNamedQuery(String queryName, Map params, Integer fromIndex, Integer toIndex) {
@@ -266,37 +266,32 @@ public abstract class ModelOperationsCommon extends FusionDao {
 	}
 
 	// RAPTOR ZK
-	/*
-	 * This method can be used to execute both HQL or SQL named queries with
-	 * paging. The distinction will come in the hbm.xml mapping file defining
-	 * the named query. Named HQL queries use the <query> tag while named SQL
-	 * queries use the <sql-query> tag.
+
+	/**
+	 * This method can be used to execute both HQL or SQL named queries with paging.
+	 * The distinction will come in the hbm.xml mapping file defining the named
+	 * query. Named HQL queries use the <query> tag while named SQL queries use the
+	 * <sql-query> tag.
 	 */
 	@SuppressWarnings("rawtypes")
 	protected final List _executeNamedCountQuery(Class entity, String queryName, String whereClause, Map params) {
 		Session session = getSessionFactory().getCurrentSession();
 		Query query = session.getNamedQuery(queryName);
 		String queryStr = query.getQueryString();
-		StringBuffer modifiedSql = new StringBuffer(" select count(*) as countRows from (" + queryStr + " ) al ");
+		StringBuilder modifiedSql = new StringBuilder("select count(*) as countRows from (" + queryStr + " ) al ");
 		if (whereClause != null && whereClause.length() > 0)
 			modifiedSql.append("where " + whereClause);
-		// SQLQuery sqlQuery = session.createSQLQuery(" select count(*) as
-		// {reportSearch.countRows} from ("+ modifiedSql.toString()+")");
 		SQLQuery sqlQuery = session.createSQLQuery(modifiedSql.toString());
 		bindQueryParameters(sqlQuery, params);
 		sqlQuery.addScalar("countRows", LongType.INSTANCE);
-		// sqlQuery.addEntity("reportSearch", entity);
-		// sqlQuery.setResultTransformer(new
-		// AliasToBeanResultTransformer(SearchCount.class));
 		return sqlQuery.list();
-
 	}
 
-	/*
-	 * This method can be used to execute both HQL or SQL named queries with
-	 * paging. The distinction will come in the hbm.xml mapping file defining
-	 * the named query. Named HQL queries use the <query> tag while named SQL
-	 * queries use the <sql-query> tag. It is modified to test ZK filter.
+	/**
+	 * This method can be used to execute both HQL or SQL named queries with paging.
+	 * The distinction will come in the hbm.xml mapping file defining the named
+	 * query. Named HQL queries use the <query> tag while named SQL queries use the
+	 * <sql-query> tag. It is modified to test ZK filter.
 	 */
 	@SuppressWarnings("rawtypes")
 	protected final List _executeNamedQuery(Class entity, String queryName, String whereClause, Map params,
@@ -305,12 +300,13 @@ public abstract class ModelOperationsCommon extends FusionDao {
 		Query query = session.getNamedQuery(queryName);
 		bindQueryParameters(query, params);
 		String queryStr = query.getQueryString();
-		StringBuffer modifiedSql = new StringBuffer(" select * from (" + queryStr + " ) al ");
+		StringBuilder modifiedSql = new StringBuilder(" select * from (" + queryStr + " ) al ");
 		if (whereClause != null && whereClause.length() > 0)
 			modifiedSql.append("where " + whereClause);
 
 		SQLQuery sqlQuery = session.createSQLQuery(modifiedSql.toString());
 		bindQueryParameters(sqlQuery, params);
+		// why is reportSearch hardcoded here?
 		sqlQuery.addEntity("reportSearch", entity);
 
 		if (fromIndex != null && toIndex != null) {
@@ -321,11 +317,11 @@ public abstract class ModelOperationsCommon extends FusionDao {
 		return sqlQuery.list();
 	}
 
-	/*
-	 * This method can be used to execute both HQL or SQL named queries with
-	 * paging. The distinction will come in the hbm.xml mapping file defining
-	 * the named query. Named HQL queries use the <query> tag while named SQL
-	 * queries use the <sql-query> tag.
+	/**
+	 * x This method can be used to execute both HQL or SQL named queries with
+	 * paging. The distinction will come in the hbm.xml mapping file defining the
+	 * named query. Named HQL queries use the <query> tag while named SQL queries
+	 * use the <sql-query> tag.
 	 */
 	@SuppressWarnings("rawtypes")
 	protected final List _executeNamedQueryWithOrderBy(Class entity, String queryName, Map params, String _orderBy,
@@ -346,7 +342,6 @@ public abstract class ModelOperationsCommon extends FusionDao {
 		return sqlQuery.list();
 	}
 
-	// Where Clause
 	@SuppressWarnings("rawtypes")
 	protected final List _executeNamedQueryWithOrderBy(Class entity, String queryName, String whereClause, Map params,
 			String _orderBy, boolean asc, Integer fromIndex, Integer toIndex) {
@@ -355,10 +350,7 @@ public abstract class ModelOperationsCommon extends FusionDao {
 		bindQueryParameters(query, params);
 		String queryStr = query.getQueryString();
 		queryStr = String.format(queryStr, _orderBy, asc ? "ASC" : "DESC");
-		// StringBuffer modifiedSql = new StringBuffer(queryStr );
-		StringBuffer modifiedSql = new StringBuffer(" select * from (" + queryStr + " ) al ");
-		// modifiedSql.insert(queryStr.lastIndexOf("order by"), " " +
-		// whereClause + " ");
+		StringBuilder modifiedSql = new StringBuilder(" select * from (" + queryStr + " ) al ");
 		if (whereClause != null && whereClause.length() > 0)
 			modifiedSql.append("where " + whereClause);
 		SQLQuery sqlQuery = session.createSQLQuery(modifiedSql.toString());
@@ -375,7 +367,7 @@ public abstract class ModelOperationsCommon extends FusionDao {
 	// RAPTOR ZK END
 
 	/* Processes custom Insert/Update/Delete SQL statements */
-	protected final int _executeUpdateQuery(String sql) throws Exception {
+	protected final int _executeUpdateQuery(String sql) {
 		Session session = getSessionFactory().getCurrentSession();
 		Query query = session.createSQLQuery(sql);
 		return query.executeUpdate();
@@ -383,7 +375,7 @@ public abstract class ModelOperationsCommon extends FusionDao {
 
 	/* Processes Insert/Update/Delete Named SQL statements */
 	@SuppressWarnings("rawtypes")
-	protected final int _executeNamedUpdateQuery(String queryName, Map params) throws Exception {
+	protected final int _executeNamedUpdateQuery(String queryName, Map params) {
 		Session session = getSessionFactory().getCurrentSession();
 		Query query = session.getNamedQuery(queryName);
 		bindQueryParameters(query, params);
@@ -391,7 +383,7 @@ public abstract class ModelOperationsCommon extends FusionDao {
 	}
 
 	protected final void _update(DomainVo vo, Integer userId) {
-		_update(vo, ((userId != null) ? userId.intValue() : 0));
+		_update(vo, (userId != null) ? userId.intValue() : 0);
 	}
 
 	protected final void _update(DomainVo vo, int userId) {
@@ -427,16 +419,10 @@ public abstract class ModelOperationsCommon extends FusionDao {
 
 	@SuppressWarnings("rawtypes")
 	protected final int _remove(Class domainClass, String whereClause) {
-		int rowsAffected = 0;
-
 		Session session = getSessionFactory().getCurrentSession();
-
-		StringBuffer sql = new StringBuffer("delete from ");
-
+		StringBuilder sql = new StringBuilder("delete from ");
 		sql.append(domainClass.getName()).append(" where ").append(whereClause);
-
-		rowsAffected = session.createQuery(sql.toString()).executeUpdate();
-
+		int rowsAffected = session.createQuery(sql.toString()).executeUpdate();
 		return rowsAffected;
 	}
 
@@ -452,17 +438,14 @@ public abstract class ModelOperationsCommon extends FusionDao {
 				Map.Entry entry = (Map.Entry) i.next();
 
 				Object parameterValue = entry.getValue();
-
 				if (!(parameterValue instanceof Collection) && !(parameterValue instanceof Object[])) {
 					query.setParameter((String) entry.getKey(), parameterValue);
+				} else if (parameterValue instanceof Collection) {
+					query.setParameterList((String) entry.getKey(), (Collection) parameterValue);
+				} else if (parameterValue instanceof Object[]) {
+					query.setParameterList((String) entry.getKey(), (Object[]) parameterValue);
 				} else {
-					if (parameterValue instanceof Collection) {
-						query.setParameterList((String) entry.getKey(), (Collection) parameterValue);
-					} else {
-						if (parameterValue instanceof Object[]) {
-							query.setParameterList((String) entry.getKey(), (Object[]) parameterValue);
-						}
-					}
+					logger.warn("bindQueryParameters: unimplemented case for {}", parameterValue);
 				}
 			}
 		}

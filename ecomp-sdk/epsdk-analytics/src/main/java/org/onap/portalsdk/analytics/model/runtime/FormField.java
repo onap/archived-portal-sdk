@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -62,20 +62,28 @@ package org.onap.portalsdk.analytics.model.runtime;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.HiddenAction;
-
-import org.onap.portalsdk.analytics.error.RaptorException;
 import org.onap.portalsdk.analytics.error.RaptorRuntimeException;
 import org.onap.portalsdk.analytics.error.UserDefinedException;
-import org.onap.portalsdk.analytics.model.base.*;
-import org.onap.portalsdk.analytics.system.*;
-import org.onap.portalsdk.analytics.util.*;
-import org.onap.portalsdk.analytics.xmlobj.*;
+import org.onap.portalsdk.analytics.model.base.IdNameList;
+import org.onap.portalsdk.analytics.model.base.IdNameLookup;
+import org.onap.portalsdk.analytics.model.base.IdNameSql;
+import org.onap.portalsdk.analytics.model.base.IdNameValue;
+import org.onap.portalsdk.analytics.system.AppUtils;
+import org.onap.portalsdk.analytics.system.ConnectionUtils;
+import org.onap.portalsdk.analytics.system.Globals;
+import org.onap.portalsdk.analytics.util.DataSet;
+import org.onap.portalsdk.analytics.util.Utils;
+import org.onap.portalsdk.analytics.xmlobj.JavascriptItemType;
 
 public class FormField extends org.onap.portalsdk.analytics.RaptorObject implements Serializable {
 	private static final String HTML_FORM = "formd";

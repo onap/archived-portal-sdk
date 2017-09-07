@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -61,16 +61,28 @@
  */
 package org.onap.portalsdk.analytics.model;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
-import javax.servlet.http.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.util.Iterator;
 
-import org.onap.portalsdk.analytics.controller.*;
+import javax.servlet.http.HttpServletRequest;
+
+import org.onap.portalsdk.analytics.controller.ErrorHandler;
 import org.onap.portalsdk.analytics.error.RaptorException;
-import org.onap.portalsdk.analytics.model.search.*;
-import org.onap.portalsdk.analytics.system.*;
-import org.onap.portalsdk.analytics.util.*;
+import org.onap.portalsdk.analytics.model.search.ReportSearchResult;
+import org.onap.portalsdk.analytics.model.search.ReportSearchResultJSON;
+import org.onap.portalsdk.analytics.model.search.SearchResultColumn;
+import org.onap.portalsdk.analytics.model.search.SearchResultField;
+import org.onap.portalsdk.analytics.model.search.SearchResultRow;
+import org.onap.portalsdk.analytics.system.AppUtils;
+import org.onap.portalsdk.analytics.system.DbUtils;
+import org.onap.portalsdk.analytics.system.Globals;
+import org.onap.portalsdk.analytics.util.AppConstants;
+import org.onap.portalsdk.analytics.util.DataSet;
+import org.onap.portalsdk.analytics.util.HtmlStripper;
 
 public class SearchHandler extends org.onap.portalsdk.analytics.RaptorObject {
     private static final String HTML_FORM = "forma";

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,49 +37,62 @@
  */
 package org.onap.portalsdk.core.command.support;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("rawtypes")
 public class SearchResult extends ArrayList implements java.io.Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -451947878984459011L;
-	private int pageNo   = 0;
+	private int pageNo = 0;
 	private int pageSize = 50;
 	private int dataSize = -1;
 
-	private String accessType   = null;
+	private String accessType = null;
 
-	//private boolean empty = true;	// Overrides collections [isEmpty] with searchResult present/not present logic
-
-
-	public SearchResult() {}
+	public SearchResult() {
+		super();
+	}
 
 	@SuppressWarnings("unchecked")
 	public SearchResult(List items) {
 		super(items);
-	}	// SearchResult
+	}
 
-	/*public SearchResult(boolean empty) {
-		this();
-		this.empty = empty;
-	}	// SearchResult*/
+	public int getPageNo() {
+		return pageNo;
+	}
 
+	public int getPageSize() {
+		return pageSize;
+	}
 
-	public int getPageNo()   { return pageNo; }
-	public int getPageSize() { return pageSize; }
-	public int getDataSize() { return dataSize; }
+	public int getDataSize() {
+		return dataSize;
+	}
 
-	public int     getSize() { return size(); }	// for Struts bean property access
-	//public boolean isEmpty() { return empty; }
+	public int getSize() {
+		return size();
+	} // for Struts bean property access
 
-	public String getAccessType() { return accessType; }
+	public String getAccessType() {
+		return accessType;
+	}
 
-	public void setPageNo(int pageNo)     { this.pageNo=pageNo; }
-	public void setPageSize(int pageSize) { this.dataSize=pageSize; }
-	public void setDataSize(int dataSize) { this.dataSize=dataSize; }
+	public void setPageNo(int pageNo) {
+		this.pageNo = pageNo;
+	}
 
-	public void setAccessType(String accessType) { this.accessType = accessType; }
+	public void setPageSize(int pageSize) {
+		this.dataSize = pageSize;
+	}
 
-}	// SearchResult
+	public void setDataSize(int dataSize) {
+		this.dataSize = dataSize;
+	}
+
+	public void setAccessType(String accessType) {
+		this.accessType = accessType;
+	}
+
+}

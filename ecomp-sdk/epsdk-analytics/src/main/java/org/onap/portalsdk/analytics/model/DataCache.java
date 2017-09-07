@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,17 +37,25 @@
  */
 package org.onap.portalsdk.analytics.model;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.onap.portalsdk.analytics.error.RaptorException;
 import org.onap.portalsdk.analytics.error.ReportSQLException;
-import org.onap.portalsdk.analytics.model.base.*;
-import org.onap.portalsdk.analytics.model.definition.*;
-import org.onap.portalsdk.analytics.model.runtime.*;
-import org.onap.portalsdk.analytics.system.*;
-import org.onap.portalsdk.analytics.util.*;
+import org.onap.portalsdk.analytics.model.base.IdNameValue;
+import org.onap.portalsdk.analytics.model.definition.DBColumnInfo;
+import org.onap.portalsdk.analytics.model.definition.TableJoin;
+import org.onap.portalsdk.analytics.model.definition.TableSource;
+import org.onap.portalsdk.analytics.model.runtime.LookupDBInfo;
+import org.onap.portalsdk.analytics.system.AppUtils;
+import org.onap.portalsdk.analytics.system.ConnectionUtils;
+import org.onap.portalsdk.analytics.system.DbUtils;
+import org.onap.portalsdk.analytics.system.Globals;
+import org.onap.portalsdk.analytics.util.AppConstants;
+import org.onap.portalsdk.analytics.util.DataSet;
 
 public class DataCache extends org.onap.portalsdk.analytics.RaptorObject {
 	private static Vector dataViewActions = null;

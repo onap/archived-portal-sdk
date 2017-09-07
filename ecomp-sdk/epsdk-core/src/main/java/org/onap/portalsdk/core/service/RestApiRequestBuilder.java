@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -54,10 +54,10 @@ public class RestApiRequestBuilder {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RestApiRequestBuilder.class);
 
+	private static final String APPLICATION_JSON = "application/json";
+
 	@Autowired
 	private AppService appService;
-
-	private static final String content_type = "application/json";
 
 	/**
 	 * 
@@ -69,9 +69,9 @@ public class RestApiRequestBuilder {
 	 */
 	public String getViaREST(String restEndPoint, boolean isBasicAuth, String userId) throws IOException {
 		logger.info(EELFLoggerDelegate.debugLogger, "getViaRest: endpoint {}", restEndPoint);
-		String appName = "";
-		String appUserName = "";
-		String decryptedPwd = "";
+		String appName;
+		String appUserName;
+		String decryptedPwd = null;
 		App app = appService.getDefaultApp();
 		if (app != null) {
 			appName = app.getName();
@@ -81,12 +81,13 @@ public class RestApiRequestBuilder {
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
 			} catch (CipherUtilException e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "getViaREST failed", e);
-				throw new IOException(e.toString());
+				throw new IOException("getViaREST failed", e);
 			}
 		} else {
 			logger.warn(EELFLoggerDelegate.errorLogger,
 					"getViaREST: Unable to locate the app information from the database.");
 			appName = SystemProperties.SDK_NAME;
+			appUserName = "unknown";
 		}
 		String requestId = MDC.get(MDC_KEY_REQUEST_ID);
 		String response = RestWebServiceClient.getInstance().getPortalContent(restEndPoint, userId, appName, requestId,
@@ -106,9 +107,9 @@ public class RestApiRequestBuilder {
 	public void postViaREST(String restEndPoint, boolean isBasicAuth, String content, String userId)
 			throws IOException {
 		logger.info(EELFLoggerDelegate.debugLogger, "postViaRest: endpoint {}", restEndPoint);
-		String appName = "";
-		String appUserName = "";
-		String decryptedPwd = "";
+		String appName;
+		String appUserName;
+		String decryptedPwd = null;
 		App app = appService.getDefaultApp();
 		if (app != null) {
 			appName = app.getName();
@@ -118,16 +119,17 @@ public class RestApiRequestBuilder {
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
 			} catch (CipherUtilException e) {
 				logger.error(EELFLoggerDelegate.errorLogger, "postViaREST failed", e);
-				throw new IOException(e.toString());
+				throw new IOException("postViaREST failed", e);
 			}
 		} else {
 			logger.warn(EELFLoggerDelegate.errorLogger,
 					"postViaRest: Unable to locate the app information from the database.");
 			appName = SystemProperties.SDK_NAME;
+			appUserName = "unknown";
 		}
 		String requestId = MDC.get(MDC_KEY_REQUEST_ID);
 		String response = RestWebServiceClient.getInstance().postPortalContent(restEndPoint, userId, appName, requestId,
-				appUserName, decryptedPwd, content_type, content, isBasicAuth);
+				appUserName, decryptedPwd, APPLICATION_JSON, content, isBasicAuth);
 		logger.debug(EELFLoggerDelegate.debugLogger, "postViaRest response: {}", response);
 	}
 
@@ -142,9 +144,9 @@ public class RestApiRequestBuilder {
 	public void deleteViaRest(String restEndPoint, boolean isBasicAuth, String content, String userId)
 			throws IOException {
 		logger.info(EELFLoggerDelegate.debugLogger, "deleteViaRest: endpoint {}", restEndPoint);
-		String appName = "";
-		String appUserName = "";
-		String decryptedPwd = "";
+		String appName;
+		String appUserName;
+		String decryptedPwd = null;
 		App app = appService.getDefaultApp();
 		if (app != null) {
 			appName = app.getName();
@@ -153,17 +155,18 @@ public class RestApiRequestBuilder {
 				decryptedPwd = CipherUtil.decrypt(app.getAppPassword(),
 						SystemProperties.getProperty(SystemProperties.Decryption_Key));
 			} catch (CipherUtilException e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "postViaREST failed", e);
-				throw new IOException(e.toString());
+				logger.error(EELFLoggerDelegate.errorLogger, "deleteViaRest failed", e);
+				throw new IOException("deleteViaRest failed", e);
 			}
 		} else {
 			logger.warn(EELFLoggerDelegate.errorLogger,
 					"deleteViaRest: Unable to locate the app information from the database.");
 			appName = SystemProperties.SDK_NAME;
+			appUserName = "unknown";
 		}
 		String requestId = MDC.get(MDC_KEY_REQUEST_ID);
 		String response = RestWebServiceClient.getInstance().deletePortalContent(restEndPoint, userId, appName,
-				requestId, appUserName, decryptedPwd, content_type, content, isBasicAuth);
+				requestId, appUserName, decryptedPwd, APPLICATION_JSON, content, isBasicAuth);
 		logger.debug(EELFLoggerDelegate.debugLogger, "deleteViaRest response: {}", response);
 	}
 

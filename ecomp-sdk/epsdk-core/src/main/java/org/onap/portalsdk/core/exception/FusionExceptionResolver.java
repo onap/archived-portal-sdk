@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -44,25 +44,30 @@ import org.springframework.web.servlet.ModelAndView;
 @ControllerAdvice
 public class FusionExceptionResolver {
 
+	private final String error = "error";
+	private final String errMsg = "errMsg";
+
 	@ExceptionHandler(UrlAccessRestrictedException.class)
 	public ModelAndView handleUrlAccessException(UrlAccessRestrictedException ex) {
-		ModelAndView model = new ModelAndView("error");
-		model.addObject("errMsg", ex.getMessage());
+		ModelAndView model = new ModelAndView(error);
+		model.addObject(errMsg, ex.getMessage());
 		return model;
 
 	}
+
 	@ExceptionHandler(SessionExpiredException.class)
 	public ModelAndView handleSessionException(SessionExpiredException ex) {
-		ModelAndView model = new ModelAndView("error");
-		model.addObject("errMsg", ex.getMessage());
+		ModelAndView model = new ModelAndView(error);
+		model.addObject(errMsg, ex.getMessage());
 		return model;
 	}
+
 	@ExceptionHandler(Exception.class)
 	public ModelAndView handleAllException(Exception ex) {
-		ModelAndView model = new ModelAndView("error");
-		model.addObject("errMsg", ex.getMessage());
+		ModelAndView model = new ModelAndView(error);
+		model.addObject(errMsg, ex.getMessage());
 		return model;
 
 	}
-	
+
 }

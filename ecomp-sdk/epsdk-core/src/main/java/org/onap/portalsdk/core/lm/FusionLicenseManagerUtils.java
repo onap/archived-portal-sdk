@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -50,42 +50,30 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 @Component
 public class FusionLicenseManagerUtils {
-	
+
 	@Autowired
 	private FusionLicenseManager licenseManager;
 
 	@Autowired
 	private SystemProperties sysProps;
-	static {
-	}
-		
+
 	public int verifyLicense(ServletContext context) {
-		if(sysProps == null) {
+		if (sysProps == null) {
 			try {
 				sysProps = new SystemProperties();
 				sysProps.setServletContext(context);
-//				sysProps.load();
-//				licenseManager = new FusionLicenseManagerImpl(new LicenseableClassImpl());
 				System.out.println(licenseManager);
 				licenseManager.installLicense();
-			}
-			catch(Exception ex) {
+			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
-		
-		
-		
-//		WebApplicationContext ctx =RequestContextUtils.getWebApplicationContext(request);
-//		int flag = ((FusionLicenseManager)ctx.getBean("fusionLicenseManager")).verifyLicense(request);
-//		logger.debug("****************FLAG ******************** " + flag);
-//		return flag;
-//		return 2;
+
 		return licenseManager.verifyLicense(context);
 	}
 
 	public static Date getLicenseExpiryDate(HttpServletRequest request) {
-		WebApplicationContext ctx =RequestContextUtils.getWebApplicationContext(request);
-		return ((FusionLicenseManager)ctx.getBean("fusionLicenseManager")).getExpiredDate();
+		WebApplicationContext ctx = RequestContextUtils.getWebApplicationContext(request);
+		return ((FusionLicenseManager) ctx.getBean("fusionLicenseManager")).getExpiredDate();
 	}
 }

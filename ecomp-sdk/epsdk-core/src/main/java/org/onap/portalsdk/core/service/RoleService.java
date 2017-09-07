@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,111 +37,118 @@
  */
 package org.onap.portalsdk.core.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.domain.RoleFunction;
 
-
 public interface RoleService {
 	/**
+	 * returns list of Role Functions
 	 * 
-	 * @param requestedLoginId loginId
+	 * @param requestedLoginId
+	 *            loginId
 	 * @return returns List of RoleFunction
-	 * @throws Exception
-	 * Method getRoleFunctions returns list of Role Functions
+	 * @throws IOException
 	 */
-	List<RoleFunction> getRoleFunctions(String requestedLoginId) throws Exception;
-	
-	
+	List<RoleFunction> getRoleFunctions(String requestedLoginId) throws IOException;
+
 	/**
+	 * returns list of avialable child roles
 	 * 
 	 * @param requestedLoginId
 	 * @param roleId
 	 * @return returns List of Role
-	 * @throws Exception
-	 * Method getAvailableChildRoles returns list of avialable child roles
+	 * @throws IOException
 	 */
-	List<Role> getAvailableChildRoles(String requestedLoginId,Long roleId) throws Exception;
-	
-	
-	/**
-	 * 
-	 * @param requestedLoginId
-	 * @param id roleId
-	 * @return returns role 
-	 * @throws Exception
-	 * Method getRole returns Role object if requested roleID
-	 */
-	Role getRole(String requestedLoginId,Long id) throws Exception;
-	
-	/**
-	 * 
-	 * @param requestedLoginId
-	 * @param domainRole Object to be saved
-	 * Method saveRole saves the Role Object
-	 */
-	void saveRole(String requestedLoginId,Role domainRole) throws Exception;
-	
-	/**
-	 * 
-	 * @param requestedLoginId
-	 * @param domainRole Object to be removed
-	 * Method deleteRole deletes the requested Role Object
-	 */
-	void deleteRole(String requestedLoginId,Role domainRole) throws Exception;
-	
-	/**
-	 * 
-	 * @param requestedLoginId
-	 * @return returns list of available roles
-	 * @throws Exception
-	 * Method getAvailableRoles gets the list of available roles
-	 */
-	
-	List<Role> getAvailableRoles(String requestedLoginId) throws Exception;
-	
-	/**
-	 * 
-	 * @param requestedLoginId
-	 * @return List of active roles
-	 * @throws Exception
-	 * Method getActiveRoles gets the list of active roles of application
-	 * 
-	 */
-	List<Role> getActiveRoles(String requestedLoginId) throws Exception;
+	List<Role> getAvailableChildRoles(String requestedLoginId, Long roleId) throws IOException;
 
 	/**
-	 * 
-	 * @param requestedLoginId
-	 * @param code function code
-	 * @return RoleFunction of requested function code
-	 * @throws Exception
-	 * Method getRoleFunction returns RoleFunction of requested function code
-	 */
-	RoleFunction getRoleFunction(String requestedLoginId,String code) throws Exception;
-	
-	/**
-	 * 
-	 * @param requestedLoginId
-	 * @param domainRoleFunction
-	 * Method saveRoleFunction saves the requested RoleFunction object
-	 */
-	void saveRoleFunction(String requestedLoginId,RoleFunction domainRoleFunction) throws Exception;
-	
-	/**
-	 * 
-	 * @param requestedLoginId
-	 * @param domainRoleFunction
-	 * Method deleteRoleFunction deletes the requested RoleFunction object
-	 */
-	void deleteRoleFunction(String requestedLoginId,RoleFunction domainRoleFunction) throws Exception;
-	
-	/**
+	 * returns Role object with requested roleID
 	 * 
 	 * @param requestedLoginId
 	 * @param id
-	 * Method deleteDependcyRoleRecord deletes the requested object
+	 *            roleId
+	 * @return returns role
+	 * @throws IOException
 	 */
-	void deleteDependcyRoleRecord(String requestedLoginId,Long id);
+	Role getRole(String requestedLoginId, Long id) throws IOException;
+
+	/**
+	 * saves the Role Object
+	 * 
+	 * @param requestedLoginId
+	 * @param domainRole
+	 *            Object to be saved
+	 * @throws IOException
+	 */
+	void saveRole(String requestedLoginId, Role domainRole) throws IOException;
+
+	/**
+	 * 
+	 * deletes the requested Role Object
+	 * 
+	 * @param requestedLoginId
+	 * @param domainRole
+	 *            Object to be removed
+	 * @throws IOException
+	 */
+	void deleteRole(String requestedLoginId, Role domainRole) throws IOException;
+
+	/**
+	 * gets the list of available roles
+	 * 
+	 * @param requestedLoginId
+	 * @return returns list of available roles
+	 * @throws IOException
+	 */
+	List<Role> getAvailableRoles(String requestedLoginId) throws IOException;
+
+	/**
+	 * gets the list of active roles of application
+	 * 
+	 * @param requestedLoginId
+	 * @return List of active roles
+	 * @throws IOException
+	 */
+	List<Role> getActiveRoles(String requestedLoginId) throws IOException;
+
+	/**
+	 * returns RoleFunction of requested function code
+	 * 
+	 * @param requestedLoginId
+	 * @param code
+	 *            function code
+	 * @return RoleFunction of requested function code
+	 * @throws IOException
+	 */
+	RoleFunction getRoleFunction(String requestedLoginId, String code) throws IOException;
+
+	/**
+	 * saves the requested RoleFunction object
+	 * 
+	 * @param requestedLoginId
+	 * @param domainRoleFunction
+	 * @throws IOException
+	 */
+	void saveRoleFunction(String requestedLoginId, RoleFunction domainRoleFunction) throws IOException;
+
+	/**
+	 * deletes the requested RoleFunction object
+	 * 
+	 * @param requestedLoginId
+	 * @param domainRoleFunction
+	 * @throws IOException
+	 */
+	void deleteRoleFunction(String requestedLoginId, RoleFunction domainRoleFunction) throws IOException;
+
+	/**
+	 * deletes the requested object
+	 * 
+	 * @param requestedLoginId
+	 * @param id
+	 * @throws IOException
+	 */
+	void deleteDependcyRoleRecord(String requestedLoginId, Long id) throws IOException;
 }

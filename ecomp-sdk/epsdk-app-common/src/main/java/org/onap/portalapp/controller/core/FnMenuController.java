@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -68,7 +68,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * A controller for Admin to add/edit/delete menu items from FN_MENU.
  */
-
 @Controller
 @RequestMapping("/")
 public class FnMenuController extends RestrictedBaseController {
@@ -91,7 +90,6 @@ public class FnMenuController extends RestrictedBaseController {
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getParentListFailed", e);
 			response.setCharacterEncoding("UTF-8");
-			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
 			out.write(e.getMessage());
 		}
@@ -105,7 +103,6 @@ public class FnMenuController extends RestrictedBaseController {
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getFunctionCDList", e);
 			response.setCharacterEncoding("UTF-8");
-			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
 			out.write(e.getMessage());
 		}
@@ -114,10 +111,10 @@ public class FnMenuController extends RestrictedBaseController {
 
 	@RequestMapping(value = { "/admin_fn_menu" }, method = RequestMethod.GET)
 	public void getFnMenuList(HttpServletRequest request, HttpServletResponse response) {
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 		List<MenuData> temp = null;
-		List<List<MenuData>> childItemList = new ArrayList<List<MenuData>>();
+		List<List<MenuData>> childItemList = new ArrayList<>();
 		List<MenuData> parentList = new ArrayList<>();
 
 		try {
@@ -142,20 +139,10 @@ public class FnMenuController extends RestrictedBaseController {
 				parentData.setSeparator(menu.isSeparator());
 				parentData.setImageSrc(menu.getImageSrc());
 				parentList.add(parentData);
-				List<MenuData> tempList = new ArrayList<MenuData>();
-				// int countChildAction = 0;
-				/*
-				 * for(Object o:menu.getChildMenus()){ Menu m = (Menu)o; Menu
-				 * data = new Menu(); data.setId(m.getId());
-				 * data.setLabel(m.getLabel()); data.setAction(m.getAction());
-				 * data.setImageSrc(m.getImageSrc()); tempList.add(data); }
-				 */
+				List<MenuData> tempList = new ArrayList<>();
 				childItemList.add(tempList);
 			}
 			model.put("fnMenuItems", parentList);
-			// JsonMessage msg = new
-			// JsonMessage(mapper.writeValueAsString(parentList),mapper.writeValueAsString(childItemList),"none");
-
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
 			JSONObject j = new JSONObject(msg);
 			response.getWriter().write(j.toString());
@@ -234,10 +221,12 @@ public class FnMenuController extends RestrictedBaseController {
 
 	}
 
+	@Override
 	public String getViewName() {
 		return viewName;
 	}
 
+	@Override
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
 	}

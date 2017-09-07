@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,6 +37,7 @@
  */
 package org.onap.portalsdk.workflow.scheduler;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,20 +57,16 @@ public class WorkFlowScheduleRegistry{
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WorkFlowScheduleRegistry.class);
 
-	public WorkFlowScheduleRegistry() {
-
-	}
-
 	private static final String groupName = "AppGroup";
 	private static final String jobName = "WorkflowScheduleJob";
 	private static final String triggerName = "WorkflowScheduleTrigger";
 
-	// @Autowired
-	// private SystemProperties systemProperties;
+	public WorkFlowScheduleRegistry() {
+		super();
+	}
 
 	// @Bean
 	public JobDetailFactoryBean jobDetailFactoryBean(Map<String, ?> contextInfoMap) {
-
 		JobDetailFactoryBean jobDetailFactory = new JobDetailFactoryBean();
 		jobDetailFactory.setJobClass(WorkFlowScheduleJob.class);
 		jobDetailFactory.setJobDataAsMap(contextInfoMap);
@@ -81,13 +78,13 @@ public class WorkFlowScheduleRegistry{
 
 	// @Bean
 	public CronTriggerFactoryBean cronTriggerFactoryBean(JobDetailFactoryBean jobDetailFactory, Long id,
-			String cronExpression, Date startDateTime, Date enddatetime) throws Exception {
+			String cronExpression, Date startDateTime, Date enddatetime) throws ParseException {
 		CronTriggerFactoryBean cronTriggerFactory = new CronTriggerFactoryBean();
 		cronTriggerFactory.setJobDetail(jobDetailFactory.getObject());
 		cronTriggerFactory.setStartDelay(3000);
 		cronTriggerFactory.setName(triggerName + "_" + id);
 		cronTriggerFactory.setGroup(groupName);
-		logger.debug(EELFLoggerDelegate.debugLogger, (triggerName + " Scheduled: " + cronExpression));
+		logger.debug(EELFLoggerDelegate.debugLogger, triggerName + " Scheduled: " + cronExpression);
 		cronTriggerFactory.setCronExpression( cronExpression);  //"0 * * * * ? *"
 		cronTriggerFactory.afterPropertiesSet();
 
@@ -96,27 +93,21 @@ public class WorkFlowScheduleRegistry{
 		cronTrigger.setEndTime(enddatetime);
 		Date fireAgainTime = cronTrigger.getFireTimeAfter(cronTrigger.getStartTime());
 		if (fireAgainTime == null)
-			throw new Exception("Cron not added as it may not fire again " + " Expr: " + cronExpression + " End Time: "
+			throw new IllegalArgumentException("Cron not added as it may not fire again " + " Expr: " + cronExpression + " End Time: "
 					+ cronTrigger.getEndTime());
 		return cronTriggerFactory;
-
 	}
 
 	public CronTriggerFactoryBean setUpTrigger(Long wfId, String serverUrl, String workflowKey, String arguments,
-			String startdatetimecron, Date startDateTime, Date enddatetime) throws Exception {
+			String startdatetimecron, Date startDateTime, Date enddatetime) throws ParseException {
 
-		Map<String, String> contextInfo = new HashMap<String, String>();
+		Map<String, String> contextInfo = new HashMap<>();
 		contextInfo.put("serverUrl", serverUrl);
 		contextInfo.put("workflowKey", workflowKey);
 		contextInfo.put("arguments", arguments);
 		JobDetailFactoryBean jobDetailFactory = jobDetailFactoryBean(contextInfo);
-
 		CronTriggerFactoryBean cronTriggerFactory = cronTriggerFactoryBean(jobDetailFactory, wfId, startdatetimecron, startDateTime, enddatetime);
-		
-		logger.debug(EELFLoggerDelegate.debugLogger, (" Job to be Scheduled: " + contextInfo.get("workflowKey")));
-		
-		//cronTriggerFactory.
-		
+		logger.debug(EELFLoggerDelegate.debugLogger, " Job to be Scheduled: " + contextInfo.get("workflowKey"));		
 		return cronTriggerFactory;
 	}
 

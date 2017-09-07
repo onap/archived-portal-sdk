@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -55,22 +55,22 @@ public class FusionLicenseManagerImpl implements FusionLicenseManager {
 
 	@Override
 	public void initKeyStoreParam() {
-		
-	}
-	
-	@Override
-	public void initCipherParam() {
-		
+		// a dummy stub for the interface
 	}
 
-	@Override	
+	@Override
+	public void initCipherParam() {
+		// a dummy stub for the interface
+	}
+
+	@Override
 	public void initLicenseParam() {
-		
+		// a dummy stub for the interface
 	}
 
 	@Override
 	public void doInitWork() {
-		
+		// a dummy stub for the interface
 	}
 
 	@Override
@@ -85,9 +85,9 @@ public class FusionLicenseManagerImpl implements FusionLicenseManager {
 
 	@Override
 	public void generateLicense(Map<String, String> clientInfoMap, List<String> ipAddressList) throws Exception {
-		
+		// a dummy stub for the interface
 	}
-	
+
 	@Override
 	public String nvl(String s) {
 		return null;
@@ -98,9 +98,9 @@ public class FusionLicenseManagerImpl implements FusionLicenseManager {
 		return null;
 	}
 
-	@Override	
+	@Override
 	public void setExpiredDate(Date expiredDate) {
-		
+		// a dummy stub for the interface
 	}
 
 }

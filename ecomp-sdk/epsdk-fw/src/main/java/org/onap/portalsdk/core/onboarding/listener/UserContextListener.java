@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -50,19 +50,21 @@ import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 @WebListener
 public class UserContextListener implements ServletContextListener {
 
+	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		ServletContext context = event.getServletContext();
 		//
 		// create a map to store references to all the active
 		// sessions and bind it to context scope.
 		//
-		HashMap<String, HttpSession> activeUsers = new HashMap<String, HttpSession>();
+		HashMap<String, HttpSession> activeUsers = new HashMap<>();
 		context.setAttribute(PortalApiConstants.ACTIVE_USERS_NAME, activeUsers);
 	}
 
 	/**
 	 * Needed for the ServletContextListener interface.
 	 */
+	@Override
 	public void contextDestroyed(ServletContextEvent event) {
 		// To overcome the problem with losing the session references
 		// during server restarts, put code here to serialize the

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -51,17 +51,12 @@ import org.onap.portalsdk.core.menu.MenuBuilder;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.service.DataAccessServiceImpl;
-import org.onap.portalsdk.core.service.LocalAccessCondition;
-import org.onap.portalsdk.core.service.RestApiRequestBuilder;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.web.support.AppUtils;
 import org.onap.portalsdk.core.web.support.UserUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -83,7 +78,9 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppConfig.class);
 
-	private final List<String> tileDefinitions = new ArrayList<String>();
+	private final List<String> tileDefinitions = new ArrayList<>();
+	private String[] excludeUrlPathsForSessionTimeout = {};
+
 	protected ApplicationContext appApplicationContext = null;
 
 	public AppConfig() {
@@ -94,12 +91,13 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 
 	/**
 	 * Creates and returns a new instance of a secondary (order=2)
-	 * {@link ViewResolver} that finds files by adding prefix "/WEB-INF/jsp/"
-	 * and suffix ".jsp" to the base view name.
+	 * {@link ViewResolver} that finds files by adding prefix "/WEB-INF/jsp/" and
+	 * suffix ".jsp" to the base view name.
 	 * 
 	 * @return New instance of {@link ViewResolver}.
 	 */
 	@Bean
+	@Override
 	public ViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 		viewResolver.setViewClass(JstlView.class);
@@ -110,21 +108,20 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	}
 
 	/**
-	 * Loads all the default logging fields into the global MDC context and
-	 * marks each log file type that logging has been started.
+	 * Loads all the default logging fields into the global MDC context and marks
+	 * each log file type that logging has been started.
 	 */
 	private void initGlobalLocalContext() {
 		logger.init();
 	}
 
-	/*
+	/**
 	 * Any requests from the url pattern /static/**, Spring will look for the
-	 * resources from the /static/ Same as <mvc:resources mapping="/static/**"
-	 * location="/static/"/> in xml
+	 * resources from the /static/ Same as
+	 * <mvc:resources mapping="/static/**" location="/static/"/> in xml
 	 */
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		// registry.addResourceHandler("/static/**").addResourceLocations("/static/");
 		registry.addResourceHandler("/**").addResourceLocations("/");
 	}
 
@@ -134,6 +131,7 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	 * @return New instance of {@link DataAccessService}.
 	 */
 	@Bean
+	@Override
 	public DataAccessService dataAccessService() {
 		return new DataAccessServiceImpl();
 	}
@@ -157,15 +155,14 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	public MenuBuilder menuBuilder() {
 		return new MenuBuilder();
 	}
-	
+
 	/**
 	 * Creates and returns a new instance of a {@link UserUtils} class.
 	 * 
 	 * @return New instance of {@link UserUtils}.
 	 */
 	@Bean
-	public UserUtils userUtil()
-	{
+	public UserUtils userUtil() {
 		return new UserUtils();
 	}
 
@@ -213,7 +210,7 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 			String password = SystemProperties.getProperty(SystemProperties.DB_PASSWORD);
 			if (SystemProperties.containsProperty(SystemProperties.DB_ENCRYPT_FLAG)) {
 				String encryptFlag = SystemProperties.getProperty(SystemProperties.DB_ENCRYPT_FLAG);
-				if (encryptFlag != null && encryptFlag.equalsIgnoreCase("true")) {
+				if (encryptFlag != null && "true".equalsIgnoreCase(encryptFlag)) {
 					password = CipherUtil.decrypt(password);
 				}
 			}
@@ -227,14 +224,12 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 			dataSource.setTestConnectionOnCheckout(getConnectionOnCheckout());
 			dataSource.setPreferredTestQuery(getPreferredTestQuery());
 		} catch (Exception e) {
+			// Show details
 			logger.error(EELFLoggerDelegate.errorLogger,
-					"Error initializing database, verify database settings in properties file: "
-							+ UserUtils.getStackTrace(e),
-					AlarmSeverityEnum.CRITICAL);
+					"Error initializing database, verify database settings in properties file", e);
+			// Include alarm in log 
 			logger.error(EELFLoggerDelegate.debugLogger,
-					"Error initializing database, verify database settings in properties file: "
-							+ UserUtils.getStackTrace(e),
-					AlarmSeverityEnum.CRITICAL);
+					"Error initializing database", AlarmSeverityEnum.CRITICAL);
 			// Raise an alarm that opening a connection to the database failed.
 			logger.logEcompError(AppMessagesEnum.BeDaoSystemError);
 			throw e;
@@ -243,9 +238,8 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	}
 
 	/**
-	 * Gets the value of the property
-	 * {@link SystemProperties#PREFERRED_TEST_QUERY}; defaults to "Select 1" if
-	 * the property is not defined.
+	 * Gets the value of the property {@link SystemProperties#PREFERRED_TEST_QUERY};
+	 * defaults to "Select 1" if the property is not defined.
 	 * 
 	 * @return String value that is a SQL query
 	 */
@@ -266,8 +260,8 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 
 	/**
 	 * Gets the value of the property
-	 * {@link SystemProperties#TEST_CONNECTION_ON_CHECKOUT}; defaults to true if
-	 * the property is not defined.
+	 * {@link SystemProperties#TEST_CONNECTION_ON_CHECKOUT}; defaults to true if the
+	 * property is not defined.
 	 * 
 	 * @return Boolean value
 	 */
@@ -288,8 +282,8 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	}
 
 	/*
-	 * TODO: Check whether it is appropriate to extend the list of tile
-	 * definitions at every invocation.
+	 * TODO: Check whether it is appropriate to extend the list of tile definitions
+	 * at every invocation.
 	 */
 	protected String[] tileDefinitions() {
 		tileDefinitions.add("/WEB-INF/fusion/defs/definitions.xml");
@@ -304,8 +298,9 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	 * 
 	 * @return An empty list.
 	 */
+	@Override
 	public List<String> addTileDefinitions() {
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	/**
@@ -324,9 +319,8 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	}
 
 	/**
-	 * Adds new instances of the following interceptors to the specified
-	 * interceptor registry: {@link SessionTimeoutInterceptor},
-	 * {@link ResourceInterceptor}
+	 * Adds new instances of the following interceptors to the specified interceptor
+	 * registry: {@link SessionTimeoutInterceptor}, {@link ResourceInterceptor}
 	 */
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
@@ -344,8 +338,6 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	public ResourceInterceptor resourceInterceptor() {
 		return new ResourceInterceptor();
 	}
-
-	private String[] excludeUrlPathsForSessionTimeout = {};
 
 	/**
 	 * Gets the array of Strings that are paths excluded for session timeout.
@@ -374,9 +366,8 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 	 * (org.springframework.context.ApplicationContext)
 	 */
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) {
 		appApplicationContext = applicationContext;
-
 	}
 
 }

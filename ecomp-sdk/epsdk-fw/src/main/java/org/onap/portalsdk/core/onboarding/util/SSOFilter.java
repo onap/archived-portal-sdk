@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -56,18 +56,19 @@ public class SSOFilter implements Filter {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
+	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws java.io.IOException, ServletException {
 
 		try {
 			if (PortalRestAPIProxy.getPortalRestApiServiceImpl().getUserId((HttpServletRequest) request) == null) {
-				String redirectURL = SSOUtil.getECOMPSSORedirectURL(((HttpServletRequest) request),
-						((HttpServletResponse) response),
-						(((HttpServletRequest) request).getRequestURI()
+				String redirectURL = SSOUtil.getECOMPSSORedirectURL((HttpServletRequest) request,
+						(HttpServletResponse) response,
+						((HttpServletRequest) request).getRequestURI()
 								.substring(((HttpServletRequest) request).getContextPath().length() + 1)
 								+ (((HttpServletRequest) request).getQueryString() != null
 										? ("?" + ((HttpServletRequest) request).getQueryString())
-										: "")));
+										: ""));
 
 				((HttpServletResponse) response).sendRedirect(redirectURL);
 
@@ -83,12 +84,14 @@ public class SSOFilter implements Filter {
 
 	}
 
+	@Override
 	public void destroy() {
-
+		logger.trace("destroy called");
 	}
 
+	@Override
 	public void init(FilterConfig arg0) throws ServletException {
-		// TODO Auto-generated method stub
-
+		logger.trace("init called");
 	}
+	
 }

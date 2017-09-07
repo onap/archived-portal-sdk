@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,13 +37,19 @@
  */
 package org.onap.portalsdk.analytics.model.runtime;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
 
-import org.onap.portalsdk.analytics.*;
-import org.onap.portalsdk.analytics.system.*;
-import org.onap.portalsdk.analytics.util.*;
-import org.onap.portalsdk.analytics.view.*;
-import org.onap.portalsdk.analytics.xmlobj.*;
+import org.onap.portalsdk.analytics.RaptorObject;
+import org.onap.portalsdk.analytics.system.DbUtils;
+import org.onap.portalsdk.analytics.system.Globals;
+import org.onap.portalsdk.analytics.util.AppConstants;
+import org.onap.portalsdk.analytics.util.DataSet;
+import org.onap.portalsdk.analytics.view.DataRow;
+import org.onap.portalsdk.analytics.view.DataValue;
+import org.onap.portalsdk.analytics.view.HtmlFormatter;
+import org.onap.portalsdk.analytics.xmlobj.FormatType;
+import org.onap.portalsdk.analytics.xmlobj.SemaphoreType;
 
 public class FormatProcessor extends RaptorObject {
 

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -42,22 +42,21 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 /**
- * 
- *
- * Use this class to get access to ApplicationContext for classes who were not created by Spring. 	
+ * Use this class to get access to ApplicationContext for classes that were not
+ * created by Spring.
  */
 
-
 @Component
-public class AppContextManager implements ApplicationContextAware{
-    private static ApplicationContext _appCtx;
+public class AppContextManager implements ApplicationContextAware {
+	
+	private static ApplicationContext appContext;
 
-    @Override
-    public void setApplicationContext(ApplicationContext ctx){
-         _appCtx = ctx;
-    }
+	@Override
+	public void setApplicationContext(final ApplicationContext ctx) {
+		this.appContext = ctx;
+	}
 
-    public static ApplicationContext getAppContext(){
-        return _appCtx;
-    } 
+	public static ApplicationContext getAppContext() {
+		return appContext;
+	}
 }

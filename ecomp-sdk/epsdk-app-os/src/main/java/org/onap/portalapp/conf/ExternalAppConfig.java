@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -87,6 +87,7 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 	/**
 	 * @see org.onap.portalsdk.core.conf.AppConfig#viewResolver()
 	 */
+	@Override
 	public ViewResolver viewResolver() {
 		return super.viewResolver();
 	}
@@ -96,6 +97,7 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 	 * 
 	 * @param registry
 	 */
+	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		super.addResourceHandlers(registry);
 	}
@@ -103,6 +105,7 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 	/**
 	 * @see org.onap.portalsdk.core.conf.AppConfig#dataAccessService()
 	 */
+	@Override
 	public DataAccessService dataAccessService() {
 		// Echo the JDBC URL to assist developers when starting the app.
 		System.out.println("ExternalAppConfig: " + SystemProperties.DB_CONNECTIONURL + " is "
@@ -116,8 +119,9 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 	 * 
 	 * @return List of String, size 1
 	 */
+	@Override
 	public List<String> addTileDefinitions() {
-		List<String> definitions = new ArrayList<String>();
+		List<String> definitions = new ArrayList<>();
 		definitions.add("/WEB-INF/defs/definitions.xml");
 		return definitions;
 	}
@@ -173,7 +177,6 @@ public class ExternalAppConfig extends AppConfig implements Configurable {
 
 	@Bean
 	public LoginStrategy loginStrategy() {
-
 		return new LoginStrategyImpl();
 	}
 }

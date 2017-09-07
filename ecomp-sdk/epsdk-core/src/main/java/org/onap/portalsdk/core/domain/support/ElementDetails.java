@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,37 +37,23 @@
  */
 package org.onap.portalsdk.core.domain.support;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ElementDetails {
-	public String logical_group;
-	public String display_longname;
-	public String description;
-	public String primary_function;
-	public String network_function;
-	public String key_interfaces;
-	public String location;
-	public String vendor;
-	public String vendor_shortname;
-	public String enclosingContainer;
 	
+	String logical_group;
+	String display_longname;
+	String description;
+	String primary_function;
+	String network_function;
+	String key_interfaces;
+	String location;
+	String vendor;
+	String vendor_shortname;
+	String enclosingContainer;
 
-//	public Map<String,String> details1;
+	public ElementDetails(String logical_group, String display_longname, String description, String primary_function,
+			String network_function, String key_interfaces, String location, String vendor, String vendor_shortname,
+			String enclosingContainer) {
 
-//	public ElementDetails(Map<String, String> details) {
-		
-	//	this.details = new HashMap<String, String>();
-	//	this.details1 = details;
-//	}
-	
-	
-	
-	
-	
-	public ElementDetails(String logical_group, String display_longname, String description, String primary_function, String network_function,
-			String key_interfaces, String location, String vendor, String vendor_shortname, String enclosingContainer) {
-		
 		this.logical_group = logical_group;
 		this.display_longname = display_longname;
 		this.description = description;
@@ -80,10 +66,12 @@ public class ElementDetails {
 		this.enclosingContainer = enclosingContainer;
 	}
 
+	public String getLogical_group() {
+		return logical_group;
+	}
+	
 	public void setLogical_group(String logical_group) {
 		this.logical_group = logical_group;
 	}
-	
-	
-	
+
 }

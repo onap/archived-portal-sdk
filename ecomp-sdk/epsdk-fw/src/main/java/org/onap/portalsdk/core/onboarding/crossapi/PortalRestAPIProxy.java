@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -88,11 +88,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebServlet(urlPatterns = { PortalApiConstants.API_PREFIX + "/*" })
 public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPIService {
+	
 	private static final long serialVersionUID = 1L;
 
-	private static final String contentTypeAppJson = "application/json";
+	private static final String APPLICATION_JSON = "application/json";
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory.getLog(PortalRestAPIProxy.class);
 
 	/**
 	 * Mapper for JSON to object etc.
@@ -163,8 +164,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					requestBody = mapper.writeValueAsString(bodyMap);
 					responseJson = RestWebServiceClient.getInstance().postPortalContent(storeAnalyticsContextPath,
 							userId, credential, null, credential, credential, "application/json", requestBody, true);
-					if (logger.isDebugEnabled())
-						logger.debug("doPost: postPortalContent returns " + responseJson);
+					logger.debug("doPost: postPortalContent returns " + responseJson);
 					response.setStatus(HttpServletResponse.SC_OK);
 				} catch (Exception ex) {
 					logger.error("doPost: " + storeAnalyticsContextPath + " caught exception", ex);
@@ -172,7 +172,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				}
 			}
-			writeAndFlush(response, contentTypeAppJson, responseJson);
+			writeAndFlush(response, APPLICATION_JSON, responseJson);
 			return;
 		} // post analytics
 
@@ -186,10 +186,9 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			return;
 		}
 		if (!secure) {
-			if (logger.isDebugEnabled())
-				logger.debug("doPost: isAppAuthenticated answered false");
+			logger.debug("doPost: isAppAuthenticated answered false");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			writeAndFlush(response, contentTypeAppJson, buildJsonResponse(false, "Not authorized"));
+			writeAndFlush(response, APPLICATION_JSON, buildJsonResponse(false, "Not authorized"));
 			return;
 		}
 
@@ -212,8 +211,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 
 			if (requestUri.endsWith("/updateSessionTimeOuts")) {
 				if (updateSessionTimeOuts(requestBody)) {
-					if (logger.isDebugEnabled())
-						logger.debug("doPost: updated session timeouts");
+					logger.debug("doPost: updated session timeouts");
 					response.setStatus(HttpServletResponse.SC_OK);
 				} else {
 					String msg = "Failed to update session time outs";
@@ -227,8 +225,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					portalJSessionId = "";
 				}
 				if (timeoutSession(portalJSessionId)) {
-					if (logger.isDebugEnabled())
-						logger.debug("doPost: timed out session");
+					logger.debug("doPost: timed out session");
 					response.setStatus(HttpServletResponse.SC_OK);
 				} else {
 					String msg = "Failed to timeout session";
@@ -242,8 +239,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 				try {
 					EcompUser user = mapper.readValue(requestBody, EcompUser.class);
 					pushUser(user);
-					if (logger.isDebugEnabled())
-						logger.debug("doPost: pushUser: success");
+					logger.debug("doPost: pushUser: success");
 					responseJson = buildJsonResponse(true, null);
 					response.setStatus(HttpServletResponse.SC_OK);
 				} catch (Exception ex) {
@@ -258,8 +254,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 				try {
 					EcompUser user = mapper.readValue(requestBody, EcompUser.class);
 					editUser(loginId, user);
-					if (logger.isDebugEnabled())
-						logger.debug("doPost: editUser: success");
+					logger.debug("doPost: editUser: success");
 					responseJson = buildJsonResponse(true, null);
 					response.setStatus(HttpServletResponse.SC_OK);
 				} catch (Exception ex) {
@@ -277,8 +272,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					};
 					List<EcompRole> roles = mapper.readValue(requestBody, typeRef);
 					pushUserRole(loginId, roles);
-					if (logger.isDebugEnabled())
-						logger.debug("doPost: pushUserRole: success");
+					logger.debug("doPost: pushUserRole: success");
 					responseJson = buildJsonResponse(true, null);
 					response.setStatus(HttpServletResponse.SC_OK);
 				} catch (Exception ex) {
@@ -298,7 +292,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			responseJson = buildJsonResponse(ex);
 		}
 
-		writeAndFlush(response, contentTypeAppJson, responseJson);
+		writeAndFlush(response, APPLICATION_JSON, responseJson);
 
 	}
 
@@ -310,17 +304,16 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			// Should never happen due to checks in init()
 			logger.error("doGet: no service class instance");
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			writeAndFlush(response, contentTypeAppJson,
+			writeAndFlush(response, APPLICATION_JSON,
 					buildJsonResponse(false, "Misconfigured - no instance of service class"));
 			return;
 		}
 
 		String requestUri = request.getRequestURI();
-		String responseString = "";
-		String contentType = contentTypeAppJson;
-
+		String contentType = APPLICATION_JSON;
 		String webAnalyticsContextPath = "/analytics";
 		if (requestUri.endsWith(PortalApiConstants.API_PREFIX + webAnalyticsContextPath)) {
+			String responseString;
 			String userId;
 			try {
 				userId = getUserId(request);
@@ -360,7 +353,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 		} catch (PortalAPIException ex) {
 			logger.error("doGet: isAppAuthenticated threw exception", ex);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			writeAndFlush(response, contentTypeAppJson, buildJsonResponse(false, "Failed to authenticate request"));
+			writeAndFlush(response, APPLICATION_JSON, buildJsonResponse(false, "Failed to authenticate request"));
 			return;
 		}
 
@@ -368,16 +361,14 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			if (logger.isDebugEnabled())
 				logger.debug("doGet: isAppAuthenticated answered false");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			writeAndFlush(response, contentTypeAppJson, buildJsonResponse(false, "Not authorized"));
+			writeAndFlush(response, APPLICATION_JSON, buildJsonResponse(false, "Not authorized"));
 			return;
 		}
 
 		String responseJson = null;
 		try {
 			// Ignore any request body in a GET.
-			// String requestBody = readRequestBody(request);
-			if (logger.isDebugEnabled())
-				logger.debug("doGet: URI =  " + requestUri);
+			logger.debug("doGet: URI =  " + requestUri);
 
 			/*
 			 * 1. /roles <-- get roles
@@ -392,8 +383,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			if (requestUri.endsWith("/sessionTimeOuts")) {
 				responseJson = getSessionTimeOuts();
 				if (responseJson != null && responseJson.length() > 0) {
-					if (logger.isDebugEnabled())
-						logger.debug("doGet: got session timeouts");
+					logger.debug("doGet: got session timeouts");
 					response.setStatus(HttpServletResponse.SC_OK);
 				} else {
 					String msg = "Failed to get session time outs";
@@ -467,7 +457,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			responseJson = buildJsonResponse(ex);
 		}
-		writeAndFlush(response, contentTypeAppJson, responseJson);
+		writeAndFlush(response, APPLICATION_JSON, responseJson);
 	}
 
 	public String getSessionTimeOuts() {
@@ -567,7 +557,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 				try {
 					bufferedReader.close();
 				} catch (IOException ex) {
-					throw ex;
+					logger.error("readRequestBody", ex);
 				}
 			}
 		}
@@ -595,6 +585,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			json = mapper.writeValueAsString(response);
 		} catch (JsonProcessingException ex) {
 			// Truly should never, ever happen
+			logger.error("buildJsonResponse", ex);
 			json = "{ \"status\": \"error\",\"message\":\"" + ex.toString() + "\" }";
 		}
 		return json;

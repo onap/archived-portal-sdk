@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,6 +37,7 @@
  */
 package org.onap.portalapp.controller.core;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -89,10 +91,8 @@ public class PostSearchController extends RestrictedBaseController {
 	private ProfileService profileService;
 
 	@RequestMapping(value = { "/post_search" }, method = RequestMethod.GET)
-	public ModelAndView welcome(HttpServletRequest request,
-			@ModelAttribute("postSearchBean") PostSearchBean postSearchBean) {
-		Map<String, Object> model = new HashMap<String, Object>();
-
+	public ModelAndView welcome(@ModelAttribute("postSearchBean") PostSearchBean postSearchBean) {
+		Map<String, Object> model = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			postSearchBean = new PostSearchBean();
@@ -101,17 +101,16 @@ public class PostSearchController extends RestrictedBaseController {
 			model.put("existingUsers", mapper.writeValueAsString(getExistingUsers()));
 			model.put("sortByList", mapper.writeValueAsString(getSortByList()));
 		} catch (Exception ex) {
-			logger.error(EELFLoggerDelegate.errorLogger, "welcome: failed to write JSON" + ex.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "welcome: failed to write JSON", ex);
 		}
 
 		return new ModelAndView(getViewName(), model);
 	}
 
 	@RequestMapping(value = { "/post_search_sample" }, method = RequestMethod.GET)
-	public void getPostSearchProfile(HttpServletRequest request, HttpServletResponse response,
+	public void getPostSearchProfile(HttpServletResponse response,
 			@ModelAttribute("postSearchBean") PostSearchBean postSearchBean) {
-		Map<String, Object> model = new HashMap<String, Object>();
-
+		Map<String, Object> model = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			postSearchBean = new PostSearchBean();
@@ -123,13 +122,12 @@ public class PostSearchController extends RestrictedBaseController {
 			JSONObject j = new JSONObject(msg);
 			response.getWriter().write(j.toString());
 		} catch (Exception ex) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getPostSearchProfile: failed to write JSON" + ex.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "getPostSearchProfile: failed to write JSON", ex);
 		}
-
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private HashMap getExistingUsers() throws Exception {
+	private HashMap getExistingUsers() throws IOException {
 		HashMap existingUsers = new HashMap();
 
 		// get the list of user ids in the system
@@ -149,7 +147,7 @@ public class PostSearchController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/post_search/search" }, method = RequestMethod.POST)
-	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -169,7 +167,7 @@ public class PostSearchController extends RestrictedBaseController {
 
 			out.write(j.toString());
 		} catch (Exception ex) {
-			logger.error(EELFLoggerDelegate.errorLogger, "search: failed to send search result" + ex.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "search: failed to send search result", ex);
 		}
 
 		return null;
@@ -191,7 +189,7 @@ public class PostSearchController extends RestrictedBaseController {
 	} // getSortByList
 
 	private SearchResult loadSearchResultData(HttpServletRequest request, PostSearchBean searchCriteria)
-			throws Exception {
+			throws NamingException {
 		return ldapService.searchPost(searchCriteria.getUser(), searchCriteria.getSortBy1(),
 				searchCriteria.getSortBy2(), searchCriteria.getSortBy3(), searchCriteria.getPageNo(),
 				searchCriteria.getNewDataSize(), UserUtils.getUserSession(request).getId().intValue());
@@ -205,13 +203,14 @@ public class PostSearchController extends RestrictedBaseController {
 		JsonNode root = mapper.readTree(request.getReader());
 		PostSearchBean postSearch = mapper.readValue(root.get("postSearchBean").toString(), PostSearchBean.class);
 		String errorMsg = "{}";
-		try{
+		try {
 			postSearchService.process(request, postSearch);
 			postSearch.setSearchResult(loadSearchResultData(request, postSearch));
-		}catch(Exception e){
-			errorMsg=e.getMessage();
-			logger.error(EELFLoggerDelegate.errorLogger,"Exception occurred while performing PostSearchController.process. Details:", e);
-		}	
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"Exception occurred while performing PostSearchController.process. Details:", e);
+		}
 		logger.info(EELFLoggerDelegate.auditLogger, "Import new user from webphone ");
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("application / json");
@@ -220,10 +219,9 @@ public class PostSearchController extends RestrictedBaseController {
 		PrintWriter out = response.getWriter();
 		String postSearchString = mapper.writeValueAsString(postSearch);
 		JSONObject j = new JSONObject("{postSearchBean: " + postSearchString + ",existingUsers: "
-				+ mapper.writeValueAsString(getExistingUsers()) + ",errorMsg:"+errorMsg+"}");
+				+ mapper.writeValueAsString(getExistingUsers()) + ",errorMsg:" + errorMsg + "}");
 
 		out.write(j.toString());
-
 		return null;
 	}
 }

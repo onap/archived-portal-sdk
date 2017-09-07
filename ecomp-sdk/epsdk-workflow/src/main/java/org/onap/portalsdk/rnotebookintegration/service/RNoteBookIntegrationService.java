@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -43,7 +43,8 @@ import org.onap.portalsdk.core.restful.domain.EcompUser;
 import org.onap.portalsdk.rnotebookintegration.exception.RNotebookIntegrationException;
 
 public interface RNoteBookIntegrationService {
-	public String getRNotebookCredentials(String token)  throws RNotebookIntegrationException, Exception;
+
+	public String getRNotebookCredentials(String token)  throws RNotebookIntegrationException;
 	
-	public String saveRNotebookCredentials(String notebookId, EcompUser user, Map<String, String> params) throws RNotebookIntegrationException, Exception;
+	public String saveRNotebookCredentials(String notebookId, EcompUser user, Map<String, String> params) throws RNotebookIntegrationException;
 }

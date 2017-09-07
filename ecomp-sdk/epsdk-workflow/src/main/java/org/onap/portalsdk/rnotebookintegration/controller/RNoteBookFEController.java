@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.onap.portalsdk.core.controller.RestrictedBaseController;
 import org.onap.portalsdk.core.domain.User;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.web.support.UserUtils;
@@ -63,69 +64,55 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/rNotebookFE/")
 public class RNoteBookFEController extends RestrictedBaseController {
+
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RNoteBookController.class);
+
 	@Autowired
 	private RNoteBookIntegrationService rNoteBookIntegrationService;
-	
-	
 
 	public RNoteBookIntegrationService getrNoteBookIntegrationService() {
 		return rNoteBookIntegrationService;
 	}
 
-
-
-	public void setrNoteBookIntegrationService(
-			RNoteBookIntegrationService rNoteBookIntegrationService) {
+	public void setrNoteBookIntegrationService(RNoteBookIntegrationService rNoteBookIntegrationService) {
 		this.rNoteBookIntegrationService = rNoteBookIntegrationService;
 	}
-	
+
 	@RequestMapping(value = { "authCr" }, method = RequestMethod.POST, produces = "application/json")
-	public @ResponseBody ResponseEntity<String> saveRNotebookCredentials (@RequestBody String notebookId, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		//ObjectMapper mapper = new ObjectMapper();
-		//mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		//JsonNode root = mapper.readTree(request.getReader());
-		//String token = root.get("authenticationToken").textValue();
-		System.out.println("Notebook id "+notebookId);
-		System.out.println("Query parameters "+request.getParameter("qparams"));
+	@ResponseBody
+	public ResponseEntity<String> saveRNotebookCredentials(@RequestBody String notebookId, HttpServletRequest request,
+			HttpServletResponse response) {
+		logger.debug(EELFLoggerDelegate.debugLogger, "saveRNotebookCredentials: Notebook id {}", notebookId);
+		logger.debug(EELFLoggerDelegate.debugLogger, "saveRNotebookCredentials: Query parameters {}", request.getParameter("qparams"));
 		String retUrl = "";
-		try{
-			
+		try {
 			User user = UserUtils.getUserSession(request);
-			user = (User) this.getDataAccessService().getDomainObject(User.class, user.getId(), null);
-			
-			EcompUser ecUser =UserUtils.convertToEcompUser(user);
-			
-			HashMap<String, String> map = new HashMap<String, String>();
-	        JSONObject jObject = new JSONObject(request.getParameter("qparams"));
-	        Iterator<?> keys = jObject.keys();
-
-	        while( keys.hasNext() ){
-	            String key = (String)keys.next();
-	            String value = jObject.getString(key); 
-	            map.put(key, value);
-
-	        }
-
-	        System.out.println("json : "+jObject);
-	        System.out.println("map : "+map);
-			
-		//	String token = this.getrNoteBookIntegrationService().saveRNotebookCredentials(notebookId, ecUser, new HashMap<String, String>());
-	        String token = this.getrNoteBookIntegrationService().saveRNotebookCredentials(notebookId, ecUser, map);
-			
-			String guard = SystemProperties.getProperty("guard_notebook_url");
-			
+			user = (User) getDataAccessService().getDomainObject(User.class, user.getId(), null);
+			EcompUser ecUser = UserUtils.convertToEcompUser(user);
+			HashMap<String, String> map = new HashMap<>();
+			JSONObject jObject = new JSONObject(request.getParameter("qparams"));
+			Iterator<?> keys = jObject.keys();
+			while (keys.hasNext()) {
+				String key = (String) keys.next();
+				String value = jObject.getString(key);
+				map.put(key, value);
+			}
+			logger.debug(EELFLoggerDelegate.debugLogger, "saveRNotebookCredentials: json {}", jObject);
+			logger.debug(EELFLoggerDelegate.debugLogger, "saveRNotebookCredentials: map {}", map);
+			String token = this.getrNoteBookIntegrationService().saveRNotebookCredentials(notebookId, ecUser, map);
+			final String guardNotebookUrl = "guard_notebook_url";
+			if (!SystemProperties.containsProperty(guardNotebookUrl))
+				throw new IllegalArgumentException("Failed to find property " + guardNotebookUrl);
+			String guard = SystemProperties.getProperty(guardNotebookUrl);
 			retUrl = guard + "id=" + token;
-			
-		
-		} catch (RNotebookIntegrationException re){
-			return new ResponseEntity<String>(re.getMessage(), HttpStatus.BAD_REQUEST);
-		} catch (Exception e){
-			return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (RNotebookIntegrationException re) {
+			logger.error(EELFLoggerDelegate.errorLogger, "saveRNotebookCredentials failed 1", re);
+			return new ResponseEntity<>(re.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "saveRNotebookCredentials failed 2", e);
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-		
-		return new ResponseEntity<String>(retUrl, HttpStatus.OK);
-		
+		return new ResponseEntity<>(retUrl, HttpStatus.OK);
 	}
 
 }

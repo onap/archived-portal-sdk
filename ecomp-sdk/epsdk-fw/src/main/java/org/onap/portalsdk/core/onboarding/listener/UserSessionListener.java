@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -60,7 +60,7 @@ public class UserSessionListener implements HttpSessionListener {
 
 	private Log logger = LogFactory.getLog(getClass());
 
-	public static Map<String, HttpSession> activeSessions = new Hashtable<String, HttpSession>();
+	private static Map<String, HttpSession> activeSessions = new Hashtable<>();
 
 	public void init(ServletConfig config) {
 	}
@@ -68,6 +68,7 @@ public class UserSessionListener implements HttpSessionListener {
 	/**
 	 * Adds sessions to the context-scoped HashMap when they begin.
 	 */
+	@Override
 	public void sessionCreated(HttpSessionEvent event) {
 		HttpSession session = event.getSession();
 		ServletContext context = session.getServletContext();
@@ -85,6 +86,7 @@ public class UserSessionListener implements HttpSessionListener {
 	 * Removes sessions from the context-scoped HashMap when they expire or are
 	 * invalidated.
 	 */
+	@Override
 	public void sessionDestroyed(HttpSessionEvent event) {
 		try {
 			HttpSession session = event.getSession();

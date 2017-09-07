@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,54 +37,51 @@
  */
 package org.onap.portalsdk.core.domain;
 
-import java.util.*;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class MenuData extends Menu {
 
-	/**
-	 * 
-	 */
-  private static final long serialVersionUID = 1L;
-  private MenuData parentMenu;
-  private Set      childMenus = new TreeSet();
+	private static final long serialVersionUID = 1L;
+	private MenuData parentMenu;
+	private Set childMenus = new TreeSet();
 
-  public MenuData() {}
+	public MenuData() {
+	}
 
-  public Set getChildMenus() {
-      return childMenus;
-  }
+	public Set getChildMenus() {
+		return childMenus;
+	}
 
-  public MenuData getParentMenu() {
-      return parentMenu;
-  }
+	public void setChildMenus(Set childMenus) {
+		this.childMenus = childMenus;
+	}
 
-  public void setChildMenus(Set childMenus) {
-      this.childMenus = childMenus;
-  }
+	public MenuData getParentMenu() {
+		return parentMenu;
+	}
 
-  public void setParentMenu(MenuData parentMenu) {
-      this.parentMenu = parentMenu;
-  }
+	public void setParentMenu(MenuData parentMenu) {
+		this.parentMenu = parentMenu;
+	}
 
-  public int compareTo(Object obj){
+	public String getActiveAsString() {
+		return String.valueOf(isActive());
+	}
 
-    Short c1 = getSortOrder();
-    Short c2 = ((MenuData)obj).getSortOrder();
-    
-    return (c1 == null || c2 == null) ? 1 : ((c1.compareTo(c2) == 0) ? 1 : c1.compareTo(c2));
-  }
-  
-  public String getActiveAsString(){
-	  return String.valueOf(isActive());
-  }
+	public String getParentIdAsString() {
+		return String.valueOf(getParentId());
+	}
 
-  public String getParentIdAsString(){
-	  return String.valueOf(getParentId());
-  }
+	public String getSeparatorAsString() {
+		return String.valueOf(isSeparator());
+	}
 
-  public String getSeparatorAsString(){
-	  return String.valueOf(isSeparator());
-  }
-
+	@Override
+	public int compareTo(Object obj) {
+		Short c1 = getSortOrder();
+		Short c2 = ((MenuData) obj).getSortOrder();
+		return (c1 == null || c2 == null) ? 1 : ((c1.compareTo(c2) == 0) ? 1 : c1.compareTo(c2));
+	}
 
 }

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -45,36 +45,26 @@ import javax.servlet.http.HttpSessionListener;
 import org.onap.portalsdk.core.logging.format.AlarmSeverityEnum;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 
-
 @WebListener
-public class UserSessionListener implements HttpSessionListener{
-	
+public class UserSessionListener implements HttpSessionListener {
+
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(UserSessionListener.class);
-	
-    public void sessionCreated(HttpSessionEvent event){
-    	
-    }
-     
-    /**
-     * Removes sessions from the context scoped HashMap when they expire
-     * or are invalidated.
-     */
-    public void sessionDestroyed(HttpSessionEvent event){
-    	try {
-	        HttpSession    session = event.getSession();
-	        session.removeAttribute(CollaborateListBindingListener.SESSION_ATTR_NAME);
-	        
-	       // Object user = session.getAttribute(SystemProperties.getProperty("user.attribute.name"));
-	        
-	        //if( user != null)
-	       // {
-	        	session.removeAttribute(CollaborateListBindingListener.SESSION_ATTR_NAME);
-			    //CollaborateList.getInstance().delUserName(user.getOrgUserId());
-	       // }
-		   
-    	}
-    	catch(Exception e) {
-    		logger.error(EELFLoggerDelegate.errorLogger, "sessionDestroyed" + e.getMessage(),AlarmSeverityEnum.MINOR);
-    	}
-    }
+
+	@Override
+	public void sessionCreated(HttpSessionEvent event) {
+		logger.trace(EELFLoggerDelegate.debugLogger, "sessionCreated");
+	}
+
+	/**
+	 * Removes sessions from the context scoped HashMap when they expire or are
+	 * invalidated.
+	 */
+	public void sessionDestroyed(HttpSessionEvent event) {
+		try {
+			HttpSession session = event.getSession();
+			session.removeAttribute(CollaborateListBindingListener.SESSION_ATTR_NAME);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "sessionDestroyed" + e.getMessage(), AlarmSeverityEnum.MINOR);
+		}
+	}
 }

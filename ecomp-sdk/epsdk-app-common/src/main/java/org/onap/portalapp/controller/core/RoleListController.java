@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,6 +37,7 @@
  */
 package org.onap.portalapp.controller.core;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,61 +71,52 @@ public class RoleListController extends RestrictedBaseController {
 
 	@Autowired
 	private RoleService service;
-	
-	private String viewName;
-	
-	@RequestMapping(value = {"/role_list" }, method = RequestMethod.GET)
-	public ModelAndView getRoleList(HttpServletRequest request) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		ObjectMapper mapper = new ObjectMapper();	
-		User user = UserUtils.getUserSession(request);
 
-		
+	private String viewName;
+
+	@RequestMapping(value = { "/role_list" }, method = RequestMethod.GET)
+	public ModelAndView getRoleList(HttpServletRequest request) {
+		Map<String, Object> model = new HashMap<>();
+		ObjectMapper mapper = new ObjectMapper();
+		User user = UserUtils.getUserSession(request);
 		try {
 			model.put("availableRoles", mapper.writeValueAsString(service.getAvailableRoles(user.getOrgUserId())));
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getRoleList failed", e);
 		}
-	
-		return new ModelAndView(getViewName(),model);
+		return new ModelAndView(getViewName(), model);
 	}
-	
-	@RequestMapping(value = {"/get_roles" }, method = RequestMethod.GET)
+
+	@RequestMapping(value = { "/get_roles" }, method = RequestMethod.GET)
 	public void getRoles(HttpServletRequest request, HttpServletResponse response) {
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
-
-		
 		try {
 			model.put("availableRoles", mapper.writeValueAsString(service.getAvailableRoles(user.getOrgUserId())));
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
 			JSONObject j = new JSONObject(msg);
-			response.getWriter().write(j.toString());	
+			response.getWriter().write(j.toString());
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getRoles failed", e);
 		}
 	}
-	
-	
-	@RequestMapping(value = {"/role_list/toggleRole" }, method = RequestMethod.POST)
-	public ModelAndView toggleRole(HttpServletRequest request, 
-			HttpServletResponse response) throws Exception {
+
+	@RequestMapping(value = { "/role_list/toggleRole" }, method = RequestMethod.POST)
+	public ModelAndView toggleRole(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		User user = UserUtils.getUserSession(request);
-
-
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			JsonNode root = mapper.readTree(request.getReader());
 			Role role = mapper.readValue(root.get("role").toString(), Role.class);
 
-			Role domainRole = service.getRole(user.getOrgUserId(),role.getId());
-			//role. toggle active ind
+			Role domainRole = service.getRole(user.getOrgUserId(), role.getId());
+			// role. toggle active ind
 			boolean active = domainRole.getActive();
 			domainRole.setActive(!active);
-			
-			service.saveRole(user.getOrgUserId(),domainRole);
+
+			service.saveRole(user.getOrgUserId(), domainRole);
 			logger.info(EELFLoggerDelegate.auditLogger, "Toggle active status for role " + domainRole.getId());
 
 			response.setCharacterEncoding("UTF-8");
@@ -133,38 +125,35 @@ public class RoleListController extends RestrictedBaseController {
 
 			PrintWriter out = response.getWriter();
 			String responseString = mapper.writeValueAsString(service.getAvailableRoles(user.getOrgUserId()));
-			JSONObject j = new JSONObject("{availableRoles: "+responseString+"}");
-			
+			JSONObject j = new JSONObject("{availableRoles: " + responseString + "}");
+
 			out.write(j.toString());
-			
+
 			return null;
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "toggleRole failed", e);
 			response.setCharacterEncoding("UTF-8");
-			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
 			out.write(e.getMessage());
 			return null;
 		}
 
 	}
-	
-	@RequestMapping(value = {"/role_list/removeRole" }, method = RequestMethod.POST)
-	public ModelAndView removeRole(HttpServletRequest request, 
-			HttpServletResponse response) throws Exception {
+
+	@RequestMapping(value = { "/role_list/removeRole" }, method = RequestMethod.POST)
+	public ModelAndView removeRole(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		User user = UserUtils.getUserSession(request);
 
 		try {
-
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			JsonNode root = mapper.readTree(request.getReader());
 			Role role = mapper.readValue(root.get("role").toString(), Role.class);
 
-			Role domainRole = service.getRole(user.getOrgUserId(),role.getId());
-						
-			service.deleteDependcyRoleRecord(user.getOrgUserId(),role.getId());
-			service.deleteRole(user.getOrgUserId(),domainRole);
+			Role domainRole = service.getRole(user.getOrgUserId(), role.getId());
+
+			service.deleteDependcyRoleRecord(user.getOrgUserId(), role.getId());
+			service.deleteRole(user.getOrgUserId(), domainRole);
 			logger.info(EELFLoggerDelegate.auditLogger, "Remove role " + domainRole.getId());
 
 			response.setCharacterEncoding("UTF-8");
@@ -172,11 +161,11 @@ public class RoleListController extends RestrictedBaseController {
 			request.setCharacterEncoding("UTF-8");
 
 			PrintWriter out = response.getWriter();
-			
+
 			String responseString = mapper.writeValueAsString(service.getAvailableRoles(user.getOrgUserId()));
-			JSONObject j = new JSONObject("{availableRoles: "+responseString+"}");
+			JSONObject j = new JSONObject("{availableRoles: " + responseString + "}");
 			out.write(j.toString());
-			
+
 			return null;
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "removeRole failed", e);
@@ -189,9 +178,12 @@ public class RoleListController extends RestrictedBaseController {
 
 	}
 
+	@Override
 	public String getViewName() {
 		return viewName;
 	}
+
+	@Override
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
 	}

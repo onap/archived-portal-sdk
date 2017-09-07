@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -48,7 +48,7 @@ import java.util.Set;
 
 /* Super class from which all data objects descend 
  *
- * Per Sunder T on 3 June 2016:
+ * @deprecated per Sunder T on 3 June 2016:
  * 
  * Yes, we need to get rid of domain.DomainVO and fold all the references to the support.DomainVO.
  */
@@ -56,9 +56,6 @@ import java.util.Set;
 @Deprecated
 public class DomainVo extends FusionVo implements Serializable, Cloneable, Comparable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	protected Long id;
 	protected Date created;
@@ -70,9 +67,6 @@ public class DomainVo extends FusionVo implements Serializable, Cloneable, Compa
 	protected Serializable auditUserId;
 
 	Set auditTrail = null;
-
-	public DomainVo() {
-	}
 
 	public void setId(Long i) {
 		id = i;
@@ -147,10 +141,6 @@ public class DomainVo extends FusionVo implements Serializable, Cloneable, Compa
 		getAuditTrail().add(auditLog);
 	}
 
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
-
 	public Object copy() {
 		return copy(false);
 	}
@@ -185,6 +175,7 @@ public class DomainVo extends FusionVo implements Serializable, Cloneable, Compa
 		return newVo;
 	}
 
+	@Override
 	public int compareTo(Object obj) {
 		Long c1 = getId();
 		Long c2 = ((DomainVo) obj).getId();

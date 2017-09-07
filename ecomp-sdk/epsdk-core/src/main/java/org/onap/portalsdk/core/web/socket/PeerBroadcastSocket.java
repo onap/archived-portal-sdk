@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -56,14 +56,13 @@ public class PeerBroadcastSocket {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PeerBroadcastSocket.class);
 
-	public static Map<String, Object> channelMap = new Hashtable<String, Object>();
-	public Map<String, String> sessionMap = new Hashtable<String, String>();
-	ObjectMapper mapper = new ObjectMapper();
+	private final static Map<String, Object> channelMap = new Hashtable<>();
+	private final Map<String, String> sessionMap = new Hashtable<>();
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	@OnMessage
 	public void message(String message, Session session) {
 		try {
-			// JSONObject jsonObject = new JSONObject(message);
 			@SuppressWarnings("unchecked")
 			Map<String, Object> jsonObject = mapper.readValue(message, Map.class);
 			try {
@@ -73,7 +72,7 @@ public class PeerBroadcastSocket {
 					sessionMap.put(session.getId(), from.toString());
 				}
 			} catch (Exception je) {
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed to read value" + je.getMessage());
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to read value", je);
 			}
 
 			try {
@@ -82,24 +81,23 @@ public class PeerBroadcastSocket {
 					return;
 				Object toSessionObj = channelMap.get(to);
 				if (toSessionObj != null) {
-					Session toSession = null;
-					toSession = (Session) toSessionObj;
+					Session 	toSession = (Session) toSessionObj;
 					toSession.getBasicRemote().sendText(message);
 				}
 
 			} catch (Exception ex) {
-				logger.error(EELFLoggerDelegate.errorLogger, "Failed to send text" + ex.getMessage());
+				logger.error(EELFLoggerDelegate.errorLogger, "Failed to send text", ex);
 			}
 
 		} catch (Exception ex) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Failed" + ex.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "Failed", ex);
 		}
 
 	}
 
 	@OnOpen
 	public void open(Session session) {
-		logger.info(EELFLoggerDelegate.debugLogger, "Channel opened");
+		logger.debug(EELFLoggerDelegate.debugLogger, "Session opened {}", session);
 	}
 
 	@OnClose
@@ -111,12 +109,12 @@ public class PeerBroadcastSocket {
 				try {
 					((Session) sessObj).close();
 				} catch (IOException e) {
-					logger.error(EELFLoggerDelegate.errorLogger, "Failed to close" + e.getMessage());
+					logger.error(EELFLoggerDelegate.errorLogger, "Failed to close", e);
 				}
 			}
 			channelMap.remove(channel);
 		}
-		logger.info(EELFLoggerDelegate.debugLogger, "Channel closed");
+		logger.debug(EELFLoggerDelegate.debugLogger, "Channel closed");
 	}
 
 }

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -47,16 +47,19 @@ package org.onap.portalsdk.core;
  * of each package in FUSION. This allows all top-level support classes to have
  * some commonality for easier maintenance.
  * </p>
- *
- * <p>
- * Copyright: Copyright (c) 2007
- * </p>
- *
- * @version 1.1
  */
 public interface FusionObject {
 
+	/**
+	 * Inner class provides static constants to any class that implements the
+	 * interface.
+	 */
 	public class Parameters {
+
+		private Parameters() {
+			// Static content only
+		}
+
 		// HashMap parameters passed to the Service and Dao tiers
 		public static final String PARAM_USERID = "userId";
 		public static final String PARAM_HTTP_REQUEST = "request";
@@ -67,46 +70,39 @@ public interface FusionObject {
 	}
 
 	/**
-	 * <p>
-	 * Title: FusionObject.Utilities
-	 * </p>
-	 *
-	 * <p>
-	 * Description: Inner class that has some utility functions available for
-	 * any class that implements it.
-	 * </p>
-	 *
-	 * <p>
-	 * Copyright: Copyright (c) 2007
-	 * </p>
-	 *
-	 * @version 1.1
+	 * Inner class provides static utility functions to any class that implements
+	 * the interface.
 	 */
 	public class Utilities {
+
+		private Utilities() {
+			// Static content only
+		}
+
 		/**
 		 * nvl - replaces a string value with an empty string if null.
 		 *
 		 * @param s
 		 *            String - the string value that needs to be checked
-		 * @return String - returns the original string value if not null.
-		 *         Otherwise an empty string ("") is returned.
+		 * @return String - returns the original string value if not null. Otherwise an
+		 *         empty string ("") is returned.
 		 */
 		public static String nvl(String s) {
-			return (s == null) ? "" : s;
+			return s == null ? "" : s;
 		}
 
 		/**
-		 * nvl - replaces a string value with a default value if null.
+		 * nvl - replaces a string value with a default value if null or empty.
 		 *
 		 * @param s
 		 *            String - the string value that needs to be checked
 		 * @param sDefault
 		 *            String - the default value
-		 * @return String - returns the original string value if not null.
+		 * @return String - returns the original string value if not null nor empty.
 		 *         Otherwise the default value is returned.
 		 */
 		public static String nvl(String s, String sDefault) {
-			return nvl(s).equals("") ? sDefault : s;
+			return "".equals(nvl(s)) ? sDefault : s;
 		}
 
 		/**
@@ -118,10 +114,7 @@ public interface FusionObject {
 		 *         sequence "null" (ignoring case); otherwise false.
 		 */
 		public static boolean isNull(String a) {
-			if ((a == null) || (a.length() == 0) || a.equalsIgnoreCase("null"))
-				return true;
-			else
-				return false;
+			return a == null || a.length() == 0 || a.equalsIgnoreCase("null");
 		}
 
 	}

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -58,7 +58,7 @@ public class App extends DomainVo {
 	private String alternateUrl; // app_alternate_url
 	private String restEndpoint; // app_rest_endpoint
 	private String mlAppName; // ml_app_name
-	private String mlAppAdminId; // ml_app_admin_id;
+	private String mlAppAdminId; // ml_app_admin_id
 	private String motsId; // mots_id
 	private String appPassword; // app_password
 	private String open;
@@ -216,6 +216,7 @@ public class App extends DomainVo {
 	/**
 	 * Answers true if the objects have the same ID.
 	 */
+	@Override
 	public int compareTo(Object obj) {
 		Long c1 = getId();
 		Long c2 = ((App) obj).getId();

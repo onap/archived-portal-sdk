@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -69,7 +69,7 @@ public class SSOUtil {
 		try {
 			encodedAppURL = URLEncoder.encode(appURL, "UTF-8");
 		} catch (UnsupportedEncodingException ex) {
-			logger.error("getECOMPSSORedirectURL: Failed to encode app URL " + appURL);
+			logger.error("getECOMPSSORedirectURL: Failed to encode app URL " + appURL, ex);
 		}
 		String portalURL = PortalApiProperties.getProperty(PortalApiConstants.ECOMP_REDIRECT_URL);
 		if (portalURL == null || portalURL.length() == 0) {

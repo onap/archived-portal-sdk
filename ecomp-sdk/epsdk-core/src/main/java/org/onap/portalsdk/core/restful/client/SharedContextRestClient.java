@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,23 +37,23 @@
  */
 package org.onap.portalsdk.core.restful.client;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
 import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.onap.portalsdk.core.restful.domain.SharedContext;
-import org.onap.portalsdk.core.util.SystemProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -82,13 +82,13 @@ public class SharedContextRestClient extends PortalRestClientBase {
 	 * Builds the URl for the shared context service using the portal.properties
 	 * value for the AUXAPI endpoint.
 	 * 
-	 * @throws Exception
-	 *             if the ECOMP_REST_URL property is not found 
+	 * @throws IllegalArgumentException
+	 *             if the ECOMP_REST_URL property is not found
 	 */
-	private String getSharedContextUrl() throws Exception {
+	private String getSharedContextUrl() throws IllegalArgumentException {
 		String restUrl = PortalApiProperties.getProperty(PortalApiConstants.ECOMP_REST_URL);
 		if (restUrl == null || restUrl.length() == 0)
-			throw new Exception("getSharedContextUrl: no property " + PortalApiConstants.ECOMP_REST_URL);
+			throw new IllegalArgumentException("getSharedContextUrl: no property " + PortalApiConstants.ECOMP_REST_URL);
 		String contextUrl = restUrl + (restUrl.endsWith("/") ? "" : "/") + "context/";
 		return contextUrl;
 	}
@@ -102,6 +102,7 @@ public class SharedContextRestClient extends PortalRestClientBase {
 	 *            Key for the shared-context entry; e.g., "lastName"
 	 * @return SharedContext object; null if not found.
 	 * @throws Exception
+	 *             If URI cannot be built, host cannot be reached, etc.
 	 */
 	public SharedContext getContextValue(String contextId, String key) throws Exception {
 		HttpStatusAndResponse hsr = getContext("get", contextId, key);
@@ -110,16 +111,8 @@ public class SharedContextRestClient extends PortalRestClientBase {
 			logger.error(EELFLoggerDelegate.applicationLogger, "getContextValue: unexpected null response");
 			return null;
 		}
-		SharedContext jsonObj = null;
-		try {
-			jsonObj = mapper.readValue(hsr.getResponse(), SharedContext.class);
-		} catch (JsonMappingException ex) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"getContextValue: failed to map response onto object" + ex.getMessage());
-		} catch (JsonParseException ex) {
-			logger.info(EELFLoggerDelegate.applicationLogger,
-					"getContextValue: failed to parse response" + ex.getMessage());
-		}
+		SharedContext jsonObj = mapper.readValue(hsr.getResponse(), SharedContext.class);
+		// Response means no data.
 		if (jsonObj != null && jsonObj.getResponse() != null)
 			return null;
 		return jsonObj;
@@ -130,37 +123,28 @@ public class SharedContextRestClient extends PortalRestClientBase {
 	 * 
 	 * @param contextId
 	 *            An Ecomp Portal session ID
-	 * @return List of SharedContext objects corresponding to the following
-	 *         keys: USER_FIRST_NAME, USER_LAST_NAME, USER_EMAIL and
-	 *         USER_ORGUSERID; empty if none were found; null if an error
-	 *         happens.
+	 * @return List of SharedContext objects corresponding to the following keys:
+	 *         USER_FIRST_NAME, USER_LAST_NAME, USER_EMAIL and USER_ORGUSERID; empty
+	 *         if none were found; null if an error happens.
 	 * @throws Exception
+	 *             If URI cannot be built, host cannot be reached, etc.
 	 */
 	public List<SharedContext> getUserContext(String contextId) throws Exception {
 		HttpStatusAndResponse hsr = getContext("get_user", contextId, null);
 		logger.info(EELFLoggerDelegate.debugLogger, "getUserContext: resp is " + hsr);
 		if (hsr == null) {
 			logger.error(EELFLoggerDelegate.applicationLogger, "getUserContext: unexpected null response");
-			return null;
+			return new ArrayList<>();
 		}
-		List<SharedContext> jsonList = null;
-		try {
-			TypeReference<List<SharedContext>> typeRef = new TypeReference<List<SharedContext>>() {
-			};
-			jsonList = mapper.readValue(hsr.getResponse(), typeRef);
-		} catch (JsonMappingException ex) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"getUserContext: failed to map response onto object" + ex.getMessage());
-		} catch (JsonParseException ex) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"getUserContext: failed to parse response" + ex.getMessage());
-		}
+		TypeReference<List<SharedContext>> typeRef = new TypeReference<List<SharedContext>>() {
+		};
+		List<SharedContext> jsonList = mapper.readValue(hsr.getResponse(), typeRef);
 		return jsonList;
 	}
 
 	/**
-	 * Checks whether a shared-context entry exists for the specified context ID
-	 * and key.
+	 * Checks whether a shared-context entry exists for the specified context ID and
+	 * key.
 	 * 
 	 * @param contextId
 	 *            An Ecomp Portal session ID
@@ -168,6 +152,7 @@ public class SharedContextRestClient extends PortalRestClientBase {
 	 *            Key for the shared-context entry; e.g., "lastName"
 	 * @return True if the object exists, false otherwise; null on error.
 	 * @throws Exception
+	 *             If URI cannot be built, host cannot be reached, etc.
 	 */
 	public Boolean checkSharedContext(String contextId, String key) throws Exception {
 		HttpStatusAndResponse hsr = getContext("check", contextId, key);
@@ -176,20 +161,11 @@ public class SharedContextRestClient extends PortalRestClientBase {
 			logger.error(EELFLoggerDelegate.applicationLogger, "checkSharedContext: unexpected null response");
 			return null;
 		}
-		String response = null;
-		try {
-			SharedContext jsonObj = mapper.readValue(hsr.getResponse(), SharedContext.class);
-			response = jsonObj.getResponse();
-		} catch (JsonMappingException ex) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"checkSharedContext: failed to map response onto object" + ex.getMessage());
-		} catch (JsonParseException ex) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"checkSharedContext: failed to parse response" + ex.getMessage());
-		}
+		SharedContext jsonObj = mapper.readValue(hsr.getResponse(), SharedContext.class);
+		String response = jsonObj.getResponse();
 		if (response == null)
 			return null;
-		return ("exists".equals(response));
+		return "exists".equals(response);
 	}
 
 	/**
@@ -201,6 +177,7 @@ public class SharedContextRestClient extends PortalRestClientBase {
 	 *            Key for the shared-context entry; e.g., "lastName"
 	 * @return True if the entry was removed, false otherwise; null on error.
 	 * @throws Exception
+	 *             If URI cannot be built, host cannot be reached, etc.
 	 */
 	public Boolean removeSharedContext(String contextId, String key) throws Exception {
 		HttpStatusAndResponse hsr = getContext("remove", contextId, key);
@@ -209,20 +186,11 @@ public class SharedContextRestClient extends PortalRestClientBase {
 			logger.error(EELFLoggerDelegate.applicationLogger, "removeSharedContext: unexpected null response");
 			return null;
 		}
-		SharedContext jsonObj = null;
-		try {
-			jsonObj = mapper.readValue(hsr.getResponse(), SharedContext.class);
-		} catch (JsonMappingException ex) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"removeSharedContext: failed to map response onto object" + ex.getMessage());
-		} catch (JsonParseException ex) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"removeSharedContext: failed to parse response" + ex.getMessage());
-		}
+		SharedContext jsonObj = mapper.readValue(hsr.getResponse(), SharedContext.class);
 		if (jsonObj == null)
 			return null;
 		String response = jsonObj.getResponse();
-		return ("removed".equals(response));
+		return "removed".equals(response);
 	}
 
 	/**
@@ -231,9 +199,10 @@ public class SharedContextRestClient extends PortalRestClientBase {
 	 * 
 	 * @param contextId
 	 *            An Ecomp Portal session ID
-	 * @return Number of key-value pairs removed; -1 if not found or any
-	 *         problems occur.
+	 * @return Number of key-value pairs removed; -1 if not found or any problems
+	 *         occur.
 	 * @throws Exception
+	 *             If URI cannot be built, host cannot be reached, etc.
 	 */
 	public int clearSharedContext(String contextId) throws Exception {
 		HttpStatusAndResponse hsr = getContext("remove", contextId, null);
@@ -242,16 +211,7 @@ public class SharedContextRestClient extends PortalRestClientBase {
 			logger.error(EELFLoggerDelegate.applicationLogger, "clearSharedContext: unexpected null response");
 			return -1;
 		}
-		SharedContext jsonObj = null;
-		try {
-			jsonObj = mapper.readValue(hsr.getResponse(), SharedContext.class);
-		} catch (JsonMappingException ex) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"clearSharedContext: failed to map response onto object" + ex.getMessage());
-		} catch (JsonParseException ex) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"clearSharedContext: failed to parse response" + ex.getMessage());
-		}
+		SharedContext jsonObj = mapper.readValue(hsr.getResponse(), SharedContext.class);
 		if (jsonObj == null)
 			return -1;
 		String response = jsonObj.getResponse();
@@ -269,9 +229,10 @@ public class SharedContextRestClient extends PortalRestClientBase {
 	 *            Key for the shared-context entry; e.g., "lastName"
 	 * @param value
 	 *            Value for the entry
+	 * @return True if the object previously existed, false otherwise; null if any
+	 *         problem happened.
 	 * @throws Exception
-	 * @return True if the object previously existed, false otherwise; null if
-	 *         any problem happened.
+	 *             If URI cannot be built, host cannot be reached, etc.
 	 */
 	public Boolean setSharedContext(String contextId, String key, String value) throws Exception {
 		String body = buildContext(contextId, key, value);
@@ -281,33 +242,28 @@ public class SharedContextRestClient extends PortalRestClientBase {
 			logger.error(EELFLoggerDelegate.applicationLogger, "setSharedContext: unexpected null response");
 			return null;
 		}
-		SharedContext jsonObj = null;
-		try {
-			jsonObj = mapper.readValue(hsr.getResponse(), SharedContext.class);
-		} catch (JsonMappingException ex) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"setSharedContext: failed to map response onto object" + ex.getMessage());
-		} catch (JsonParseException ex) {
-			logger.error(EELFLoggerDelegate.applicationLogger,
-					"setSharedContext: failed to parse response" + ex.getMessage());
-		}
+		SharedContext jsonObj = mapper.readValue(hsr.getResponse(), SharedContext.class);
 		if (jsonObj == null)
 			return null;
 		String response = jsonObj.getResponse();
-		return ("replaced".equals(response));
+		return "replaced".equals(response);
 	}
 
 	/**
-	 * Builds the full URL with the specified parameters, then calls the method
-	 * that adds credentials and GETs.
+	 * Builds the full URL with the specified parameters, then calls the method that
+	 * adds credentials and GETs.
 	 * 
 	 * @param requestPath
 	 * @param contextId
 	 * @param contextKey
 	 * @return HttpStatusAndResponse object; may be null.
-	 * @throws Exception
+	 * @throws URISyntaxException
+	 * @throws IllegalArgumentException
+	 * @throws IOException
+	 * @throws CipherUtilException
 	 */
-	private HttpStatusAndResponse getContext(String requestPath, String contextId, String contextKey) throws Exception {
+	private HttpStatusAndResponse getContext(String requestPath, String contextId, String contextKey)
+			throws IllegalArgumentException, URISyntaxException, CipherUtilException, IOException {
 		URIBuilder uriBuilder = new URIBuilder(getSharedContextUrl() + requestPath);
 		uriBuilder.addParameter("context_id", contextId);
 		if (contextKey != null)
@@ -317,16 +273,19 @@ public class SharedContextRestClient extends PortalRestClientBase {
 	}
 
 	/**
-	 * Builds the full URL, then calls the method that adds credentials and
-	 * POSTs.
+	 * Builds the full URL, then calls the method that adds credentials and POSTs.
 	 * 
 	 * @param requestPath
 	 * @param contextId
 	 * @param contextKey
 	 * @return HttpStatusAndResponse object; may be null.
-	 * @throws Exception
+	 * @throws IOException
+	 * @throws CipherUtilException
+	 * @throws URISyntaxException
+	 * @throws IllegalArgumentException
 	 */
-	private HttpStatusAndResponse postContext(String requestPath, String json) throws Exception {
+	private HttpStatusAndResponse postContext(String requestPath, String json)
+			throws CipherUtilException, IOException, IllegalArgumentException, URISyntaxException {
 		URIBuilder uriBuilder = new URIBuilder(getSharedContextUrl() + requestPath);
 		URI uri = uriBuilder.build();
 		return postRestWithCredentials(uri, json);
@@ -344,8 +303,7 @@ public class SharedContextRestClient extends PortalRestClientBase {
 	 * @return JSON block
 	 */
 	private String buildContext(String cxid, String ckey, String cvalue) throws JsonProcessingException {
-		ObjectMapper mapper = new ObjectMapper();
-		HashMap<String, String> stringMap = new HashMap<String, String>();
+		HashMap<String, String> stringMap = new HashMap<>();
 		stringMap.put("context_id", cxid);
 		stringMap.put("ckey", ckey);
 		stringMap.put("cvalue", cvalue);
@@ -355,9 +313,6 @@ public class SharedContextRestClient extends PortalRestClientBase {
 
 	// Simple test scaffold
 	public static void main(String[] args) throws Exception {
-		// ObjectMapper mapper = new ObjectMapper();
-		// SharedContext cxt = mapper.readValue("{ \"response\":\"foo\" }",
-		// SharedContext.class);
 		SharedContextRestClient client = new SharedContextRestClient();
 		SharedContext get = client.getContextValue("abc", "123");
 		System.out.println("Get yields " + get.toString());

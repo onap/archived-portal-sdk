@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -39,74 +39,67 @@ package org.onap.portalsdk.core.domain.support;
 
 import java.io.Serializable;
 
-
 public class NameValueId implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-    private String lab;
-    private String val;
+	private String lab;
+	private String val;
 
-    public NameValueId() {
-    }
+	public NameValueId() {
+		// No-arg constructor
+	}
 
-    public NameValueId(String value, String label) {
-      setVal(value);
-      setLab(label);
-    }
+	public NameValueId(String value, String label) {
+		setVal(value);
+		setLab(label);
+	}
 
+	public String getLab() {
+		return lab;
+	}
 
-    public String getLab() {
-        return lab;
-    }
+	public String getVal() {
+		return val;
+	}
 
+	public void setLab(String label) {
+		this.lab = label;
+	}
 
-    public String getVal() {
-        return val;
-    }
+	public void setVal(String value) {
+		this.val = value;
+	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
 
-    public void setLab(String label) {
-        this.lab = label;
-    }
+		if (o == null) {
+			return false;
+		}
 
+		if (!(o instanceof NameValueId)) {
+			return false;
+		}
 
-    public void setVal(String value) {
-        this.val = value;
-    }
+		final NameValueId nameValueId = (NameValueId) o;
 
+		if (!getVal().equals(nameValueId.getVal())) {
+			return false;
+		}
 
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
+		if (!getLab().equals(nameValueId.getLab())) {
+			return false;
+		}
 
-      if (o == null) {
-        return false;
-      }
+		return true;
+	}
 
-      if (!(o instanceof NameValueId)) {
-        return false;
-      }
-
-      final NameValueId nameValueId = (NameValueId)o;
-
-      if (!getVal().equals(nameValueId.getVal())) {
-        return false;
-      }
-
-      if (!getLab().equals(nameValueId.getLab())) {
-        return false;
-      }
-
-      return true;
-    }
-
-
-    public int hashCode() {
-      return getVal().hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return getVal().hashCode();
+	}
 
 }

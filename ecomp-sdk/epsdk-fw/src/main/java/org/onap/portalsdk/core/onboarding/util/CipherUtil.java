@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -145,14 +145,14 @@ public class CipherUtil {
 
 	public static void main(String[] args) throws CipherUtilException {
 
-		String password = "Welcome123";
+		String testValue = "Welcome123";
 		String encrypted;
 		String decrypted;
 
 		if (args.length != 2) {
 			System.out.println("Default password testing... ");
-			System.out.println("Plain password: " + password);
-			encrypted = encrypt(password);
+			System.out.println("Plain password: " + testValue);
+			encrypted = encrypt(testValue);
 			System.out.println("Encrypted password: " + encrypted);
 			decrypted = decrypt(encrypted);
 			System.out.println("Decrypted  password: " + decrypted);

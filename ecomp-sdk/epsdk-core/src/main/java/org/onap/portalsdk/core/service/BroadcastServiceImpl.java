@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -49,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.onap.portalsdk.core.domain.BroadcastMessage;
 import org.onap.portalsdk.core.domain.Lookup;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.service.support.FusionService;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.web.support.AppUtils;
@@ -62,199 +64,201 @@ import org.springframework.web.bind.ServletRequestUtils;
 @Service("broadcastService")
 @Transactional
 public class BroadcastServiceImpl extends FusionService implements BroadcastService {
-  
-  public BroadcastServiceImpl() {
-  }
+
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(BroadcastServiceImpl.class);
 
 	@Autowired
-	private DataAccessService  dataAccessService;
-  private static Hashtable         broadcastMessages = new Hashtable();
+	private DataAccessService dataAccessService;
 
-  @SuppressWarnings("unchecked")
-  public void loadMessages() {
-    List messageLocations = AppUtils.getLookupListNoCache("fn_lu_message_location", "message_location_id", "message_location_descr", "", "message_location_id");
+	private static Hashtable broadcastMessages = new Hashtable();
 
-    for (int i=0; i < messageLocations.size(); i++) {
-      Lookup location   = (Lookup)messageLocations.get(i);
-      String locationId = location.getValue();
+	public BroadcastServiceImpl() {
+		super();
+	}
 
-      broadcastMessages.put(locationId, getPersistedBroadcastMessages(locationId));
-    }
-  }
-  
-  public HashMap getBcModel(HttpServletRequest request){
-		HashMap    bcModel = new HashMap();
+	@Override
+	@SuppressWarnings("unchecked")
+	public void loadMessages() {
+		List messageLocations = AppUtils.getLookupListNoCache("fn_lu_message_location", "message_location_id",
+				"message_location_descr", "", "message_location_id");
 
-        List   items     = null;
-        int    messageId = ServletRequestUtils.getIntParameter(request, "message_id", 0);
-        String task      = ServletRequestUtils.getStringParameter(request, "task", "get");
+		for (int i = 0; i < messageLocations.size(); i++) {
+			Lookup location = (Lookup) messageLocations.get(i);
+			String locationId = location.getValue();
 
-        // delete or toggle activation on the selected record (if applicable)
-        if (messageId != 0 && (task.equals("delete") || task.equals("toggleActive"))) {
-          BroadcastMessage message = (BroadcastMessage)getDataAccessService().getDomainObject(BroadcastMessage.class, new Long(messageId), null);
-
-          if (task.equals("delete")) {
-            getDataAccessService().deleteDomainObject(message, null);
-          }
-          else if (task.equals("toggleActive")) {
-            HashMap  additionalParams = new HashMap();
-            additionalParams.put(Parameters.PARAM_HTTP_REQUEST, request);
-
-            message.setActive(new Boolean(!message.getActive().booleanValue()));
-            getDataAccessService().saveDomainObject(message, additionalParams);
-          }
-          loadMessages();
-        }
-
-        items = getDataAccessService().getList(BroadcastMessage.class, null);
-        Collections.sort(items);
-        bcModel.put("messagesList", packageMessages(items));
-
-        List locations = AppUtils.getLookupList("fn_lu_message_location", "message_location_id", "message_location_descr", "", "message_location_id");
-        bcModel.put("messageLocations", locations);
-
-        if ("true".equals(SystemProperties.getProperty(SystemProperties.CLUSTERED))) {
-          List sites = AppUtils.getLookupList("fn_lu_broadcast_site", "broadcast_site_cd", "broadcast_site_descr", "", "broadcast_site_descr");
-          bcModel.put("broadcastSites", sites);
-        }
-        
-        return bcModel;
-  }
-  
-  @SuppressWarnings("unchecked")
-  private HashMap packageMessages(List messages) {
-      HashMap messagesList     = new HashMap();
-      Set     locationMessages = null;
-
-      Integer previousLocationId = null;
-
-      for (int i=0; i < messages.size(); i++) {
-        BroadcastMessage message = (BroadcastMessage)messages.get(i);
-
-        if (!message.getLocationId().equals(previousLocationId)) {
-          if (previousLocationId != null) {
-            messagesList.put(previousLocationId.toString(), locationMessages);
-          }
-
-          locationMessages = new TreeSet();
-          previousLocationId = message.getLocationId();
-        }
-
-        locationMessages.add(message);
-      }
-
-      if (previousLocationId != null) {
-        messagesList.put(previousLocationId.toString(), locationMessages);
-      }
-
-      return messagesList;
-    }
-
-
-  @SuppressWarnings("unchecked")
-  private List getPersistedBroadcastMessages(String locationId) {
-    HashMap params = new HashMap();
-
-    
-    
-    params.put("location_id", new Integer(locationId));
-    
-    Calendar calInstanceToday = Calendar.getInstance();
-    calInstanceToday.set(Calendar.HOUR, 0);
-    calInstanceToday.set(Calendar.MINUTE, 0);
-    calInstanceToday.set(Calendar.SECOND, 0);
-    params.put("today_date", calInstanceToday.getTime());
-  
-    return getDataAccessService().executeNamedQuery("broadcastMessages", params, null);
-  }
-
-  public Hashtable getBroadcastMessages() {
-    return broadcastMessages;
-  }
-
-  public static List getBroadcastMessages(String locationId) {
-    return (List)broadcastMessages.get(locationId);
-  }
-
-  public static String displayMessages(String locationId) {
-    return displayServerMessages(locationId, null);
-  }
-
-  public static String displayServerMessages(String locationId, String siteCd) {
-    StringBuffer html = new StringBuffer();
-
-    List messages = getBroadcastMessages(locationId);
-
-    for (int i=0; i < messages.size(); i++) {
-      BroadcastMessage message = (BroadcastMessage)messages.get(i);
-      
-      if ((message.getSiteCd() == null) || ((message.getSiteCd() != null) && message.getSiteCd().equals(siteCd))) {
-        html.append("<li class=\"broadcastMessage\">")
-            .append(message.getMessageText());
-      }
-    }
-
-    if (html.length() > 0) {
-      html.insert(0, "<ul class=\"broadcastMessageList\">");
-      html.append("</ul>");
-    }
-
-    return html.toString();
-  }
-
-  public static boolean hasMessages(String locationId) {
-    return hasServerMessages(locationId, null);
-  }
-
-  public static boolean hasServerMessages(String locationId, String siteCd) {
-    List messages = getBroadcastMessages(locationId);
-    boolean     messagesExist = !((messages == null) || messages.size() == 0);
-    if (!messagesExist)
-    		return false;
-
-    if (siteCd == null) {
-      return messagesExist;
-    }
-    else {
-      for (int i=0; i < messages.size(); i++) {
-        BroadcastMessage message = (BroadcastMessage)messages.get(i);
-         
-        if ((message.getSiteCd() == null) || message.getSiteCd().equals(siteCd)) {
-          return true;
-        }
-      }
-      return false;
-    }
-  }
-
-  public DataAccessService getDataAccessService() {
-	return dataAccessService;
-  }
-
-  public void setDataAccessService(DataAccessService dataAccessService) {
-	dataAccessService = dataAccessService;
-  }
-
-  public BroadcastMessage getBroadcastMessage(HttpServletRequest request) {
-      long messageId = ServletRequestUtils.getLongParameter(request, "message_id", 0);
-
-      BroadcastMessage message = new BroadcastMessage();
-      if(messageId!=0)
-    	  message = (BroadcastMessage)getDataAccessService().getDomainObject(BroadcastMessage.class, new Long(messageId), null);
-
-      if (message.getLocationId() == null) {
-        try {
-			message.setLocationId(new Integer(ServletRequestUtils.getStringParameter(request, "message_location_id")));
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (ServletRequestBindingException e) {
-			e.printStackTrace();
+			broadcastMessages.put(locationId, getPersistedBroadcastMessages(locationId));
 		}
-        message.setActive(Boolean.TRUE);
-      }
+	}
 
-      return message;
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public Map getBcModel(HttpServletRequest request) {
+		HashMap bcModel = new HashMap();
+
+		int messageId = ServletRequestUtils.getIntParameter(request, "message_id", 0);
+		String task = ServletRequestUtils.getStringParameter(request, "task", "get");
+
+		// delete or toggle activation on the selected record (if applicable)
+		if (messageId != 0 && ("delete".equals(task) || "toggleActive".equals(task))) {
+			BroadcastMessage message = (BroadcastMessage) getDataAccessService().getDomainObject(BroadcastMessage.class,
+					new Long(messageId), null);
+
+			if ("delete".equals(task)) {
+				getDataAccessService().deleteDomainObject(message, null);
+			} else if ("toggleActive".equals(task)) {
+				HashMap additionalParams = new HashMap();
+				additionalParams.put(Parameters.PARAM_HTTP_REQUEST, request);
+
+				message.setActive(new Boolean(!message.getActive().booleanValue()));
+				getDataAccessService().saveDomainObject(message, additionalParams);
+			}
+			loadMessages();
+		}
+
+		List items = getDataAccessService().getList(BroadcastMessage.class, null);
+		Collections.sort(items);
+		bcModel.put("messagesList", packageMessages(items));
+
+		List locations = AppUtils.getLookupList("fn_lu_message_location", "message_location_id",
+				"message_location_descr", "", "message_location_id");
+		bcModel.put("messageLocations", locations);
+
+		if ("true".equals(SystemProperties.getProperty(SystemProperties.CLUSTERED))) {
+			List sites = AppUtils.getLookupList("fn_lu_broadcast_site", "broadcast_site_cd", "broadcast_site_descr", "",
+					"broadcast_site_descr");
+			bcModel.put("broadcastSites", sites);
+		}
+
+		return bcModel;
+	}
+
+	@SuppressWarnings("unchecked")
+	private HashMap packageMessages(List messages) {
+		HashMap messagesList = new HashMap();
+		Set locationMessages = null;
+
+		Integer previousLocationId = null;
+
+		for (int i = 0; i < messages.size(); i++) {
+			BroadcastMessage message = (BroadcastMessage) messages.get(i);
+
+			if (!message.getLocationId().equals(previousLocationId)) {
+				if (previousLocationId != null) {
+					messagesList.put(previousLocationId.toString(), locationMessages);
+				}
+
+				locationMessages = new TreeSet();
+				previousLocationId = message.getLocationId();
+			}
+
+			locationMessages.add(message);
+		}
+
+		if (previousLocationId != null) {
+			messagesList.put(previousLocationId.toString(), locationMessages);
+		}
+
+		return messagesList;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List getPersistedBroadcastMessages(String locationId) {
+		HashMap params = new HashMap();
+
+		params.put("location_id", new Integer(locationId));
+
+		Calendar calInstanceToday = Calendar.getInstance();
+		calInstanceToday.set(Calendar.HOUR, 0);
+		calInstanceToday.set(Calendar.MINUTE, 0);
+		calInstanceToday.set(Calendar.SECOND, 0);
+		params.put("today_date", calInstanceToday.getTime());
+
+		return getDataAccessService().executeNamedQuery("broadcastMessages", params, null);
+	}
+
+	@Override
+	public Map getBroadcastMessages() {
+		return broadcastMessages;
+	}
+
+	public static List getBroadcastMessages(String locationId) {
+		return (List) broadcastMessages.get(locationId);
+	}
+
+	public static String displayMessages(String locationId) {
+		return displayServerMessages(locationId, null);
+	}
+
+	public static String displayServerMessages(String locationId, String siteCd) {
+		StringBuilder html = new StringBuilder();
+		List messages = getBroadcastMessages(locationId);
+		for (int i = 0; i < messages.size(); i++) {
+			BroadcastMessage message = (BroadcastMessage) messages.get(i);
+			if ((message.getSiteCd() == null)
+					|| ((message.getSiteCd() != null) && message.getSiteCd().equals(siteCd))) {
+				html.append("<li class=\"broadcastMessage\">").append(message.getMessageText());
+			}
+		}
+		if (html.length() > 0) {
+			html.insert(0, "<ul class=\"broadcastMessageList\">");
+			html.append("</ul>");
+		}
+		return html.toString();
+	}
+
+	public static boolean hasMessages(String locationId) {
+		return hasServerMessages(locationId, null);
+	}
+
+	public static boolean hasServerMessages(String locationId, String siteCd) {
+		List messages = getBroadcastMessages(locationId);
+		boolean messagesExist = !((messages == null) || messages.isEmpty());
+		if (!messagesExist)
+			return false;
+
+		if (siteCd == null) {
+			return messagesExist;
+		} else {
+			for (int i = 0; i < messages.size(); i++) {
+				BroadcastMessage message = (BroadcastMessage) messages.get(i);
+
+				if ((message.getSiteCd() == null) || message.getSiteCd().equals(siteCd)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	@Override
+	public BroadcastMessage getBroadcastMessage(HttpServletRequest request) {
+		long messageId = ServletRequestUtils.getLongParameter(request, "message_id", 0);
+
+		BroadcastMessage message = new BroadcastMessage();
+		if (messageId != 0)
+			message = (BroadcastMessage) getDataAccessService().getDomainObject(BroadcastMessage.class,
+					new Long(messageId), null);
+
+		if (message.getLocationId() == null) {
+			try {
+				message.setLocationId(
+						new Integer(ServletRequestUtils.getStringParameter(request, "message_location_id")));
+			} catch (NumberFormatException | ServletRequestBindingException e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "getBroadcastMessage failed", e);
+			}
+			message.setActive(Boolean.TRUE);
+		}
+
+		return message;
+	}
+
+	public DataAccessService getDataAccessService() {
+		return dataAccessService;
+	}
+
+	public void setDataAccessService(final DataAccessService dataAccessService) {
+		this.dataAccessService = dataAccessService;
+	}
 
 	@Override
 	public void saveBroadcastMessage(BroadcastMessage broadcastMessage) {
@@ -265,5 +269,5 @@ public class BroadcastServiceImpl extends FusionService implements BroadcastServ
 	public void removeBroadcastMessage(BroadcastMessage broadcastMessage) {
 		dataAccessService.deleteDomainObject(broadcastMessage, null);
 	}
-  
+
 }

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -105,16 +105,14 @@ public class EELFLoggerAdvice {
 			MDC.put(SystemProperties.TARGET_SERVICE_NAME, methodName);
 			if (securityEventType != null) {
 				MDC.put(className + methodName + SystemProperties.AUDITLOG_BEGIN_TIMESTAMP, getCurrentDateTimeUTC());
-				HttpServletRequest req = null;
 				if (args[0] != null && args[0] instanceof HttpServletRequest) {
-					req = (HttpServletRequest) args[0];
+					HttpServletRequest req = (HttpServletRequest) args[0];
 					logger.setRequestBasedDefaultsIntoGlobalLoggingContext(req, appName);
 				}
 			}
-			logger.debug(EELFLoggerDelegate.debugLogger, (methodName + " was invoked."));
+			logger.debug(EELFLoggerDelegate.debugLogger, "{} was invoked.", methodName);
 		} catch (Exception e) {
-			adviceLogger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred in EELFLoggerAdvice.before() method. Details: " + e.getMessage());
+			adviceLogger.error(EELFLoggerDelegate.errorLogger, "before failed", e);
 		}
 
 		return new Object[] { "" };
@@ -197,8 +195,7 @@ public class EELFLoggerAdvice {
 			MDC.remove(SystemProperties.TARGET_ENTITY);
 			MDC.remove(SystemProperties.TARGET_SERVICE_NAME);
 		} catch (Exception e) {
-			adviceLogger.error(EELFLoggerDelegate.errorLogger,
-					"Exception occurred in EELFLoggerAdvice.after() method. Details: " + e.getMessage());
+			adviceLogger.error(EELFLoggerDelegate.errorLogger, "after failed", e);
 		}
 	}
 
@@ -212,7 +209,6 @@ public class EELFLoggerAdvice {
 	private void logSecurityMessage(EELFLoggerDelegate logger, SecurityEventTypeEnum securityEventType, String result,
 			String restMethod) {
 		StringBuilder additionalInfoAppender = new StringBuilder();
-		String auditMessage = "";
 
 		additionalInfoAppender.append(String.format("%s request was received.", restMethod));
 
@@ -224,7 +220,7 @@ public class EELFLoggerAdvice {
 			additionalInfoAppender.append(" Request-URL:" + MDC.get(SystemProperties.FULL_URL));
 		}
 
-		auditMessage = AuditLogFormatter.getInstance().createMessage(MDC.get(SystemProperties.PROTOCOL),
+		String auditMessage = AuditLogFormatter.getInstance().createMessage(MDC.get(SystemProperties.PROTOCOL),
 				securityEventType.name(), MDC.get(SystemProperties.MDC_LOGIN_ID), additionalInfoAppender.toString());
 
 		logger.info(EELFLoggerDelegate.auditLogger, auditMessage);
@@ -243,9 +239,7 @@ public class EELFLoggerAdvice {
 				String timeDifference = String.format("%d ms", endDate.getTime() - beginDate.getTime());
 				MDC.put(SystemProperties.MDC_TIMER, timeDifference);
 			} catch (Exception e) {
-				adviceLogger.error(EELFLoggerDelegate.errorLogger,
-						"Exception occurred in EELFLoggerAdvice.calculateDateTimeDifference() method. Details: "
-								+ e.getMessage());
+				adviceLogger.error(EELFLoggerDelegate.errorLogger, "calculateDateTimeDifference failed", e);
 			}
 		}
 	}

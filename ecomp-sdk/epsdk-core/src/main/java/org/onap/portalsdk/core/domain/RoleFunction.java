@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,53 +37,50 @@
  */
 package org.onap.portalsdk.core.domain;
 
-
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 /**
- * <p>RoleFunction.java</p>
+ * <p>
+ * RoleFunction.java
+ * </p>
  *
- * <p>Represents a role function data object.</p>
+ * <p>
+ * Represents a role function data object.
+ * </p>
  *
  * @version 1.0
  */
 public class RoleFunction extends DomainVo {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
-    public RoleFunction() {}
+	private String code;
+	private String name;
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public String getCode() {
+		return code;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
-    public String getEditUrl() {
-      return "/role_function.htm?role_function_id=" + getCode();    	
-    }
-    
-    public int compareTo(Object obj){
-      String c1 = getName();
-      String c2 = ((RoleFunction)obj).getName();
+	public String getEditUrl() {
+		return "/role_function.htm?role_function_id=" + getCode();
+	}
 
-      return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
-    }
-
-    private String code;
-    private String name;
-    private String editUrl;
+	@Override
+	public int compareTo(Object obj) {
+		String c1 = getName();
+		String c2 = ((RoleFunction) obj).getName();
+		return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
+	}
 
 }

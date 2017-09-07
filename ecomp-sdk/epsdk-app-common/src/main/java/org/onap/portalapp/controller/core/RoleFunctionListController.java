@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,6 +37,7 @@
  */
 package org.onap.portalapp.controller.core;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,138 +65,136 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Controller
 @RequestMapping("/")
 public class RoleFunctionListController extends RestrictedBaseController {
-	
+
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RoleFunctionListController.class);
 
 	@Autowired
 	private RoleService service;
-	
+
 	private String viewName;
 
-	@RequestMapping(value = {"/role_function_list" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/role_function_list" }, method = RequestMethod.GET)
 	public ModelAndView welcome(HttpServletRequest request) {
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
-
-		
 		try {
-			model.put("availableRoleFunctions", mapper.writeValueAsString(service.getRoleFunctions(user.getOrgUserId())));
+			model.put("availableRoleFunctions",
+					mapper.writeValueAsString(service.getRoleFunctions(user.getOrgUserId())));
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "welcome failed", e);
 		}
-		
-		return new ModelAndView(getViewName(),model);		
+		return new ModelAndView(getViewName(), model);
 	}
-	
-	@RequestMapping(value = {"/get_role_functions" }, method = RequestMethod.GET)
-	public void getRoleFunctionList(HttpServletRequest request,HttpServletResponse response) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		ObjectMapper mapper = new ObjectMapper();	
+
+	@RequestMapping(value = { "/get_role_functions" }, method = RequestMethod.GET)
+	public void getRoleFunctionList(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> model = new HashMap<>();
+		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
 		try {
-			model.put("availableRoleFunctions", mapper.writeValueAsString(service.getRoleFunctions(user.getOrgUserId())));
+			model.put("availableRoleFunctions",
+					mapper.writeValueAsString(service.getRoleFunctions(user.getOrgUserId())));
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
 			JSONObject j = new JSONObject(msg);
-			response.getWriter().write(j.toString());	
+			response.getWriter().write(j.toString());
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getROleFunctionList failed", e);
 		}
-		
 	}
-	
-	@RequestMapping(value = {"/role_function_list/saveRoleFunction" }, method = RequestMethod.POST)
-	public void saveRoleFunction(HttpServletRequest request, 
-			HttpServletResponse response, @RequestBody String roleFunc) throws Exception {
+
+	@RequestMapping(value = { "/role_function_list/saveRoleFunction" }, method = RequestMethod.POST)
+	public void saveRoleFunction(HttpServletRequest request, HttpServletResponse response, @RequestBody String roleFunc)
+			throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
 
 		String restCallStatus = "";
 		try {
 			String data = roleFunc;
-			RoleFunction availableRoleFunction = mapper.readValue(data, RoleFunction.class);		
+			RoleFunction availableRoleFunction = mapper.readValue(data, RoleFunction.class);
 			String code = availableRoleFunction.getCode();
-			RoleFunction domainRoleFunction = service.getRoleFunction(user.getOrgUserId(),code);
+			RoleFunction domainRoleFunction = service.getRoleFunction(user.getOrgUserId(), code);
 			domainRoleFunction.setName(availableRoleFunction.getName());
-			domainRoleFunction.setCode(code); 
-			restCallStatus="success";
-			service.saveRoleFunction(user.getOrgUserId(),domainRoleFunction);
+			domainRoleFunction.setCode(code);
+			restCallStatus = "success";
+			service.saveRoleFunction(user.getOrgUserId(), domainRoleFunction);
 		} catch (Exception e) {
-			restCallStatus="fail";
 			logger.error(EELFLoggerDelegate.errorLogger, "saveRoleFunction failed", e);
-			throw new Exception("failed  while Saving RoleFunction");
+			throw new IOException(e);
 		}
 		JsonMessage msg = new JsonMessage(mapper.writeValueAsString(restCallStatus));
 		JSONObject j = new JSONObject(msg);
 		response.getWriter().write(j.toString());
 	}
-	
-	@RequestMapping(value = {"/role_function_list/addRoleFunction" }, method = RequestMethod.POST)
-	public void addRoleFunction(HttpServletRequest request, 
-			HttpServletResponse response, @RequestBody String roleFunc) throws Exception {
+
+	@RequestMapping(value = { "/role_function_list/addRoleFunction" }, method = RequestMethod.POST)
+	public void addRoleFunction(HttpServletRequest request, HttpServletResponse response, @RequestBody String roleFunc)
+			throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
 
 		String restCallStatus = "";
-		boolean canSave=true;
+		boolean canSave = true;
 		try {
 			String data = roleFunc;
-			RoleFunction availableRoleFunction = mapper.readValue(data, RoleFunction.class);		
-		    String code = availableRoleFunction.getCode();
+			RoleFunction availableRoleFunction = mapper.readValue(data, RoleFunction.class);
+			String code = availableRoleFunction.getCode();
 			List<RoleFunction> currentRoleFunction = service.getRoleFunctions(user.getOrgUserId());
-			restCallStatus="success";
-			for(RoleFunction roleF:currentRoleFunction){
-				if(roleF.getCode().equals(code)){
-					restCallStatus="code exists";
-					canSave=false;
+			restCallStatus = "success";
+			for (RoleFunction roleF : currentRoleFunction) {
+				if (roleF.getCode().equals(code)) {
+					restCallStatus = "code exists";
+					canSave = false;
 					break;
 				}
 			}
-			if(canSave)
-				service.saveRoleFunction(user.getOrgUserId(),availableRoleFunction);
+			if (canSave)
+				service.saveRoleFunction(user.getOrgUserId(), availableRoleFunction);
 		} catch (Exception e) {
-			restCallStatus="fail";
 			logger.error(EELFLoggerDelegate.errorLogger, "addRoleFunction failed", e);
-			throw new Exception(e.getMessage());
+			throw new IOException(e);
 		}
 		JsonMessage msg = new JsonMessage(mapper.writeValueAsString(restCallStatus));
 		JSONObject j = new JSONObject(msg);
 		response.getWriter().write(j.toString());
 	}
 
-	@RequestMapping(value = {"/role_function_list/removeRoleFunction" }, method = RequestMethod.POST)
-	public void removeRoleFunction(HttpServletRequest request, 
-			HttpServletResponse response, @RequestBody String roleFunc) throws Exception {
+	@RequestMapping(value = { "/role_function_list/removeRoleFunction" }, method = RequestMethod.POST)
+	public void removeRoleFunction(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody String roleFunc) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
 
 		String restCallStatus = "";
 		try {
 			String data = roleFunc;
-		
+
 			RoleFunction availableRoleFunction = mapper.readValue(data, RoleFunction.class);
 
-			RoleFunction domainRoleFunction = service.getRoleFunction(user.getOrgUserId(),availableRoleFunction.getCode());
-			
-			service.deleteRoleFunction(user.getOrgUserId(),domainRoleFunction);
+			RoleFunction domainRoleFunction = service.getRoleFunction(user.getOrgUserId(),
+					availableRoleFunction.getCode());
+
+			service.deleteRoleFunction(user.getOrgUserId(), domainRoleFunction);
 			logger.info(EELFLoggerDelegate.auditLogger, "Remove role function " + domainRoleFunction.getName());
-			restCallStatus="success";
+			restCallStatus = "success";
 		} catch (Exception e) {
-			restCallStatus="fail";
 			logger.error(EELFLoggerDelegate.errorLogger, "removeRoleFunction failed", e);
-			throw new Exception(e.getMessage());
+			throw new IOException(e);
 		}
 		JsonMessage msg = new JsonMessage(mapper.writeValueAsString(restCallStatus));
 		JSONObject j = new JSONObject(msg);
 		response.getWriter().write(j.toString());
 	}
 
+	@Override
 	public String getViewName() {
 		return viewName;
 	}
+
+	@Override
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
 	}
-	
-	
+
 }

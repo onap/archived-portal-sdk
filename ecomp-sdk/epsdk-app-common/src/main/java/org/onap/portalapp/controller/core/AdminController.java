@@ -7,7 +7,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -20,7 +20,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -41,8 +41,6 @@ package org.onap.portalapp.controller.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.onap.portalsdk.core.controller.RestrictedBaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,14 +53,14 @@ public class AdminController {
 	public class AngularSinglePageController extends RestrictedBaseController {
 
 		@RequestMapping(value = { "/admin" }, method = RequestMethod.GET)
-		public ModelAndView view(HttpServletRequest request) {
-			Map<String, Object> model = new HashMap<String, Object>();
+		public ModelAndView view() {
+			Map<String, Object> model = new HashMap<>();
 			return new ModelAndView("admin", "model", model);
 		}
 		
 		@RequestMapping(value = { "/admin2" }, method = RequestMethod.GET)
-		public ModelAndView adminView(HttpServletRequest request) {
-			Map<String, Object> model = new HashMap<String, Object>();
+		public ModelAndView adminView() {
+			Map<String, Object> model = new HashMap<>();
 			return new ModelAndView("admin2", "model", model);
 		}
 

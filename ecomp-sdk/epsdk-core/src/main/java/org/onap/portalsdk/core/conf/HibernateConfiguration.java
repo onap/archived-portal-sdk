@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -48,7 +48,6 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
-import org.onap.portalsdk.core.logging.format.AlarmSeverityEnum;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +82,8 @@ public class HibernateConfiguration {
 	}
 
 	/**
-	 * Builds a properties object with Hibernate properties in te system.properties file.
+	 * Builds a properties object with Hibernate properties in te system.properties
+	 * file.
 	 * 
 	 * @return Properties object
 	 */
@@ -107,27 +107,18 @@ public class HibernateConfiguration {
 			String sql = "SELECT schema_id,datasource_type,connection_url,user_name,password,driver_class,min_pool_size,max_pool_size,idle_connection_test_period FROM schema_info";
 			rs = stmt.executeQuery(sql);
 			while (rs.next()) {
-				ComboPooledDataSource dataSource = new ComboPooledDataSource();
-				dataSource.setDriverClass(rs.getString("driver_class"));
-				dataSource.setJdbcUrl(rs.getString("connection_url"));
-				dataSource.setUser(rs.getString("user_name"));
-				dataSource.setPassword(rs.getString("password"));
-				dataSource.setMinPoolSize(rs.getInt("min_pool_size"));
-				dataSource.setMaxPoolSize(rs.getInt("max_pool_size"));
-				dataSource.setIdleConnectionTestPeriod(rs.getInt("idle_connection_test_period"));
-				dataSourceMap.put(rs.getString("schema_id"), dataSource);
+				ComboPooledDataSource pool = new ComboPooledDataSource();
+				pool.setDriverClass(rs.getString("driver_class"));
+				pool.setJdbcUrl(rs.getString("connection_url"));
+				pool.setUser(rs.getString("user_name"));
+				pool.setPassword(rs.getString("password"));
+				pool.setMinPoolSize(rs.getInt("min_pool_size"));
+				pool.setMaxPoolSize(rs.getInt("max_pool_size"));
+				pool.setIdleConnectionTestPeriod(rs.getInt("idle_connection_test_period"));
+				dataSourceMap.put(rs.getString("schema_id"), pool);
 			}
-			rs.close();
-			rs = null;
-			stmt.close();
-			stmt = null;
-			conn.close();
-			conn = null;
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger,
-					"Error initializing database, verify database settings in properties file: " + e.getMessage(),
-					AlarmSeverityEnum.CRITICAL);
-			e.printStackTrace();
+			logger.error(EELFLoggerDelegate.errorLogger, "dataSourceMap failed", e);
 			dataSourceMap = null;
 			throw e;
 		} finally {
@@ -139,15 +130,9 @@ public class HibernateConfiguration {
 				if (conn != null)
 					conn.close();
 			} catch (SQLException se2) {
-			}
-			try {
-				if (conn != null)
-					conn.close();
-			} catch (SQLException se) {
-				se.printStackTrace();
+				logger.warn(EELFLoggerDelegate.errorLogger, "dataSourceMap failed to close", se2);
 			}
 		}
-
 		return dataSourceMap;
 	}
 

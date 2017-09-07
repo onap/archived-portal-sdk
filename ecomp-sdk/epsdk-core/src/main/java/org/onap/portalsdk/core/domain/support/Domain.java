@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,32 +37,18 @@
  */
 package org.onap.portalsdk.core.domain.support;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class Domain {
-	// Unique identifier of the domain 
+	// Unique identifier of the domain
 	String id;
-	// List<Container> cList;
-	
-	public String name;
-	Size size; 
+	String name;
+	Size size;
 	Position p;
-	
-	//Attribute1 at;
-	
-	public Position getP() {
-		return p;
-	}
-
-	public void setP(Position p) {
-		this.p = p;
-	}
-
-	//Horizontal space between a pair of containers
+	// Horizontal space between a pair of containers
 	double interContWd = 1.0;
-	//Vertical space between a pair of containers
+	// Vertical space between a pair of containers
 	double interContH;
 	double domainToLayoutWd;
 	double domainToContH;
@@ -70,7 +56,15 @@ public class Domain {
 	int numOfRowsofContainer;
 	int numOfColsofContainer;
 	boolean indexChanged;
-	Map<String,Container> containerRowCol;
+	Map<String, Container> containerRowCol;
+	double top;
+	double left;
+	double height;
+	double width;
+	List<Container> containerList;
+	double newXafterColl;
+	double YafterColl;
+
 	public Domain(String id, String name, double interContWd, double interContH, double domainToLayoutWd,
 			double domainToLayoutH, double domainToContH, int numOfRowsofContainer, int numOfColsofContainer) {
 		this.id = id;
@@ -82,26 +76,16 @@ public class Domain {
 		this.domainToContH = domainToContH;
 		this.numOfRowsofContainer = numOfRowsofContainer;
 		this.numOfColsofContainer = numOfColsofContainer;
-	//	at = new Attribute1();
 	}
-	
-	
-	
 
-	public double top;
-	
-	public double left;
-	
-	public double height;
-	
-	public double width;
-	
-	public List<Container> containerList; 
-	
-	public double newXafterColl;
-	
-	public double YafterColl;
-	
+	public Position getP() {
+		return p;
+	}
+
+	public void setP(Position p) {
+		this.p = p;
+	}
+
 	public void setNewXafterColl(double newXafterColl) {
 		this.newXafterColl = newXafterColl;
 	}
@@ -109,7 +93,7 @@ public class Domain {
 	public double getNewXafterColl() {
 		return newXafterColl;
 	}
-	
+
 	public double getYafterColl() {
 		return YafterColl;
 	}
@@ -121,7 +105,7 @@ public class Domain {
 	public void setDomainToLayoutWd(double domainToLayoutWd) {
 		this.domainToLayoutWd = domainToLayoutWd;
 	}
-	
+
 	public double getDomainToLayoutWd() {
 		return domainToLayoutWd;
 	}
@@ -166,37 +150,17 @@ public class Domain {
 		return name;
 	}
 
-	public void setContainers(Map<String,Container> containerRowCol) {
+	public void setContainers(Map<String, Container> containerRowCol) {
 		this.containerRowCol = containerRowCol;
 	}
-	
+
 	public Map<String, Container> getContainerRowCol() {
 		return containerRowCol;
 	}
 
-	
-	/* public Attribute1 getAt() {
-		return at;
-	}
-
-	public void setAt(Attribute1 at) {
-		this.at = at;
-	}*/
-
 	public void setContainerList(List<Container> containerList) {
-	//	new ArrayList<Container>();
 		this.containerList = containerList;
 	}
-
-	
-	
-/*	public boolean isCollapsed() {
-		return collapsed;
-	}
-
-	public void setCollapsed(boolean collapsed) {
-		this.collapsed = collapsed;
-	}*/
 
 	public boolean isIndexChanged() {
 		return indexChanged;
@@ -206,72 +170,63 @@ public class Domain {
 		this.indexChanged = indexChanged;
 	}
 
-	//Compute the size of any domain 
+	// Compute the size of any domain
 	public Size computeSize() {
 		size = new Size();
 		size.setHeight(5);
-		double width = 0;
+		double myWidth = 0;
 		for (int i = 0; i < numOfRowsofContainer; i++) {
-		      if (containerRowCol!=null && containerRowCol.containsKey(String.valueOf(i)+String.valueOf(numOfColsofContainer-1))) {
-		    	  for (int j = 0; j < numOfColsofContainer; j++) {
-		    		  width+=containerRowCol.get(String.valueOf(i)+String.valueOf(j)).computeSize().getWidth();
-		    	  }
-		    	  break;
-		      }
-		
+			if (containerRowCol != null
+					&& containerRowCol.containsKey(String.valueOf(i) + String.valueOf(numOfColsofContainer - 1))) {
+				for (int j = 0; j < numOfColsofContainer; j++) {
+					myWidth += containerRowCol.get(String.valueOf(i) + String.valueOf(j)).computeSize().getWidth();
+				}
+				break;
+			}
+
 		}
-		width+=(numOfColsofContainer-1)*interContWd;
-		if (this.getName().equals("VNI")) 
-			size.setWidth(width-4);
+		myWidth += (numOfColsofContainer - 1) * interContWd;
+		if (this.getName().equals("VNI"))
+			size.setWidth(myWidth - 4);
 		else
-			size.setWidth(width);
+			size.setWidth(myWidth);
 		return size;
 	}
 
 	public void computeConatinerPositions() {
-	
+
 		double xsum = 0;
-		double ysum = 0;
-		for (int i=0; i< numOfRowsofContainer; i++){
-				for (int j=0; j<numOfColsofContainer; j++){
-					if (containerRowCol!=null && containerRowCol.containsKey(String.valueOf(i)+ String.valueOf(j))) {
-						Container c = containerRowCol.get(String.valueOf(i)+ String.valueOf(j));
-					//	System.out.println("container "+c.toString());
-						Position p = new Position();
-						if (this.getName().equals("VNI")) {
-							p.x = j*(interContWd-2)+xsum+domainToLayoutWd;
-						} else
-							p.x = j*interContWd+xsum+domainToLayoutWd;
-					//	this.computeSize();
-					//	p.x = j*interContWd+xsum+this.getP().getX();
-						ysum = 0;
-						for (int k=0; k<i; k++) {
-						//	System.out.println("i value "+i);
-							if (containerRowCol.containsKey(String.valueOf(k)+ String.valueOf(j)))
-								ysum+= containerRowCol.get(String.valueOf(k)+ String.valueOf(j)).computeSize().getHeight();
-						//		System.out.println("Container height "+containerRowCol.get(String.valueOf(k)+ String.valueOf(j)).getName()+
-						//				":"+" "+containerRowCol.get(String.valueOf(k)+ String.valueOf(j)).computeSize().getHeight());
-							else if (j>0 && containerRowCol.containsKey(String.valueOf(k)+ String.valueOf(j-1)) &&
-									!containerRowCol.get(String.valueOf(i)+ String.valueOf(j)).getName().equals("AIC - Alpharetta")) {
-								ysum+= containerRowCol.get(String.valueOf(k)+ String.valueOf(j-1)).computeSize().getHeight();
-							}
+		for (int i = 0; i < numOfRowsofContainer; i++) {
+			for (int j = 0; j < numOfColsofContainer; j++) {
+				if (containerRowCol != null && containerRowCol.containsKey(String.valueOf(i) + String.valueOf(j))) {
+					Container c = containerRowCol.get(String.valueOf(i) + String.valueOf(j));
+					Position p = new Position();
+					if (this.getName().equals("VNI")) {
+						p.x = j * (interContWd - 2) + xsum + domainToLayoutWd;
+					} else
+						p.x = j * interContWd + xsum + domainToLayoutWd;
+					double ysum = 0;
+					for (int k = 0; k < i; k++) {
+						if (containerRowCol.containsKey(String.valueOf(k) + String.valueOf(j)))
+							ysum += containerRowCol.get(String.valueOf(k) + String.valueOf(j)).computeSize()
+									.getHeight();
+
+						else if (j > 0 && containerRowCol.containsKey(String.valueOf(k) + String.valueOf(j - 1))
+								&& !containerRowCol.get(String.valueOf(i) + String.valueOf(j)).getName()
+										.equals("AIC - Alpharetta")) {
+							ysum += containerRowCol.get(String.valueOf(k) + String.valueOf(j - 1)).computeSize()
+									.getHeight();
 						}
-						//System.out.println("C name "+c.getName()+" ysum "+ysum+" domainToLayoutH "+domainToLayoutH+" this.computeSize().getHeight() "+
-						//		this.computeSize().getHeight()+" domainToContH "+domainToContH+" interContH "+interContH);
-						p.y = domainToLayoutH+ysum+this.computeSize().getHeight()+ 
-							  domainToContH+i*interContH;
-		               
-						c.setP(p);
-		                xsum+= c.computeSize().getWidth();
-		                
-					}	
+					}
+					p.y = domainToLayoutH + ysum + this.computeSize().getHeight() + domainToContH + i * interContH;
+					c.setP(p);
+					xsum += c.computeSize().getWidth();
 				}
-				xsum = 0;
-				
+			}
+			xsum = 0;
+
 		}
 
 	}
 
 }
-
-

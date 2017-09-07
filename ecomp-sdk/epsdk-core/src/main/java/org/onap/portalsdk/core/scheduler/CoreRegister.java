@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -49,60 +49,35 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 @Component
-@DependsOn({"systemProperties"})
+@DependsOn({ "systemProperties" })
 public class CoreRegister {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(CoreRegister.class);
-	
-	Trigger trigger[] = new Trigger[1];
 
-	protected List<Trigger> scheduleTriggers = new ArrayList<Trigger>();
+	protected List<Trigger> scheduleTriggers = new ArrayList<>();
 
 	public void registerTriggers() {
 		// we can use this method to add any schedules to the core
-		
-		/*
-		try {
-			if(SystemProperties.getProperty(SystemProperties.SESSIONTIMEOUT_FEED_CRON) != null)
-				getScheduleTriggers().add(sessionMgtRegistry.getTrigger());
-			
-		} catch(IllegalStateException ies) {
-			logger.info("Session Timout Cron not available");
-		}
-		*/	
-		
 	}
 
-	protected void addTrigger(final String cron,	final CronTrigger cronRegistryTrigger) {
-		// if the property value is not available; the cron will not be added and can be ignored. its safe to ignore the exceptions
-		
+	protected void addTrigger(final String cron, final CronTrigger cronRegistryTrigger) {
+		// if the property value is not available; the cron will not be added and can be
+		// ignored. its safe to ignore the exceptions
 		try {
-			
-			if(SystemProperties.getProperty(cron) != null) {
+			if (SystemProperties.getProperty(cron) != null) {
 				getScheduleTriggers().add(cronRegistryTrigger);
 			}
-			
-		} catch(IllegalStateException ies) {
+		} catch (IllegalStateException ies) {
 			logger.error(EELFLoggerDelegate.errorLogger, "Log Cron not available", AlarmSeverityEnum.MAJOR);
 		}
 	}
-	
-	
-
 
 	public List<Trigger> getScheduleTriggers() {
 		return scheduleTriggers;
 	}
 
-
-
 	public void setScheduleTriggers(List<Trigger> scheduleTriggers) {
 		this.scheduleTriggers = scheduleTriggers;
 	}
-	
-	
-
-	
-	
 
 }

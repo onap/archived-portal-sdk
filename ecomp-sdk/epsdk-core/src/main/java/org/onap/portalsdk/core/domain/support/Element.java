@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,32 +37,45 @@
  */
 package org.onap.portalsdk.core.domain.support;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class Element {
-	
-	public String id;
-	public String name;
-	
-    public double top;
-	
-	public double left;
-	
-	public double height;
-	
-	public String imgFileName;
-	
-	public String borderType;
-	
-	public String bgColor;
-	
-	public ElementDetails details;
-		
-	//public List<ElementDetails> details;
-	
-	
+
+	String id;
+	String name;
+
+	double top;
+
+	double left;
+
+	double height;
+
+	double width;
+
+	String imgFileName;
+
+	String borderType;
+
+	String bgColor;
+
+	ElementDetails details;
+
+	Position p;
+
+	public Element(String id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
+	public Element(String id, String name, String imgFilename, String bgColor, String borderType,
+			ElementDetails details) {
+		this.id = id;
+		this.name = name;
+		this.imgFileName = imgFilename;
+		this.bgColor = bgColor;
+		this.borderType = borderType;
+		this.details = details;
+
+	}
+
 	public void setBgColor(String bgColor) {
 		this.bgColor = bgColor;
 	}
@@ -87,15 +100,10 @@ public class Element {
 		this.width = width;
 	}
 
-
-	public double width;
-	
-	
 	public String getId() {
 		return id;
 	}
-	
-		
+
 	public String getName() {
 		return name;
 	}
@@ -103,10 +111,7 @@ public class Element {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
 
-	Position p;
-	
 	public Position getP() {
 		return p;
 	}
@@ -115,34 +120,6 @@ public class Element {
 		this.p = p;
 	}
 
-	
-	
-	public Element(String id, String name, String imgPath, String bgColor, String logical_group, String display_longname, 
-					String description, String primary_function, String key_interfaces, String location, String vendor, String vendor_shortname) {
-		this.id = id;
-		this.name = name;
-		this.imgFileName = imgPath;
-		this.bgColor = bgColor;
-		
-		
-	}
-	
-	public Element(String id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-	
-	public Element(String id, String name, String imgFilename, String bgColor, String borderType, ElementDetails details) {
-		this.id = id;
-		this.name = name;
-		this.imgFileName = imgFilename;
-		this.bgColor = bgColor; 
-		this.borderType = borderType; 
-		this.details = details;
-		
-	}
-	
-	
 	public void setBorderType(String borderType) {
 		this.borderType = borderType;
 	}
@@ -154,29 +131,23 @@ public class Element {
 	public void setImgFileName(String imgFileName) {
 		this.imgFileName = imgFileName;
 	}
-	
+
 	public String getBorderType() {
 		return borderType;
 	}
-	
-	
-	
+
 	public ElementDetails getDetails() {
 		return details;
 	}
 
-	
-	
 	public void setDetails(ElementDetails details) {
 		this.details = details;
 	}
 
 	public Size computeSize() {
-		Size size= new Size();
-		size.setWidth(0.5*7.0);
-		size.setHeight(0.5*3.0);
-	//	size.setWidth(0.5*10.0);
-	//	size.setHeight(0.5*6.0);
+		Size size = new Size();
+		size.setWidth(0.5 * 7.0);
+		size.setHeight(0.5 * 3.0);
 		return size;
 	}
 

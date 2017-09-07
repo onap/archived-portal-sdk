@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -60,6 +60,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class PortalTimeoutHandler {
 
+	private static final Map<String, HttpSession> sessionMap = new Hashtable<String, HttpSession>();
+	private static final Log logger = LogFactory.getLog(PortalTimeoutHandler.class);
+	private static ObjectMapper mapper = new ObjectMapper();
+	private static PortalTimeoutHandler timeoutHandler;
+
 	protected static final SessionCommInf sessionComm = new SessionComm();
 
 	public interface SessionCommInf {
@@ -69,13 +74,13 @@ public class PortalTimeoutHandler {
 	}
 
 	public static class SessionComm implements SessionCommInf {
+		
+		@Override
 		public Integer fetchSessionSlotCheckInterval(String... params) {
-
 			String ecompRestURL = params[0];
 			String userName = params[1];
 			String pwd = params[2];
 			String uebKey = params[3];
-
 			String sessionSlot = SessionCommunicationService.getSessionSlotCheckInterval(ecompRestURL, userName, pwd,
 					uebKey);
 			if (sessionSlot == null)
@@ -83,25 +88,22 @@ public class PortalTimeoutHandler {
 			return Integer.parseInt(sessionSlot);
 		}
 
+		@Override
 		public void extendSessionTimeOuts(String... params) {
-
 			String ecompRestURL = params[0];
 			String userName = params[1];
 			String pwd = params[2];
 			String uebKey = params[3];
 			String sessionTimeoutMap = params[4];
-
 			SessionCommunicationService.requestPortalSessionTimeoutExtension(ecompRestURL, userName, pwd, uebKey,
 					sessionTimeoutMap);
 		}
 	}
 
-	public static final Map<String, HttpSession> sessionMap = new Hashtable<String, HttpSession>();
-	public static final Integer repeatInterval = 15 * 60; // 15 minutes
-	protected static final Log logger = LogFactory.getLog(PortalTimeoutHandler.class);
-	static ObjectMapper mapper = new ObjectMapper();
-	private static PortalTimeoutHandler timeoutHandler;
-
+	public static Map<String, HttpSession> getSessionMap() {
+		return sessionMap;
+	}
+	
 	public static PortalTimeoutHandler getInstance() {
 		if (timeoutHandler == null)
 			timeoutHandler = new PortalTimeoutHandler();
@@ -141,9 +143,6 @@ public class PortalTimeoutHandler {
 		// and with session replication the listener will fire in all tomcat
 		// instances
 		session.setAttribute(PortalApiConstants.PORTAL_JSESSION_BIND, new PortalTimeoutBindingListener());
-		// sessionMap.put((String)session.getAttribute(PortalApiConstants.PORTAL_JSESSION_ID),
-		// session);
-
 	}
 
 	/**
@@ -166,7 +165,6 @@ public class PortalTimeoutHandler {
 		try {
 			logger.info(" Session getting destroyed - id: " + session.getId());
 			session.removeAttribute(PortalApiConstants.PORTAL_JSESSION_BIND);
-			// sessionMap.remove((String)session.getAttribute(PortalApiConstants.PORTAL_JSESSION_ID));
 		} catch (Exception e) {
 			logger.error("sessionDestroyed failed", e);
 		}
@@ -204,21 +202,17 @@ public class PortalTimeoutHandler {
 	public static String gatherSessionExtensions() {
 		logger.debug("Session Management: gatherSessionExtensions");
 
-		Map<String, PortalTimeoutVO> sessionTimeoutMap = new Hashtable<String, PortalTimeoutVO>();
+		Map<String, PortalTimeoutVO> sessionTimeoutMap = new Hashtable<>();
 		String jsonMap = "";
 
 		for (String jSessionKey : sessionMap.keySet()) {
 
 			try {
-				// get the expirytime in seconds
+				// get the expiry time in seconds
 				HttpSession session = sessionMap.get(jSessionKey);
 
 				Long lastAccessedTimeMilliSec = session.getLastAccessedTime();
 				Long maxIntervalMilliSec = session.getMaxInactiveInterval() * 1000L;
-				// Long currentTimeMilliSec =
-				// Calendar.getInstance().getTimeInMillis() ;
-				// (maxIntervalMilliSec - (currentTimeMilliSec -
-				// lastAccessedTimeMilliSec) + ;
 				Calendar instance = Calendar.getInstance();
 				instance.setTimeInMillis(session.getLastAccessedTime());
 				logger.debug("Session Management: Last Accessed time for " + jSessionKey + ": " + instance.getTime());
@@ -237,9 +231,7 @@ public class PortalTimeoutHandler {
 			}
 
 		}
-
 		return jsonMap;
-
 	}
 
 	/**
@@ -251,10 +243,7 @@ public class PortalTimeoutHandler {
 	 */
 	public static boolean updateSessionExtensions(String sessionTimeoutMapStr) {
 		logger.debug("Session Management: updateSessionExtensions");
-		// Map<String,Object> sessionTimeoutMap =
-		// mapper.readValue(sessionTimeoutMapStr, Map.class);
 		Map<String, PortalTimeoutVO> sessionTimeoutMap = null;
-
 		try {
 			TypeReference<Hashtable<String, PortalTimeoutVO>> typeRef = new TypeReference<Hashtable<String, PortalTimeoutVO>>() {
 			};
@@ -284,9 +273,6 @@ public class PortalTimeoutHandler {
 					session.setMaxInactiveInterval((int) (maxTimeoutTimeMilliSec - lastAccessedTimeMilliSec) / 1000);
 					logger.debug("Session Management: extended session for :" + session.getId() + " to :"
 							+ (int) (maxTimeoutTimeMilliSec / 1000));
-					// System.out.println("!!!!!!!!!extended session for :" +
-					// session.getId() + " to :" +
-					// (int)(maxTimeoutTimeMilliSec/1000));
 				}
 			} catch (Exception e) {
 				logger.error("updateSessionExtensions failed to update session timeouts", e);
@@ -381,7 +367,7 @@ public class PortalTimeoutHandler {
 					- (lastAccessedTimeMilliSec - previousToLastAccessTime) <= portalSessionSlotCheckinMilliSec) {
 
 				String jSessionKey = (String) session.getAttribute(PortalApiConstants.PORTAL_JSESSION_ID);
-				Map<String, PortalTimeoutVO> sessionTimeoutMap = new Hashtable<String, PortalTimeoutVO>();
+				Map<String, PortalTimeoutVO> sessionTimeoutMap = new Hashtable<>();
 				Long sessionTimOutMilliSec = maxIntervalMilliSec + lastAccessedTimeMilliSec;
 
 				sessionTimeoutMap.put(PortalTimeoutHandler.portalJSessionId(jSessionKey),

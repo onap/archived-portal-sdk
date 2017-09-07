@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -39,23 +39,26 @@ package org.onap.portalsdk.core.util;
 
 import org.onap.portalsdk.core.objectcache.jcs.JCSCacheManager;
 import org.springframework.context.annotation.Configuration;
+
 @Configuration
 public class CacheManager extends JCSCacheManager {
-    public CacheManager() {
-    	
-    }
+	
+	public CacheManager() {
+		super();
+	}
 
-    /* The following can be customized for your application to cache the appropriate data upon application startup. The provided
-       example retrieves a list of sample lookup data and puts the list in the Cache Manager. To retrieve that data, simply call the
-       Cache Manager's getObject(String key) method which will return an Object instance. To put additional data in the Cache Manager
-       outside of application startup, call the Cache Manager's putObject(String key, Object objectToCache) method. */
-    public void loadLookUpCache() {
-        /*
-    	List<Role> result = (List<Role>)getDataAccessService().getList(Role.class,null);
-
-        if (result != null) {
-          putObject("lookupRoles", result);
-        }*/
-    }
+	/*
+	 * The following can be customized for your application to cache the appropriate
+	 * data upon application startup. The provided example retrieves a list of
+	 * sample lookup data and puts the list in the Cache Manager. To retrieve that
+	 * data, simply call the Cache Manager's getObject(String key) method which will
+	 * return an Object instance. To put additional data in the Cache Manager
+	 * outside of application startup, call the Cache Manager's putObject(String
+	 * key, Object objectToCache) method.
+	 */
+	@Override
+	public void loadLookUpCache() {
+		// Example code removed to silence Sonar.
+	}
 
 }

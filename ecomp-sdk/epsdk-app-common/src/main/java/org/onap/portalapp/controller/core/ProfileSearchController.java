@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -77,14 +77,14 @@ public class ProfileSearchController extends RestrictedBaseController {
 	private UserProfileService service;
 	
 	@Autowired
-	UserService userService;
+	private UserService userService;
 	
 	@Autowired
 	private FnMenuService fnMenuService;
 
 	@RequestMapping(value = { "/profile_search" }, method = RequestMethod.GET)
 	public ModelAndView profileSearch(HttpServletRequest request) {
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 		List<User> profileList = null;
 		logger.info(EELFLoggerDelegate.applicationLogger, "Initiating ProfileSearch in ProfileSearchController");
@@ -116,7 +116,7 @@ public class ProfileSearchController extends RestrictedBaseController {
 
 	@RequestMapping(value = { "/get_user_pagination" }, method = RequestMethod.GET)
 	public void getUserPagination(HttpServletRequest request, HttpServletResponse response) {
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 		logger.info(EELFLoggerDelegate.applicationLogger, "Initiating get_user_pagination in ProfileSearchController");
 		int pageNum = Integer.parseInt(request.getParameter("pageNum"));
@@ -141,9 +141,9 @@ public class ProfileSearchController extends RestrictedBaseController {
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> setDashboardData(HttpServletRequest request) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> model = new HashMap<String, Object>();
-		List<List<MenuData>> childItemList = new ArrayList<List<MenuData>>();
-		List<MenuData> parentList = new ArrayList<MenuData>();
+		Map<String, Object> model = new HashMap<>();
+		List<List<MenuData>> childItemList = new ArrayList<>();
+		List<MenuData> parentList = new ArrayList<>();
 		logger.info(EELFLoggerDelegate.applicationLogger, "Initiating setDashboardData in ProfileSearchController");
 		HttpSession session = request.getSession();
 		try {
@@ -164,7 +164,7 @@ public class ProfileSearchController extends RestrictedBaseController {
 			logger.info(EELFLoggerDelegate.applicationLogger,
 					"Initiating toggleProfileActive in ProfileSearchController");
 			String userId = request.getParameter("profile_id");
-			User user = (User) userService.getUser(userId);
+			User user = userService.getUser(userId);
 			user.setActive(!user.getActive());
 			service.saveUser(user);
 			logger.info(EELFLoggerDelegate.auditLogger,

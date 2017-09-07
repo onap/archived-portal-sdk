@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -56,63 +56,56 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
 @Service("workflowScheduleService")
 @Transactional
 
-public class WorkflowScheduleServiceImpl implements WorkflowScheduleService{
-	
+public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
+
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WorkflowScheduleServiceImpl.class);
-	
+
 	@Autowired
-	private DataAccessService  dataAccessService;
-	
+	private DataAccessService dataAccessService;
+
 	@Autowired
 	private WorkFlowScheduleRegistry workflowRegistry;
-	
+
 	@Autowired
 	private ApplicationContext appContext;
-	
 
+	@Override
 	public List<WorkflowSchedule> findAll() {
-		
-	/*	List<WorkflowSchedule> allworkflows = getDataAccessService().getList(WorkflowSchedule.class, null);
-		for (WorkflowSchedule ws : allworkflows) {
-			
-			System.out.println("Key:"+ws.getWorkflowKey()+" "+"CronDetails:"+ws.getStartdatetimecron());
-		} */
 		@SuppressWarnings("unchecked")
 		List<WorkflowSchedule> list = getDataAccessService().getList(WorkflowSchedule.class, null);
 		return list;
 	}
-	
-	
-	public void saveWorkflowSchedule(WorkflowSchedule ws){
-		
+
+	@Override
+	public void saveWorkflowSchedule(WorkflowSchedule ws) {
 		getDataAccessService().saveDomainObject(ws, null);
-		logger.info(EELFLoggerDelegate.debugLogger, ("Workflow Scheduled " + ws.getId() + " " + ws.getEndDateTime()));
-		triggerWorkflowScheduling((SchedulerFactoryBean)appContext.getBean(SchedulerFactoryBean.class),ws);
-		
+		logger.info(EELFLoggerDelegate.debugLogger, "Workflow Scheduled " + ws.getId() + " " + ws.getEndDateTime());
+		triggerWorkflowScheduling((SchedulerFactoryBean) appContext.getBean(SchedulerFactoryBean.class), ws);
 	}
-	
+
+	@Override
 	public void triggerWorkflowScheduling(SchedulerFactoryBean schedulerBean, WorkflowSchedule ws) {
-		
 		try {
-			final CronTriggerFactoryBean triggerBean = workflowRegistry.setUpTrigger(ws.getId(), ws.getServerUrl(), ws.getWorkflowKey(),ws.getArguments(),ws.getCronDetails(), ws.getStartDateTime(),ws.getEndDateTime());
-			schedulerBean.getScheduler().scheduleJob((JobDetail)triggerBean.getJobDataMap().get("jobDetail"),triggerBean.getObject());
+			final CronTriggerFactoryBean triggerBean = workflowRegistry.setUpTrigger(ws.getId(), ws.getServerUrl(),
+					ws.getWorkflowKey(), ws.getArguments(), ws.getCronDetails(), ws.getStartDateTime(),
+					ws.getEndDateTime());
+			schedulerBean.getScheduler().scheduleJob((JobDetail) triggerBean.getJobDataMap().get("jobDetail"),
+					triggerBean.getObject());
 		} catch (Exception e) {
-			logger.debug(EELFLoggerDelegate.debugLogger, ("Error scheduling work flow with Id" + ws.getId() + e.getMessage()));
+			logger.error(EELFLoggerDelegate.errorLogger, "Error scheduling work flow with Id" + ws.getId(), e);
 		}
-		
 	}
-	
+
+	@Override
 	public List<Trigger> triggerWorkflowScheduling() {
-		
-		 Date date = new Date();
-		 List<Trigger> triggers = new ArrayList<Trigger>();
-		 
-		 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		Date date = new Date();
+		List<Trigger> triggers = new ArrayList<>();
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		if (getDataAccessService() != null) {
 			@SuppressWarnings("unchecked")
@@ -120,33 +113,25 @@ public class WorkflowScheduleServiceImpl implements WorkflowScheduleService{
 					.executeQuery("From  WorkflowSchedule where endDateTime > '" + dateFormat.format(date) + "'", null);
 
 			for (WorkflowSchedule ws : allWorkflows) {
-				logger.info(EELFLoggerDelegate.debugLogger, ("Workflow Scheduled " + ws.getId() + "/ End Time: " + ws.getEndDateTime()));
-		
+				logger.info(EELFLoggerDelegate.debugLogger,
+						"Workflow Scheduled " + ws.getId() + "/ End Time: " + ws.getEndDateTime());
 				try {
-					
-					final CronTriggerFactoryBean triggerBean = workflowRegistry.setUpTrigger(ws.getId(), ws.getServerUrl(), ws.getWorkflowKey(),ws.getArguments(), ws.getCronDetails(), ws.getStartDateTime(),ws.getEndDateTime());
-					
+					final CronTriggerFactoryBean triggerBean = workflowRegistry.setUpTrigger(ws.getId(),
+							ws.getServerUrl(), ws.getWorkflowKey(), ws.getArguments(), ws.getCronDetails(),
+							ws.getStartDateTime(), ws.getEndDateTime());
 					triggers.add(triggerBean.getObject());
-					
-					//schedulerBean.getScheduler().scheduleJob(trigger);
-				
-				
 				} catch (Exception e) {
-					logger.debug(EELFLoggerDelegate.debugLogger, ("Error scheduling work flow with Id" + ws.getId() + e.getMessage()));
+					logger.error(EELFLoggerDelegate.errorLogger, "Error scheduling work flow with Id" + ws.getId(), e);
 				}
-			
-			
 			}
 		}
-		
+
 		return triggers;
 	}
-	
-	
+
 	public DataAccessService getDataAccessService() {
 		return dataAccessService;
 	}
-
 
 	public void setDataAccessService(DataAccessService dataAccessService) {
 		this.dataAccessService = dataAccessService;
@@ -154,8 +139,6 @@ public class WorkflowScheduleServiceImpl implements WorkflowScheduleService{
 
 	@Override
 	public WorkflowSchedule getWorkflowScheduleByKey(Long key) {
-		return  (WorkflowSchedule)(getDataAccessService().getDomainObject(WorkflowSchedule.class, key, null));
+		return (WorkflowSchedule) (getDataAccessService().getDomainObject(WorkflowSchedule.class, key, null));
 	}
 }
-
-

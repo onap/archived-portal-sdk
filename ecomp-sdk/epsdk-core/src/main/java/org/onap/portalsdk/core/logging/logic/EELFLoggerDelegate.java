@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -67,17 +67,18 @@ import com.att.eelf.configuration.SLF4jWrapper;
 
 public class EELFLoggerDelegate extends SLF4jWrapper implements EELFLogger {
 
-	public static EELFLogger errorLogger = EELFManager.getInstance().getErrorLogger();
-	public static EELFLogger applicationLogger = EELFManager.getInstance().getApplicationLogger();
-	public static EELFLogger auditLogger = EELFManager.getInstance().getAuditLogger();
-	public static EELFLogger metricsLogger = EELFManager.getInstance().getMetricsLogger();
-	public static EELFLogger debugLogger = EELFManager.getInstance().getDebugLogger();
-	private String className;
-	private static ConcurrentMap<String, EELFLoggerDelegate> classMap = new ConcurrentHashMap<String, EELFLoggerDelegate>();
+	public static final EELFLogger errorLogger = EELFManager.getInstance().getErrorLogger();
+	public static final EELFLogger applicationLogger = EELFManager.getInstance().getApplicationLogger();
+	public static final EELFLogger auditLogger = EELFManager.getInstance().getAuditLogger();
+	public static final EELFLogger metricsLogger = EELFManager.getInstance().getMetricsLogger();
+	public static final EELFLogger debugLogger = EELFManager.getInstance().getDebugLogger();
 
-	public EELFLoggerDelegate(String _className) {
-		super(_className);
-		className = _className;
+	private String className;
+	private static ConcurrentMap<String, EELFLoggerDelegate> classMap = new ConcurrentHashMap<>();
+
+	public EELFLoggerDelegate(final String className) {
+		super(className);
+		this.className = className;
 	}
 
 	/**
@@ -93,17 +94,17 @@ public class EELFLoggerDelegate extends SLF4jWrapper implements EELFLogger {
 	}
 
 	/**
-	 * Gets a logger for the specified class name. If the logger does not
-	 * already exist in the map, this creates a new logger.
+	 * Gets a logger for the specified class name. If the logger does not already
+	 * exist in the map, this creates a new logger.
 	 * 
 	 * @param className
 	 *            If null or empty, uses EELFLoggerDelegate as the class name.
 	 * @return Instance of EELFLoggerDelegate
 	 */
-	public static EELFLoggerDelegate getLogger(String className) {
-		if (className == null || className == "")
-			className = EELFLoggerDelegate.class.getName();
-		EELFLoggerDelegate delegate = classMap.get(className);
+	public static EELFLoggerDelegate getLogger(final String className) {
+		String classNameNeverNull = className == null || "".equals(className) ? EELFLoggerDelegate.class.getName()
+				: className;
+		EELFLoggerDelegate delegate = classMap.get(classNameNeverNull);
 		if (delegate == null) {
 			delegate = new EELFLoggerDelegate(className);
 			classMap.put(className, delegate);
@@ -355,9 +356,9 @@ public class EELFLoggerDelegate extends SLF4jWrapper implements EELFLogger {
 	}
 
 	/**
-	 * Logs a standard message identified by the specified enum, using the
-	 * specified parameters, at error level. Alarm and error severity are taken
-	 * from the specified enum argument.
+	 * Logs a standard message identified by the specified enum, using the specified
+	 * parameters, at error level. Alarm and error severity are taken from the
+	 * specified enum argument.
 	 * 
 	 * @param epMessageEnum
 	 * @param param
@@ -381,7 +382,7 @@ public class EELFLoggerDelegate extends SLF4jWrapper implements EELFLogger {
 				errorLogger.error(resolution);
 			}
 		} catch (Exception e) {
-			errorLogger.error("Failed to log the error code. Details: " + UserUtils.getStackTrace(e));
+			errorLogger.error("logEcompError failed", e);
 		} finally {
 			MDC.remove("ErrorCode");
 			MDC.remove("ErrorDescription");
@@ -419,6 +420,7 @@ public class EELFLoggerDelegate extends SLF4jWrapper implements EELFLogger {
 			MDC.put(MDC_SERVER_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress());
 			MDC.put(MDC_INSTANCE_UUID, SystemProperties.getProperty(SystemProperties.INSTANCE_UUID));
 		} catch (Exception e) {
+			errorLogger.error("setGlobalLoggingContext failed", e);
 		}
 	}
 
@@ -435,9 +437,9 @@ public class EELFLoggerDelegate extends SLF4jWrapper implements EELFLogger {
 	}
 
 	/**
-	 * Loads the RequestId/TransactionId into the MDC which it should be
-	 * receiving with an each incoming REST API request. Also, configures few
-	 * other request based logging fields into the MDC context.
+	 * Loads the RequestId/TransactionId into the MDC which it should be receiving
+	 * with an each incoming REST API request. Also, configures few other request
+	 * based logging fields into the MDC context.
 	 * 
 	 * @param req
 	 * @param appName
@@ -453,19 +455,17 @@ public class EELFLoggerDelegate extends SLF4jWrapper implements EELFLogger {
 			MDC.put(MDC_KEY_REQUEST_ID, requestId);
 
 			// Load user agent into MDC context, if available.
-			String accessingClient = "Unknown";
-			accessingClient = req.getHeader(SystemProperties.USERAGENT_NAME);
-			if (accessingClient != null && accessingClient != "" && (accessingClient.contains("Mozilla")
+			String accessingClient = req.getHeader(SystemProperties.USERAGENT_NAME);
+			if (accessingClient != null && !"".equals(accessingClient) && (accessingClient.contains("Mozilla")
 					|| accessingClient.contains("Chrome") || accessingClient.contains("Safari"))) {
 				accessingClient = appName + "_FE";
 			}
 			MDC.put(SystemProperties.PARTNER_NAME, accessingClient);
 
 			// Protocol, Rest URL & Rest Path
-			String restURL = "";
 			MDC.put(SystemProperties.FULL_URL, SystemProperties.UNKNOWN);
 			MDC.put(SystemProperties.PROTOCOL, SystemProperties.HTTP);
-			restURL = UserUtils.getFullURL(req);
+			String restURL = UserUtils.getFullURL(req);
 			if (restURL != null && restURL != "") {
 				MDC.put(SystemProperties.FULL_URL, restURL);
 				if (restURL.toLowerCase().contains("https")) {
@@ -478,8 +478,7 @@ public class EELFLoggerDelegate extends SLF4jWrapper implements EELFLogger {
 
 			// Client IPAddress i.e. IPAddress of the remote host who is making
 			// this request.
-			String clientIPAddress = "";
-			clientIPAddress = req.getHeader("X-FORWARDED-FOR");
+			String clientIPAddress = req.getHeader("X-FORWARDED-FOR");
 			if (clientIPAddress == null) {
 				clientIPAddress = req.getRemoteAddr();
 			}
@@ -487,12 +486,12 @@ public class EELFLoggerDelegate extends SLF4jWrapper implements EELFLogger {
 
 			// Load loginId into MDC context.
 			MDC.put(SystemProperties.MDC_LOGIN_ID, "Unknown");
-			
+
 			String loginId = "";
-				User user = UserUtils.getUserSession(req);
-				if (user != null) {
-					loginId = user.getLoginId();
-				}
+			User user = UserUtils.getUserSession(req);
+			if (user != null) {
+				loginId = user.getLoginId();
+			}
 
 			if (loginId != null && loginId != "") {
 				MDC.put(SystemProperties.MDC_LOGIN_ID, loginId);

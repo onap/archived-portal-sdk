@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -56,6 +56,7 @@ public class FnMenuServiceImpl implements FnMenuService {
 	@Autowired
 	private DataAccessService dataAccessService;
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<MenuData> getFnMenuItems() {
 		return getDataAccessService().getList(MenuData.class, null, "1", null);
@@ -77,7 +78,7 @@ public class FnMenuServiceImpl implements FnMenuService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Long> getParentId(String label) {
-		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> params = new HashMap<>();
 		params.put("paramLabel", label);
 		return getDataAccessService().executeNamedQuery("IdForLabelList", params, null);
 	}
@@ -98,6 +99,7 @@ public class FnMenuServiceImpl implements FnMenuService {
 		getDataAccessService().deleteDomainObject(domainFnMenu, null);
 	}
 
+	@Override
 	public MenuData getMenuItemRow(Long id) {
 		return (MenuData) getDataAccessService().getDomainObject(MenuData.class, id, null);
 	}
@@ -121,7 +123,7 @@ public class FnMenuServiceImpl implements FnMenuService {
 			parentData.setAction(menu.getAction());
 			parentData.setImageSrc(menu.getImageSrc());
 			parentList.add(parentData);
-			List<MenuData> tempList = new ArrayList<MenuData>();
+			List<MenuData> tempList = new ArrayList<>();
 			for (Object o : menu.getChildMenus()) {
 				MenuData m = (MenuData) o;
 				MenuData data = new MenuData();

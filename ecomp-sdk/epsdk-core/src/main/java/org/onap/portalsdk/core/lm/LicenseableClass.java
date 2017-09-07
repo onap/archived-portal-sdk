@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,20 +37,26 @@
  */
 package org.onap.portalsdk.core.lm;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
- * created by Alvin Alexander of http://devdaily.com.
- * modified by Sundar Ramalingam
+ * created by Alvin Alexander of http://devdaily.com. modified by Sundar
+ * Ramalingam
  */
-public interface LicenseableClass
-{
-  public String getApplicationName();
-  public InputStream getPublicKeystoreAsInputStream() throws FileNotFoundException;
-  public String getAlias();
-  public String getPublicKeystorePassword();
-  public String getKeyPasswd();
-  public String getCipherParamPassword();
-  public Class getClassToLicense();
-  
+public interface LicenseableClass {
+	public String getApplicationName();
+
+	public InputStream getPublicKeystoreAsInputStream() throws FileNotFoundException;
+
+	public String getAlias();
+
+	public String getPublicKeystorePassword();
+
+	public String getKeyPasswd();
+
+	public String getCipherParamPassword();
+
+	public Class getClassToLicense();
+
 }

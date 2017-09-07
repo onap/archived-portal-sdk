@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -68,14 +68,14 @@ public class ManifestController extends RestrictedBaseController {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ManifestController.class);
 
+	/** Path to resource on classpath */
+	private static final String MANIFEST_RESOURCE_PATH = "/META-INF/MANIFEST.MF";
+
 	/**
 	 * Required to obtain the webapp manifest.
 	 */
 	@Autowired
 	private ServletContext context;
-
-	/** Path to resource on classpath */
-	private final String MANIFEST_RESOURCE_PATH = "/META-INF/MANIFEST.MF";
 
 	/**
 	 * Gets the content of the webapp manifest file META-INF/MANIFEST.MF.
@@ -96,7 +96,6 @@ public class ManifestController extends RestrictedBaseController {
 	/**
 	 * Gets the webapp manifest contents as a JSON object.
 	 * 
-	 * @param request
 	 * @return A map of key-value pairs. On success:
 	 * 
 	 *         <pre>
@@ -114,13 +113,13 @@ public class ManifestController extends RestrictedBaseController {
 	 */
 	@RequestMapping(value = { "/manifest" }, method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public Map<Object, Object> getManifest(HttpServletRequest request) {
+	public Map<Object, Object> getManifest() {
 		try {
 			Attributes attributes = getWebappManifest();
 			return attributes;
 		} catch (Exception ex) {
 			logger.error(EELFLoggerDelegate.errorLogger, "getManifest failed", ex);
-			Map<Object, Object> response = new HashMap<Object, Object>();
+			Map<Object, Object> response = new HashMap<>();
 			response.put("error", "failed to get manifest: " + ex.toString());
 			return response;
 		}

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -39,21 +39,21 @@ package org.onap.portalsdk.core.web.support;
 
 public interface ControllerProperties {
 
-  static final String TASK_GET           = "get";
-  static final String TASK_DELETE        = "delete";
-  static final String TASK_SAVE          = "save";
-  static final String TASK_PROCESS       = "process";
-  static final String TASK_TOGGLE_ACTIVE = "toggleActive";
-  static final String TASK_DOWNLOAD      = "download";
-  static final String TASK_POPUP         = "popup";
-  static final String TASK_LOOKUP        = "lookup";
-  static final String TASK_ADD_ROW       = "addRow";
-  static final String TASK_APPROVE       = "approve";
-  static final String TASK_REJECT        = "reject";
-  static final String TASK_RESET         = "reset";
-  static final String TASK_ASSIGN        = "assign";
-  static final String TASK_CUT           = "cut";
-  static final String TASK_COPY          = "copy";
-  static final String TASK_PASTE         = "paste";
-  static final String TASK_SELECT        = "select";
+	static final String TASK_GET = "get";
+	static final String TASK_DELETE = "delete";
+	static final String TASK_SAVE = "save";
+	static final String TASK_PROCESS = "process";
+	static final String TASK_TOGGLE_ACTIVE = "toggleActive";
+	static final String TASK_DOWNLOAD = "download";
+	static final String TASK_POPUP = "popup";
+	static final String TASK_LOOKUP = "lookup";
+	static final String TASK_ADD_ROW = "addRow";
+	static final String TASK_APPROVE = "approve";
+	static final String TASK_REJECT = "reject";
+	static final String TASK_RESET = "reset";
+	static final String TASK_ASSIGN = "assign";
+	static final String TASK_CUT = "cut";
+	static final String TASK_COPY = "copy";
+	static final String TASK_PASTE = "paste";
+	static final String TASK_SELECT = "select";
 }

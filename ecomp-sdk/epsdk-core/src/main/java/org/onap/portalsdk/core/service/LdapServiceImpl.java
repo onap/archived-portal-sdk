@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -62,225 +62,189 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("ldapService")
 @Transactional
 public class LdapServiceImpl extends FusionService implements LdapService {
-	
+
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(LdapServiceImpl.class);
-	
+
 	@Autowired
 	private ServiceLocator serviceLocator;
-	
+
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-    public SearchResult searchPost(DomainVo searchCriteria, String sortBy1, String sortBy2, String sortBy3, 
-    		int pageNo, int dataSize, int userId) throws Exception {
+	public SearchResult searchPost(DomainVo searchCriteria, String sortBy1, String sortBy2, String sortBy3, int pageNo,
+			int dataSize, int userId) throws NamingException {
 
-        // initialize the directory context to access POST
-        DirContext dirContext = serviceLocator.getDirContext(SystemProperties.getProperty(SystemProperties.POST_INITIAL_CONTEXT_FACTORY),
-                                                                  SystemProperties.getProperty(SystemProperties.POST_PROVIDER_URL),
-                                                                  SystemProperties.getProperty(SystemProperties.POST_SECURITY_PRINCIPAL));
+		// initialize the directory context to access POST
+		DirContext dirContext = serviceLocator.getDirContext(
+				SystemProperties.getProperty(SystemProperties.POST_INITIAL_CONTEXT_FACTORY),
+				SystemProperties.getProperty(SystemProperties.POST_PROVIDER_URL),
+				SystemProperties.getProperty(SystemProperties.POST_SECURITY_PRINCIPAL));
 
-        SearchResult searchResult = new SearchResult();
+		SearchResult searchResult = new SearchResult();
 
-        try {
-          
-          String[] postAttributes =  {"nickname","givenName","initials","sn","employeeNumber","mail","telephoneNumber",
-        		  	"departmentNumber","a1","street","roomNumber","l","st","postalCode","zip4","physicalDeliveryOfficeName","bc",
-        		  	"friendlyCountryName","bd","bdname","bu","buname","jtname","mgrid","a2","compcode","compdesc",
-        		  	"costcenter","silo","b2"};
+		String[] postAttributes = { "nickname", "givenName", "initials", "sn", "employeeNumber", "mail",
+				"telephoneNumber", "departmentNumber", "a1", "street", "roomNumber", "l", "st", "postalCode", "zip4",
+				"physicalDeliveryOfficeName", "bc", "friendlyCountryName", "bd", "bdname", "bu", "buname", "jtname",
+				"mgrid", "a2", "compcode", "compdesc", "costcenter", "silo", "b2" };
 
-          SearchControls searchControls = new SearchControls();
-          searchControls.setTimeLimit(5000);
-          searchControls.setReturningAttributes(postAttributes);
+		SearchControls searchControls = new SearchControls();
+		searchControls.setTimeLimit(5000);
+		searchControls.setReturningAttributes(postAttributes);
 
-          StringBuffer filterClause = new StringBuffer("(&(objectClass=*)");
+		StringBuilder filterClause = new StringBuilder("(&(objectClass=*)");
+		User user = (User) searchCriteria;
 
-          User user = (User)searchCriteria;
+		if (Utilities.nvl(user.getFirstName()).length() > 0) {
+			filterClause.append("(givenName=").append(user.getFirstName()).append("*)");
+		}
+		if (Utilities.nvl(user.getLastName()).length() > 0) {
+			filterClause.append("(sn=").append(user.getLastName()).append("*)");
+		}
+		if (Utilities.nvl(user.getHrid()).length() > 0) {
+			filterClause.append("(employeeNumber=").append(user.getHrid()).append("*)");
+		}
+		if (Utilities.nvl(user.getOrgManagerUserId()).length() > 0) {
+			filterClause.append("(mgrid=").append(user.getOrgManagerUserId()).append("*)");
+		}
+		if (Utilities.nvl(user.getOrgCode()).length() > 0) {
+			filterClause.append("(departmentNumber=").append(user.getOrgCode()).append("*)");
+		}
+		if (Utilities.nvl(user.getEmail()).length() > 0) {
+			filterClause.append("(mail=").append(user.getEmail()).append("*)");
+		}
+		if (Utilities.nvl(user.getOrgUserId()).length() > 0) {
+			filterClause.append("(a1=").append(user.getOrgUserId()).append("*)");
+		}
+		filterClause.append("(c3=N)"); // this has been added to filter CP09 entries on the LDAP server that are
+										// duplicates of existing individuals
+		filterClause.append(")");
 
-          if(Utilities.nvl(user.getFirstName()).length() > 0) {
-            filterClause.append("(givenName=").append(user.getFirstName()).append("*)");
-          }
-          if(Utilities.nvl(user.getLastName()).length() > 0) {
-            filterClause.append("(sn=").append(user.getLastName()).append("*)");
-          }
-          if(Utilities.nvl(user.getHrid()).length() > 0) {
-            filterClause.append("(employeeNumber=").append(user.getHrid()).append("*)");
-          }
-          if(Utilities.nvl(user.getOrgManagerUserId()).length() > 0) {
-              filterClause.append("(mgrid=").append(user.getOrgManagerUserId()).append("*)");
-            }
-          if(Utilities.nvl(user.getOrgCode()).length() > 0) {
-            filterClause.append("(departmentNumber=").append(user.getOrgCode()).append("*)");
-          }
-          if(Utilities.nvl(user.getEmail()).length() > 0) {
-            filterClause.append("(mail=").append(user.getEmail()).append("*)");
-          }
-          if(Utilities.nvl(user.getOrgUserId()).length() > 0) {
-            filterClause.append("(a1=").append(user.getOrgUserId()).append("*)");
-          }
-          filterClause.append("(c3=N)"); // this has been added to filter CP09 entries on the LDAP server that are duplicates of existing individuals
-          filterClause.append(")");
+		List list = new ArrayList();
+		if (!"(&(objectClass=*))".equals(filterClause.toString())) {
+			NamingEnumeration e = dirContext.search(
+					SystemProperties.getProperty(SystemProperties.POST_PROVIDER_URL) + "/"
+							+ SystemProperties.getProperty(SystemProperties.POST_SECURITY_PRINCIPAL),
+					filterClause.toString(), searchControls);
 
-          List list = new ArrayList();
-          if (!filterClause.toString().equals("(&(objectClass=*))")) {
-              NamingEnumeration e = dirContext.search(SystemProperties.getProperty(SystemProperties.POST_PROVIDER_URL) + "/" +
-                                                      SystemProperties.getProperty(SystemProperties.POST_SECURITY_PRINCIPAL),
-                                                      filterClause.toString(),
-                                                      searchControls);
+			list = processResults(e);
+		}
 
-              list = processResults(e);
-          }
+		Collections.sort(list);
 
-          Collections.sort(list);
+		searchResult = new SearchResult(list);
+		searchResult.setPageNo(pageNo);
+		if (dataSize >= 0) {
+			searchResult.setDataSize(dataSize);
+		} else {
+			searchResult.setDataSize(list.size());
+		} // else
 
-          searchResult = new SearchResult(list);
-          searchResult.setPageNo(pageNo);
-          if(dataSize >= 0) {
-            searchResult.setDataSize(dataSize);
-          }
-          else {
-            searchResult.setDataSize(list.size());
-          }	// else
+		dirContext.close();
 
-        }
-        catch(NamingException ne) {
-          logger.error(EELFLoggerDelegate.errorLogger,ne.getMessage());
-        }
-        finally {
-          dirContext.close();
-        }
-
-        return searchResult;
-    }
+		return searchResult;
+	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-    private ArrayList processResults(NamingEnumeration e) throws NamingException {
-      ArrayList results = new ArrayList();
-      int count = 0;
+	private ArrayList processResults(NamingEnumeration e) throws NamingException {
+		ArrayList results = new ArrayList();
+		int count = 0;
 
-      while (e.hasMore()) {
-        javax.naming.directory.SearchResult searchResult = (javax.naming.directory.SearchResult)e.next();
-        results.add(processAttributes(searchResult.getAttributes()));
-        count++;
+		while (e.hasMore()) {
+			javax.naming.directory.SearchResult searchResult = (javax.naming.directory.SearchResult) e.next();
+			results.add(processAttributes(searchResult.getAttributes()));
+			count++;
 
-        if(count > Integer.parseInt(SystemProperties.getProperty(SystemProperties.POST_MAX_RESULT_SIZE))) {
-          break;
-        }
+			if (count > Integer.parseInt(SystemProperties.getProperty(SystemProperties.POST_MAX_RESULT_SIZE))) {
+				break;
+			}
 
-      }
+		}
 
-      return results;
-    }
+		return results;
+	}
 
 	@SuppressWarnings("rawtypes")
-    private DomainVo processAttributes(Attributes resultAttributes) throws NamingException {
-      User user = new User();
+	private DomainVo processAttributes(Attributes resultAttributes) {
+		User user = new User();
+		try {
+			if (resultAttributes == null) {
+				logger.debug(EELFLoggerDelegate.debugLogger, "processAttributes: no attributes");
+			} else {
+				for (NamingEnumeration e = resultAttributes.getAll(); e.hasMore();) { // why the nested loop?
+					Attribute attribute = (Attribute) e.next();
+					for (NamingEnumeration ie = attribute.getAll(); ie.hasMore();) {
+						if (attribute.getID().equalsIgnoreCase("nickname")) {
+							user.setFirstName((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("initials")) {
+							user.setMiddleInitial((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("sn")) {
+							user.setLastName((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("employeeNumber")) {
+							user.setHrid((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("mail")) {
+							user.setEmail((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("telephoneNumber")) {
+							user.setPhone((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("departmentNumber")) {
+							user.setOrgCode((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("a1")) {
+							user.setOrgUserId((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("street")) {
+							user.setAddress1((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("roomNumber")) {
+							user.setAddress2((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("l")) {
+							user.setCity((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("st")) {
+							user.setState((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("postalCode")) {
+							user.setZipCode((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("zip4")) {
+							user.setZipCodeSuffix((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("physicalDeliveryOfficeName")) {
+							user.setLocationClli((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("bc")) {
+							user.setBusinessCountryCode((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("friendlyCountryName")) {
+							user.setBusinessCountryName((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("bd")) {
+							user.setDepartment((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("bdname")) {
+							user.setDepartmentName((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("jtname")) {
+							user.setJobTitle((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("mgrid")) {
+							user.setOrgManagerUserId((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("a2")) {
+							user.setCommandChain((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("compcode")) {
+							user.setCompanyCode((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("compdesc")) {
+							user.setCompany((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("bu")) {
+							user.setBusinessUnit((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("buname")) {
+							user.setBusinessUnitName((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("silo")) {
+							user.setSiloStatus((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("costcenter")) {
+							user.setCostCenter((String) ie.next());
+						} else if (attribute.getID().equalsIgnoreCase("b2")) {
+							user.setFinancialLocCode((String) ie.next());
+						} else { // we don't care about returned attribute, let's move on
+							ie.next();
+						}
 
-      try {
-        if (resultAttributes == null) {
-          // System.out.println("This result has no attributes");
-        } else {
-          for (NamingEnumeration e = resultAttributes.getAll(); e.hasMore();) { //why the nested loop?
-            Attribute attribute = (Attribute)e.next();
-            for (NamingEnumeration ie = attribute.getAll(); ie.hasMore();) {
-              if (attribute.getID().equalsIgnoreCase("nickname")) {
-                  user.setFirstName((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("initials")) {
-                  user.setMiddleInitial((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("sn")) {
-                  user.setLastName((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("employeeNumber")) {
-                  user.setHrid((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("mail")) {
-                  user.setEmail((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("telephoneNumber")) {
-                  user.setPhone((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("departmentNumber")) {
-                  user.setOrgCode((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("a1")) {
-                  user.setOrgUserId((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("street")) {
-                  user.setAddress1((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("roomNumber")) {
-                  user.setAddress2((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("l")) {
-                  user.setCity((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("st")) {
-                  user.setState((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("postalCode")) {
-                  user.setZipCode((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("zip4")) {
-                  user.setZipCodeSuffix((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("physicalDeliveryOfficeName")) {
-                  user.setLocationClli((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("bc")) {
-                  user.setBusinessCountryCode((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("friendlyCountryName")) {
-                  user.setBusinessCountryName((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("bd")) {
-                  user.setDepartment((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("bdname")) {
-                  user.setDepartmentName((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("jtname")) {
-                  user.setJobTitle((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("mgrid")) {
-                  user.setOrgManagerUserId((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("a2")) {
-                  user.setCommandChain((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("compcode")) {
-                  user.setCompanyCode((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("compdesc")) {
-                  user.setCompany((String) ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("bu")) {
-                  user.setBusinessUnit((String)ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("buname")) {
-                  user.setBusinessUnitName((String)ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("silo")) {
-                  user.setSiloStatus((String)ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("costcenter")) {
-                  user.setCostCenter((String)ie.next());
-              }
-              else if (attribute.getID().equalsIgnoreCase("b2")) {
-                  user.setFinancialLocCode((String)ie.next());
-              }
-              else { //we don't care about returned attribute, let's move on
-                ie.next();
-              }
+					}
+				}
+			}
+		} catch (NamingException e) {
+			logger.error(EELFLoggerDelegate.errorLogger,
+					"An error occurred while processing the following user from POST with an ORGUSERID of "
+							+ user.getOrgUserId() + e.getMessage());
+		}
 
-            }
-          }
-        }
-      } catch (NamingException e) {
-    	  logger.error(EELFLoggerDelegate.errorLogger, "An error occurred while processing the following user from POST with an ORGUSERID of " + user.getOrgUserId() + e.getMessage());
-      } 
-      
-      return user;
+		return user;
 
-    }
-
+	}
 
 }

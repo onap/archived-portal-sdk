@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -68,82 +68,6 @@ public class SystemProperties {
 	private static Environment environment;
 
 	private ServletContext servletContext;
-
-	public SystemProperties() {
-	}
-
-	protected Environment getEnvironment() {
-		return environment;
-	}
-
-	@Autowired
-	public void setEnvironment(Environment environment) {
-		SystemProperties.environment = environment;
-	}
-
-	public ServletContext getServletContext() {
-		return servletContext;
-	}
-
-	public void setServletContext(ServletContext servletContext) {
-		this.servletContext = servletContext;
-	}
-
-	/**
-	 * Tests whether a property value is available for the specified key.
-	 * 
-	 * @param key Property key
-	 * @return True if the key is known, otherwise false.
-	 */
-	public static boolean containsProperty(String key) {
-		return environment.containsProperty(key);
-	}
-
-	/**
-	 * Returns the property value associated with the given key (never
-	 * {@code null}), after trimming any trailing space.
-	 * 
-	 * @param key
-	 *            Property key
-	 * @return Property value; the empty string if the environment was not
-	 *         autowired, which should never happen.
-	 * @throws IllegalStateException
-	 *             if the key cannot be resolved
-	 */
-	public static String getProperty(String key) {
-		String value = "";
-		if (environment == null) {
-			logger.error(EELFLoggerDelegate.errorLogger, "getProperty: environment is null, should never happen!");
-		}
-		else {
-			value = environment.getRequiredProperty(key);
-			// java.util.Properties preserves trailing space
-			if (value != null)
-				value = value.trim();
-		}
-		return value;
-	}
-
-	/**
-	 * Gets the property value for the key {@link #APPLICATION_NAME}.
-	 * 
-	 * method created to get around JSTL 1.0 limitation of not being able to
-	 * access a static method of a bean
-	 * 
-	 * @return Application name
-	 */
-	public String getApplicationName() {
-		return getProperty(APPLICATION_NAME);
-	}
-
-	/**
-	 * Gets the property value for the key {@link #APP_DISPLAY_NAME}.
-	 * 
-	 * @return Application display name
-	 */
-	public String getAppDisplayName() {
-		return getProperty(APP_DISPLAY_NAME);
-	}
 
 	// keys used to reference values in the system properties file
 	public static final String DOMAIN_CLASS_LOCATION = "domain_class_location";
@@ -228,7 +152,6 @@ public class SystemProperties {
 	public static final String LOGIN_METHOD_BACKDOOR = "login_method_backdoor";
 	public static final String LOGIN_METHOD_ATTRIBUTE_NAME = "login_method_attribute_name";
 	public static final String ROLE_FUNCTION_LIST = "role_function_list";
-	
 
 	// login error message keys
 	public static final String MESSAGE_KEY_LOGIN_ERROR_COOKIE_EMPTY = "login.error.hrid.empty";
@@ -265,7 +188,7 @@ public class SystemProperties {
 	public static final String HB_DIALECT = "hb.dialect";
 	public static final String HB_SHOW_SQL = "hb.show_sql";
 	public static final String IDLE_CONNECTION_TEST_PERIOD = "hb.idle_connection_test_period";
-	
+
 	// DataSource
 	public static final String DB_DRIVER = "db.driver";
 	public static final String DB_CONNECTIONURL = "db.connectionURL";
@@ -333,7 +256,14 @@ public class SystemProperties {
 	public static final String HTTP = "HTTP";
 	public static final String HTTPS = "HTTPS";
 	public static final String SSO_VALUE = "sso";
-	
+
+	// Menu
+	public static final String CONTACT_US_LINK = "contact_us_link";
+
+	// Left Menu
+	public static final String LEFT_MENU_PARENT = "parentList";
+	public static final String LEFT_MENU_CHILDREND = "childItemList";
+
 	public enum RESULT_ENUM {
 		SUCCESS, FAILURE
 	}
@@ -342,10 +272,81 @@ public class SystemProperties {
 		FE_LOGIN_ATTEMPT, FE_LOGOUT, SSO_LOGIN_ATTEMPT_PHASE_1, SSO_LOGIN_ATTEMPT_PHASE_2, SSO_LOGOUT, LDAP_PHONEBOOK_USER_SEARCH, INCOMING_REST_MESSAGE, OUTGOING_REST_MESSAGE, REST_AUTHORIZATION_CREDENTIALS_MODIFIED, ECOMP_PORTAL_USER_MODIFIED, ECOMP_PORTAL_USER_ADDED, ECOMP_PORTAL_USER_REMOVED, ECOMP_PORTAL_WIDGET, INCOMING_UEB_MESSAGE, ECOMP_PORTAL_HEALTHCHECK
 	}
 
-	// Menu
-	public static final String CONTACT_US_LINK = "contact_us_link";
+	public SystemProperties() {
+		super();
+	}
 
-	// Left Menu
-	public static final String LEFT_MENU_PARENT = "parentList";
-	public static final String LEFT_MENU_CHILDREND = "childItemList";
+	protected Environment getEnvironment() {
+		return environment;
+	}
+
+	@Autowired
+	public void setEnvironment(Environment environment) {
+		SystemProperties.environment = environment;
+	}
+
+	public ServletContext getServletContext() {
+		return servletContext;
+	}
+
+	public void setServletContext(ServletContext servletContext) {
+		this.servletContext = servletContext;
+	}
+
+	/**
+	 * Tests whether a property value is available for the specified key.
+	 * 
+	 * @param key
+	 *            Property key
+	 * @return True if the key is known, otherwise false.
+	 */
+	public static boolean containsProperty(String key) {
+		return environment.containsProperty(key);
+	}
+
+	/**
+	 * Returns the property value associated with the given key (never
+	 * {@code null}), after trimming any trailing space.
+	 * 
+	 * @param key
+	 *            Property key
+	 * @return Property value; the empty string if the environment was not
+	 *         autowired, which should never happen.
+	 * @throws IllegalStateException
+	 *             if the key is not found
+	 */
+	public static String getProperty(String key) {
+		String value = "";
+		if (environment == null) {
+			logger.error(EELFLoggerDelegate.errorLogger, "getProperty: environment is null, should never happen!");
+		} else {
+			value = environment.getRequiredProperty(key);
+			// java.util.Properties preserves trailing space
+			if (value != null)
+				value = value.trim();
+		}
+		return value;
+	}
+
+	/**
+	 * Gets the property value for the key {@link #APPLICATION_NAME}.
+	 * 
+	 * method created to get around JSTL 1.0 limitation of not being able to access
+	 * a static method of a bean
+	 * 
+	 * @return Application name
+	 */
+	public String getApplicationName() {
+		return getProperty(APPLICATION_NAME);
+	}
+
+	/**
+	 * Gets the property value for the key {@link #APP_DISPLAY_NAME}.
+	 * 
+	 * @return Application display name
+	 */
+	public String getAppDisplayName() {
+		return getProperty(APP_DISPLAY_NAME);
+	}
+
 }

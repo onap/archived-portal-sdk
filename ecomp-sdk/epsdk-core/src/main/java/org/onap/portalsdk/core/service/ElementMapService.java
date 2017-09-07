@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -38,6 +38,7 @@
 package org.onap.portalsdk.core.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,28 +64,39 @@ public class ElementMapService {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ElementMapService.class);
 
+	private static HashMap<String, Object> toscaElementsMap = new HashMap<>();
+	private static HashMap<String, Element> elementMap = new HashMap<>();
+	private static HashMap<String, Element> miscElementMap = new HashMap<>();
+	private static HashMap<String, Container> outercontainers = new HashMap<>();
+	private static HashMap<String, Container> innercontainers = new HashMap<>();
+	private static HashMap<String, Domain> domainMap = new HashMap<>();
+
+	private static String filePath = SystemProperties.getProperty("element_map_file_path");
+	private static String networkToscaYml = null;// "NetworkMap_topology_composition.yml";
+	private static String networkLayoutYml = null;// "network_map_layout.yml";
+
 	/**
 	 * 
 	 * @param contextRealPath
 	 * @param layout
 	 * @return
-	 * @throws Exception
+	 * @throws IOException
 	 */
-	private String convertToYAML(String contextRealPath, Layout layout) throws Exception {
+	private String convertToYAML(String contextRealPath, Layout layout) throws IOException {
 
 		// Used to build image file relative URLs
-		final String iconRelPath = SystemProperties.getProperty("element_map_icon_path"); // "static/img/map/icons/";
+		final String iconRelPath = SystemProperties.getProperty("element_map_icon_path");
 
-		Map<String, Domain> resultAICDomain = layout.domainRowCol;
-		Map<String, List<Domain>> domainMap = new HashMap<String, List<Domain>>();
-		List<Domain> domainList = new ArrayList<Domain>();
+		Map<String, Domain> resultAICDomain = layout.getDomainRowCol();
+		Map<String, List<Domain>> domainMap = new HashMap<>();
+		List<Domain> domainList = new ArrayList<>();
 		for (Domain d : resultAICDomain.values()) {
 			d.setWidth(10 * d.computeSize().getWidth());
 			d.setHeight(10 * d.computeSize().getHeight());
 			d.setLeft(10 * d.getP().getX());
 			d.setTop(10 * d.getP().getY());
 
-			List<Container> containerList = new ArrayList<Container>();
+			List<Container> containerList = new ArrayList<>();
 			for (Container c : d.getContainerRowCol().values()) {
 				c.setWidth(10 * c.computeSize().getWidth());
 				c.setHeight(10 * c.computeSize().getHeight());
@@ -97,7 +109,7 @@ public class ElementMapService {
 				}
 
 				if (c.getContainerRowCol() != null) {
-					List<Container> innerContainerList = new ArrayList<Container>();
+					List<Container> innerContainerList = new ArrayList<>();
 					for (Container innerC : c.getContainerRowCol().values()) {
 						innerC.setName(innerC.getName());
 						innerC.setWidth(10 * innerC.computeSize().getWidth());
@@ -106,9 +118,8 @@ public class ElementMapService {
 						innerC.setTop(10 * innerC.getP().getY());
 
 						if (innerC.getElementRowCol() != null) {
-							List<Element> innerContainerEList = new ArrayList<Element>();
+							List<Element> innerContainerEList = new ArrayList<>();
 							for (Element ele : innerC.getElementRowCol().values()) {
-								// ele.setName(ele.getName());
 								ele.setWidth(10 * ele.computeSize().getWidth());
 								ele.setHeight(10 * ele.computeSize().getHeight());
 								ele.setLeft(10 * ele.getP().getX());
@@ -128,9 +139,8 @@ public class ElementMapService {
 				}
 
 				if (c.getElementRowCol() != null) {
-					List<Element> elementList = new ArrayList<Element>();
+					List<Element> elementList = new ArrayList<>();
 					for (Element e : c.getElementRowCol().values()) {
-						// e.setName(e.getName());
 						e.setWidth(10 * e.computeSize().getWidth());
 						e.setHeight(10 * e.computeSize().getHeight());
 						e.setLeft(10 * e.getP().getX());
@@ -157,7 +167,7 @@ public class ElementMapService {
 		}
 		domainMap.put("domainList", domainList);
 
-		List<Domain> collapsedDomains = new ArrayList<Domain>();
+		List<Domain> collapsedDomains = new ArrayList<>();
 
 		// nline
 		for (Domain collapsed : layout.getCollapsedDomainsNewList()) {
@@ -183,30 +193,17 @@ public class ElementMapService {
 
 	}
 
-	private static HashMap<String, Object> toscaElementsMap = new HashMap<String, Object>();
-	private static HashMap<String, Element> elementMap = new HashMap<String, Element>();
-	private static HashMap<String, Element> miscElementMap = new HashMap<String, Element>();
-	private static HashMap<String, Container> outercontainers = new HashMap<String, Container>();
-	private static HashMap<String, Container> innercontainers = new HashMap<String, Container>();
-	private static HashMap<String, Domain> domainMap = new HashMap<String, Domain>();
-
-	private static String filePath = SystemProperties.getProperty("element_map_file_path");
-	private static String networkToscaYml = null;// "NetworkMap_topology_composition.yml";
-	private static String networkLayoutYml = null;// "network_map_layout.yml";
-
 	/**
 	 * Builds renderable model of elements in the network map. Parses YAML files
-	 * with metadata and builds input for JoinJS to render in the browser as
-	 * SVG.
+	 * with metadata and builds input for JoinJS to render in the browser as SVG.
 	 * 
 	 * @param args
-	 *            arg 0 - collapsedDomains; arg 1 - expandedDomains; arg 2 -
-	 *            context real path; arg 3 - contentFileName; arg 4 -
-	 *            layoutFileName
+	 *            arg 0 - collapsedDomains; arg 1 - expandedDomains; arg 2 - context
+	 *            real path; arg 3 - contentFileName; arg 4 - layoutFileName
 	 * @return Renderable model of elements
-	 * @throws Exception
+	 * @throws IOException
 	 */
-	public String buildElementMapYaml(String args[]) throws Exception {
+	public String buildElementMapYaml(String args[]) throws IOException {
 
 		final String yamlDirPath = new File(args[2], filePath).getPath();
 		if (args != null && args.length > 4) {
@@ -219,12 +216,12 @@ public class ElementMapService {
 		Map<String, Object> toscaYaml = YamlUtils.readYamlFile(yamlDirPath, networkToscaYml);
 		Map<String, Object> networkMapLayoutYaml = YamlUtils.readYamlFile(yamlDirPath, networkLayoutYml);
 
-		toscaElementsMap = new HashMap<String, Object>();
-		elementMap = new HashMap<String, Element>();
-		domainMap = new HashMap<String, Domain>();
-		outercontainers = new HashMap<String, Container>();
-		innercontainers = new HashMap<String, Container>();
-		miscElementMap = new HashMap<String, Element>();
+		toscaElementsMap = new HashMap<>();
+		elementMap = new HashMap<>();
+		domainMap = new HashMap<>();
+		outercontainers = new HashMap<>();
+		innercontainers = new HashMap<>();
+		miscElementMap = new HashMap<>();
 
 		if (toscaYaml != null) {
 			for (String key : toscaYaml.keySet()) {
@@ -237,12 +234,6 @@ public class ElementMapService {
 								&& toscaTopologyDetails.get(detailsKey) instanceof HashMap) {
 
 							toscaElementsMap = (HashMap<String, Object>) toscaTopologyDetails.get(detailsKey);
-
-							// for (String toscaElementKey :
-							// toscaElementsMap.keySet()) {
-							//// System.out.println("Element - "+ "key :" +
-							//// toscaElementKey);
-							// }
 
 						}
 					}
@@ -267,8 +258,6 @@ public class ElementMapService {
 
 				if (elementlist != null) {
 					for (Object eachElement : elementlist) {
-						// System.out.println("toscaNetworkMapElementStyleList
-						// Container : " +eachElement);
 						if (eachElement != null && eachElement instanceof HashMap) {
 							HashMap<String, String> elementDetails = (HashMap<String, String>) eachElement;
 							if (elementDetails != null) {
@@ -279,7 +268,7 @@ public class ElementMapService {
 								column = "0";
 								for (String detailsKey : elementDetails.keySet()) {
 									if ("tosca_id".equalsIgnoreCase(detailsKey))
-										elementName = elementDetails.get(detailsKey).toString();
+										elementName = elementDetails.get(detailsKey);
 									if ("id".equalsIgnoreCase(detailsKey)) {
 										elementID = String.valueOf(elementDetails.get(detailsKey));
 									}
@@ -290,7 +279,7 @@ public class ElementMapService {
 										column = String.valueOf(elementDetails.get(detailsKey));
 									}
 									if ("icon".equalsIgnoreCase(detailsKey))
-										imgPath = elementDetails.get(detailsKey).toString();
+										imgPath = elementDetails.get(detailsKey);
 								}
 
 								if (elementMap.containsKey(elementName.concat("/").concat(row).concat(column))) {
@@ -313,12 +302,11 @@ public class ElementMapService {
 
 				for (String elementkey : elementMap.keySet()) {
 					Element c = (Element) elementMap.get(elementkey);
-					// System.out.println("Element - "+ "key :" +elementkey +" -
-					// " + "value :" + c.getName());
+					logger.trace(EELFLoggerDelegate.debugLogger, "buildElementMapYaml: element {}", c);
 				}
 
 				if (!elementMap.isEmpty()) {
-					miscElementMap = new HashMap<String, Element>(elementMap);
+					miscElementMap = new HashMap<>(elementMap);
 				}
 			}
 
@@ -349,12 +337,12 @@ public class ElementMapService {
 
 								for (String detailsKey : containerDetails.keySet()) {
 									if ("logical_group_name".equalsIgnoreCase(detailsKey))
-										containerName = containerDetails.get(detailsKey).toString();
+										containerName = containerDetails.get(detailsKey);
 									if ("id".equalsIgnoreCase(detailsKey)) {
 										containerID = String.valueOf(containerDetails.get(detailsKey));
 									}
 									if ("domain".equalsIgnoreCase(detailsKey)) {
-										domain = containerDetails.get(detailsKey).toString();
+										domain = containerDetails.get(detailsKey);
 									}
 									if ("row".equalsIgnoreCase(detailsKey)) {
 										row = String.valueOf(containerDetails.get(detailsKey));
@@ -401,12 +389,12 @@ public class ElementMapService {
 
 								for (String detailsKey : containerDetails.keySet()) {
 									if ("logical_group_name".equalsIgnoreCase(detailsKey))
-										containerName = containerDetails.get(detailsKey).toString();
+										containerName = containerDetails.get(detailsKey);
 									if ("id".equalsIgnoreCase(detailsKey)) {
 										containerID = String.valueOf(containerDetails.get(detailsKey));
 									}
 									if ("domain".equalsIgnoreCase(detailsKey)) {
-										domain = containerDetails.get(detailsKey).toString();
+										domain = containerDetails.get(detailsKey);
 									}
 									if ("row".equalsIgnoreCase(detailsKey)) {
 										row = String.valueOf(containerDetails.get(detailsKey));
@@ -430,9 +418,6 @@ public class ElementMapService {
 									outercontainers.put(mapKey, fetchContainerObject(containerID, containerName, false,
 											containerName, domain));
 								}
-								// else innercontainers.put(domain +":"+
-								// containerName,
-								// fetchContainerObject(containerID,containerName.substring(containerName.indexOf("/")+1),false,containerName,domain));
 
 							}
 						}
@@ -442,10 +427,12 @@ public class ElementMapService {
 
 				for (String innerContainerkey : innercontainers.keySet()) {
 					Container c = (Container) innercontainers.get(innerContainerkey);
+					logger.trace(EELFLoggerDelegate.debugLogger, "buildElementMapYaml: inner container {}", c);
 				}
 
 				for (String outerContainerkey : outercontainers.keySet()) {
 					Container c = (Container) outercontainers.get(outerContainerkey);
+					logger.trace(EELFLoggerDelegate.debugLogger, "buildElementMapYaml: outer container {}", c);
 				}
 
 			}
@@ -463,10 +450,8 @@ public class ElementMapService {
 
 				if (domainlist != null) {
 
-					HashMap<String, String> domainStagingMap = new HashMap<String, String>();
+					HashMap<String, String> domainStagingMap = new HashMap<>();
 					for (Object eachDomain : domainlist) {
-						// System.out.println("domainlist Container : "
-						// +eachDomain);
 						if (eachDomain != null && eachDomain instanceof HashMap) {
 							HashMap<String, String> domainDetails = (HashMap<String, String>) eachDomain;
 							if (domainDetails != null) {
@@ -476,7 +461,7 @@ public class ElementMapService {
 								column = "0";
 								for (String detailsKey : domainDetails.keySet()) {
 									if ("name".equalsIgnoreCase(detailsKey))
-										domainName = domainDetails.get(detailsKey).toString();
+										domainName = domainDetails.get(detailsKey);
 									if ("id".equalsIgnoreCase(detailsKey)) {
 										domainID = String.valueOf(domainDetails.get(detailsKey));
 									}
@@ -510,11 +495,6 @@ public class ElementMapService {
 					}
 				}
 
-				// for (String domainkey : domainMap.keySet()) {
-				// Domain c = (Domain) domainMap.get(domainkey);
-				// System.out.println("Domain - "+ "key :" +domainkey +" - "
-				// + "value :" + c.getName());
-				// }
 			}
 
 		}
@@ -522,35 +502,20 @@ public class ElementMapService {
 		Layout dynamicLayout = new Layout(domainMap, 2, 10, 1, 5);
 		dynamicLayout.computeDomainPositionsModified();
 
-		/*
-		 * Map<String, Domain> resultAICDomain2 = dynamicLayout.domainRowCol;
-		 * for (String key : resultAICDomain2.keySet()) { if
-		 * (resultAICDomain2.get(key).getP() != null) {
-		 * System.out.println(resultAICDomain2.get(key).name+" "+"x:"+
-		 * resultAICDomain2.get(key).getP().getX()+","+"y:"+
-		 * resultAICDomain2.get(key).getP().getY()+","+"width:"+
-		 * resultAICDomain2.get(key).computeSize().getWidth()
-		 * +","+"height:"+resultAICDomain2.get(key).computeSize(). getHeight());
-		 * 
-		 * } }
-		 */
-
 		ElementMapService cm2 = new ElementMapService();
 		try {
 
 			if (args != null && args.length > 0) {
 
 				if (args[0] != null) {
-					String collapsedDomains[] = args[0].split(",");
+					String[] collapsedDomains = args[0].split(",");
 					for (String collapsedDomain : collapsedDomains)
-						// dynamicLayout.collapseDomainModified(collapsedDomain);
 						dynamicLayout.collapseDomainNew(collapsedDomain);
 				}
 
 				if (args[1] != null) {
-					String expandedDomains[] = args[1].split(",");
+					String[] expandedDomains = args[1].split(",");
 					for (String expandedDomain : expandedDomains)
-						// dynamicLayout.uncollapseDomainNew(expandedDomain);
 						dynamicLayout.uncollapseDomainNew1(expandedDomain);
 				}
 
@@ -605,7 +570,7 @@ public class ElementMapService {
 
 	private static Container fetchContainerObject(String id, String name, boolean isInner, String logicalGroupName,
 			String domain) {
-		Map<String, Element> containerElementsMap = new HashMap<String, Element>();
+		Map<String, Element> containerElementsMap = new HashMap<>();
 
 		containerElementsMap = fetchElementsMapForContainer(name, isInner, logicalGroupName, domain);
 		int rows = 1;
@@ -620,7 +585,6 @@ public class ElementMapService {
 
 			Container thisContainer = new Container(id, name, rows, columns, 1, 4, 8, 12, 1, 2);
 			thisContainer.setElements(containerElementsMap);
-			// thisContainer.setVisibilityType("");
 
 			return thisContainer;
 		} else {
@@ -629,7 +593,7 @@ public class ElementMapService {
 
 			if (innerContainersMap != null && !innerContainersMap.isEmpty()) {
 				if (containerElementsMap != null && !containerElementsMap.isEmpty()) {
-					Set<String> keys = new HashSet<String>(innerContainersMap.keySet());
+					Set<String> keys = new HashSet<>(innerContainersMap.keySet());
 					keys.addAll(containerElementsMap.keySet());
 					rows = computeRows(keys);
 					columns = computeColumns(keys);
@@ -648,8 +612,7 @@ public class ElementMapService {
 
 			if (containerElementsMap != null && !containerElementsMap.isEmpty()) {
 				for (Element thisElement : containerElementsMap.values()) {
-					if (thisElement.getId() != null
-							) {
+					if (thisElement.getId() != null) {
 						thisContainer.setVisibilityType("invisible");
 					}
 				}
@@ -660,7 +623,7 @@ public class ElementMapService {
 	}
 
 	private static Domain fetchDomainObject(String id, String name) {
-		HashMap<String, Container> domainContainersMap = fetchContainersForDomain(name);
+		Map<String, Container> domainContainersMap = fetchContainersForDomain(name);
 
 		int rows = 1;
 		int columns = 1;
@@ -671,30 +634,24 @@ public class ElementMapService {
 
 		double domainWidth = 11;
 		Domain thisDomain;
-
 		if (domainMap != null && !domainMap.isEmpty()) {
 			int domainsCountSoFar = domainMap.size();
 			switch (domainsCountSoFar) {
-			case 1: {
+			case 1:
 				domainWidth = 12.1;
 				break;
-			}
-			case 2: {
+			case 2:
 				domainWidth = 13.3;
 				break;
-			}
-			case 3: {
+			case 3:
 				domainWidth = 14.5;
 				break;
-			}
-			case 4: {
+			case 4:
 				domainWidth = 15.6;
 				break;
-			}
-			default: {
+			default:
 				domainWidth = 11;
 				break;
-			}
 			}
 
 			for (String domainsKey : new TreeSet<String>(domainMap.keySet())) {
@@ -707,8 +664,6 @@ public class ElementMapService {
 			thisDomain = new Domain(id, name, 2, 1, 11, 10, 3, rows, columns);
 		}
 
-		// Domain thisDomain = new Domain(id, name, 2, 1, leftPosition, 10, 3,
-		// rows, columns);
 		thisDomain.setContainers(domainContainersMap);
 
 		thisDomain.computeConatinerPositions();
@@ -716,42 +671,18 @@ public class ElementMapService {
 			for (Container thisContainer : domainContainersMap.values()) {
 				thisContainer.computeSize();
 				thisContainer.computeElementPositions();
-				Map<String, Element> resultElementMap = thisContainer.elementRowCol;
+				Map<String, Element> resultElementMap = thisContainer.getElementRowCol();
 				for (String key : resultElementMap.keySet()) {
 					if (resultElementMap.get(key) == null || resultElementMap.get(key).getP() == null) {
-						// System.out.println("culprit " +key);
+						logger.debug(EELFLoggerDelegate.debugLogger, "fetchDomainObject: {}", key);
 					}
-					/*
-					 * System.out.println(resultElementMap.get(key).name+" "
-					 * +"x:"+resultElementMap.get(key).getP().getX()+","+"y:"+
-					 * resultElementMap.get(key).getP().getY()+","+"width:"+
-					 * resultElementMap.get(key).computeSize().getWidth()
-					 * +","+"height:"+resultElementMap.get(key).computeSize().
-					 * getHeight());
-					 */
-
 				}
 
 				HashMap<String, Container> innerContainersMap = (HashMap<String, Container>) thisContainer
 						.getContainerRowCol();
 				if (innerContainersMap != null && !innerContainersMap.isEmpty()) {
 					for (Container thisInnerContainer : innerContainersMap.values()) {
-						// thisInnerContainer.computeSize();
 						thisInnerContainer.computeElementPositions();
-						/*
-						 * Map<String,Element> resultInnerElementMap =
-						 * thisContainer.elementRowCol; for (String key :
-						 * resultElementMap.keySet()) { //
-						 * System.out.println(resultElementMap.get(key).name+" "
-						 * +"x:"+resultElementMap.get(key).getP().getX()+","+
-						 * "y:"+
-						 * resultElementMap.get(key).getP().getY()+","+"width:"+
-						 * resultElementMap.get(key).computeSize().getWidth()
-						 * +","+"height:"+resultElementMap.get(key).computeSize(
-						 * ).getHeight());
-						 * 
-						 * }
-						 */
 					}
 				}
 			}
@@ -760,29 +691,12 @@ public class ElementMapService {
 		return thisDomain;
 	}
 
-	private static HashMap<String, Container> fetchContainersForDomain(String domain) {
-		HashMap<String, Container> domainContainersMap = new HashMap<String, Container>();
-
-		domainContainersMap = fetchFromOuterContainers(domain);
-
+	private static Map<String, Container> fetchContainersForDomain(String domain) {
+		Map<String, Container> domainContainersMap = fetchFromOuterContainers(domain);
 		return domainContainersMap;
-
 	}
 
 	private static Element fetchElementObject(String id, String name, String imgPath) {
-		String bgColor = "bgColor";
-		String logical_group;
-		String display_longname;
-		String display_shortname;
-		String description;
-		String primary_function;
-		String key_interfaces;
-		String location;
-		String vendor;
-		String vendor_shortname;
-		String enclosingContainer;
-		String borderType;
-		String network_function;
 
 		if (toscaElementsMap.containsKey(name)) {
 
@@ -791,35 +705,33 @@ public class ElementMapService {
 
 				for (String detailsKey : toscaElementDetails.keySet()) {
 					if ("properties".equalsIgnoreCase(detailsKey)
-							&& toscaElementDetails.get(detailsKey) instanceof HashMap) {
-						HashMap<String, String> elementDetails = (HashMap<String, String>) toscaElementDetails
-								.get(detailsKey);
+							&& toscaElementDetails.get(detailsKey) instanceof Map) {
+						Map<String, String> elementDetails = (Map<String, String>) toscaElementDetails.get(detailsKey);
 
 						if (elementDetails != null) {
-							logical_group = elementDetails.get("logical_group") == null ? ""
-									: elementDetails.get("logical_group").toString();
-							display_longname = elementDetails.get("display_longname") == null ? ""
-									: elementDetails.get("display_longname").toString();
-							display_shortname = elementDetails.get("display_shortname") == null ? ""
-									: elementDetails.get("display_shortname").toString();
-							description = elementDetails.get("description") == null ? ""
-									: elementDetails.get("description").toString();
-							primary_function = elementDetails.get("primary_function") == null ? ""
-									: elementDetails.get("primary_function").toString();
-							key_interfaces = elementDetails.get("key_interfaces") == null ? ""
-									: elementDetails.get("key_interfaces").toString();
-							location = elementDetails.get("location") == null ? ""
-									: elementDetails.get("location").toString();
-							vendor = elementDetails.get("vendor") == null ? ""
-									: elementDetails.get("vendor").toString();
-							vendor_shortname = elementDetails.get("vendor_shortname") == null ? ""
-									: elementDetails.get("vendor_shortname").toString();
-							enclosingContainer = logical_group.replace("/", "-");
-							network_function = elementDetails.get("network_function");
-							borderType = elementDetails.get("network_function") == null ? "P"
-									: elementDetails.get("network_function").toString().toUpperCase();
-							bgColor = elementDetails.get("background_color") == null ? "bgColor"
-									: elementDetails.get("background_color").toString();
+							String logical_group = elementDetails.get("logical_group") == null ? ""
+									: elementDetails.get("logical_group");
+							String display_longname = elementDetails.get("display_longname") == null ? ""
+									: elementDetails.get("display_longname");
+							String display_shortname = elementDetails.get("display_shortname") == null ? ""
+									: elementDetails.get("display_shortname");
+							String description = elementDetails.get("description") == null ? ""
+									: elementDetails.get("description");
+							String primary_function = elementDetails.get("primary_function") == null ? ""
+									: elementDetails.get("primary_function");
+							String key_interfaces = elementDetails.get("key_interfaces") == null ? ""
+									: elementDetails.get("key_interfaces");
+							String location = elementDetails.get("location") == null ? ""
+									: elementDetails.get("location");
+							String vendor = elementDetails.get("vendor") == null ? "" : elementDetails.get("vendor");
+							String vendor_shortname = elementDetails.get("vendor_shortname") == null ? ""
+									: elementDetails.get("vendor_shortname");
+							String enclosingContainer = logical_group.replace("/", "-");
+							String network_function = elementDetails.get("network_function");
+							String borderType = elementDetails.get("network_function") == null ? "P"
+									: elementDetails.get("network_function").toUpperCase();
+							String bgColor = elementDetails.get("background_color") == null ? "bgColor"
+									: elementDetails.get("background_color");
 
 							ElementDetails details = new ElementDetails(logical_group, display_longname, description,
 									primary_function, network_function, key_interfaces, location, vendor,
@@ -833,10 +745,6 @@ public class ElementMapService {
 
 			}
 
-			// Element(id, name, imgPath, bgColor, logical_group,
-			// display_longname,
-			// description, primary_function, key_interfaces, location, vendor,
-			// vendor_shortname);
 		} else {
 			return new Element(id, name);
 		}
@@ -857,7 +765,7 @@ public class ElementMapService {
 								.get(detailsKey);
 
 						if (elementDetails != null) {
-							return elementDetails.get("domain") == null ? "" : elementDetails.get("domain").toString();
+							return elementDetails.get("domain") == null ? "" : elementDetails.get("domain");
 						}
 
 					}
@@ -872,34 +780,29 @@ public class ElementMapService {
 		return "";
 	}
 
-	private static HashMap<String, Container> fetchInnerContainersMapForOuter(String name, boolean isInner,
+	private static Map<String, Container> fetchInnerContainersMapForOuter(String name, boolean isInner,
 			String logicalGroupName, String domain) {
 		return fetchInnerContainersMap(name, logicalGroupName, domain);
 	}
 
-	private static HashMap<String, Element> fetchElementsMapForContainer(String name, boolean isInner,
+	private static Map<String, Element> fetchElementsMapForContainer(String name, boolean isInner,
 			String logicalGroupName, String domain) {
 		return fetchElementsMap(logicalGroupName, domain);
 	}
 
-	private static HashMap<String, Container> fetchInnerContainersMap(String name, String logicalGroupName,
-			String domain) {
-		HashMap<String, Container> containersMap = new HashMap<String, Container>();
-		String rowColumnKey = "";
-		int count = 0;
+	private static Map<String, Container> fetchInnerContainersMap(String name, String logicalGroupName, String domain) {
+		HashMap<String, Container> containersMap = new HashMap<>();
 
 		if (innercontainers != null && !innercontainers.isEmpty()) {
 			for (String key : innercontainers.keySet()) {
-
 				Container eachContainer = innercontainers.get(key);
-
 				if (key.toUpperCase().contains((domain + ":" + name).toUpperCase())) {
+					String rowColumnKey = "";
 					if (key.contains("/")) {
 						rowColumnKey = key.substring(key.lastIndexOf("/") + 1);
 					}
-
 					if (rowColumnKey.isEmpty() || containersMap.containsKey(rowColumnKey)) {
-						count = 0;
+						int count = 0;
 						while (count <= 9) {
 							if (containersMap.containsKey(String.valueOf(count).concat(String.valueOf(count)))) {
 								count++;
@@ -920,22 +823,21 @@ public class ElementMapService {
 
 	}
 
-	private static HashMap<String, Container> fetchFromOuterContainers(String domain) {
-		HashMap<String, Container> thisContainersMap = new HashMap<String, Container>();
-		String rowColumnKey = "";
-		int count = 0;
+	private static Map<String, Container> fetchFromOuterContainers(String domain) {
+		HashMap<String, Container> thisContainersMap = new HashMap<>();
 
 		if (outercontainers != null && !outercontainers.isEmpty()) {
 			for (String key : outercontainers.keySet()) {
 				Container eachContainer = outercontainers.get(key);
 
 				if (key.toUpperCase().contains((domain + ":").toUpperCase())) {
+					String rowColumnKey = "";
 					if (key.contains("/")) {
 						rowColumnKey = key.substring(key.lastIndexOf("/") + 1);
 					}
 
 					if (rowColumnKey.isEmpty() || thisContainersMap.containsKey(rowColumnKey)) {
-						count = 0;
+						int count = 0;
 						while (count <= 9) {
 							if (thisContainersMap.containsKey(String.valueOf(count).concat(String.valueOf(count)))) {
 								count++;
@@ -962,9 +864,10 @@ public class ElementMapService {
 				String domainName = fetchDomainNameOfElement(elementName);
 
 				if (domain.equalsIgnoreCase(domainName)) {
+					String rowColumnKey = "";
 					Container eachContainer = new Container(domainName + ":" + elementName, elementName, 1, 1, 3, 6, 2,
 							5, 0, 0);
-					count = 0;
+					int count = 0;
 					while (count <= 9) {
 						if (thisContainersMap.containsKey(String.valueOf(count).concat(String.valueOf(count)))) {
 							count++;
@@ -984,45 +887,25 @@ public class ElementMapService {
 		return thisContainersMap.isEmpty() ? null : thisContainersMap;
 	}
 
-	private static HashMap<String, Container> addOuterContainersForMiscElements(String domain) {
-		HashMap<String, Container> containerElementsMap = new HashMap<String, Container>();
-		if (miscElementMap != null && !miscElementMap.isEmpty()) {
-			for (String key : miscElementMap.keySet()) {
-				Element eachElement = miscElementMap.get(key);
-				String elementName = eachElement.getName();
-				String domainName = fetchDomainNameOfElement(elementName);
-
-				if (domain.equalsIgnoreCase(domainName)) {
-					Container newContainer = new Container(domainName + ":" + elementName, elementName, 1, 1, 3, 6, 2,
-							5, 0, 0);
-					containerElementsMap.put(domainName + ":" + elementName, newContainer);
-				}
-
-			}
-
-		}
-		return containerElementsMap.isEmpty() ? null : containerElementsMap;
-	}
-
-	private static HashMap<String, Element> fetchElementsMap(String logicalGroupName, String domain) {
-		HashMap<String, Element> innerElementMap = new HashMap<String, Element>();
-		String rowColumnKey = "";
-		int count = 0;
+	private static Map<String, Element> fetchElementsMap(String logicalGroupName, String domain) {
+		HashMap<String, Element> innerElementMap = new HashMap<>();
 
 		if (elementMap != null && !elementMap.isEmpty()) {
 			for (String key : elementMap.keySet()) {
 				Element eachElement = elementMap.get(key);
 
 				String elementName = eachElement.getId();
-				String elementLogicalGroup = eachElement.details == null ? "" : eachElement.details.logical_group;
+				String elementLogicalGroup = eachElement.getDetails() == null ? ""
+						: eachElement.getDetails().getLogical_group();
 				if (elementLogicalGroup.equalsIgnoreCase(logicalGroupName)
 						&& domain.equalsIgnoreCase(fetchDomainNameOfElement(elementName))) {
+					String rowColumnKey = "";
 					if (key.contains("/")) {
 						rowColumnKey = key.substring(key.indexOf("/") + 1);
 					}
 
 					if (rowColumnKey.isEmpty() || innerElementMap.containsKey(rowColumnKey)) {
-						count = 0;
+						int count = 0;
 						while (count <= 9) {
 							if (innerElementMap.containsKey(String.valueOf(count).concat(String.valueOf(count)))) {
 								count++;

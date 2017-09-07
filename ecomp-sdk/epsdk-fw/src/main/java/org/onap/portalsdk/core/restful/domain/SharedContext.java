@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -40,8 +40,7 @@ package org.onap.portalsdk.core.restful.domain;
 import java.util.Objects;
 
 /**
- * Bean that represents shared-context data transferred in JSON objects. This is
- * a minimum example:
+ * Model for shared-context data. This is a minimum example:
  * 
  * <PRE>
  * {
@@ -56,10 +55,18 @@ public class SharedContext {
 	// Response field indicates nothing else is present
 	private String response;
 	// Required fields when data is present
-	private String context_id, ckey, cvalue;
+	private String context_id;
+	private String ckey;
+	private String cvalue;
 	private Long id, create_time;
 	// Additional database fields from the DomainVO object.
-	private String created, modified, createdId, modifiedId, auditUserId, auditTrail, rowNum;
+	private String created;
+	private String modified;
+	private String createdId;
+	private String modifiedId;
+	private String auditUserId;
+	private String auditTrail;
+	private String rowNum;
 
 	/**
 	 * Gets the response field.

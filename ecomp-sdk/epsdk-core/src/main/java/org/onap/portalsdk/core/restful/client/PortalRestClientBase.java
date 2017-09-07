@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -39,13 +39,9 @@ package org.onap.portalsdk.core.restful.client;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -56,6 +52,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.onap.portalsdk.core.domain.App;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
@@ -80,7 +77,7 @@ public class PortalRestClientBase {
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PortalRestClientBase.class);
 
 	@Autowired
-	AppService appService;
+	private AppService appService;
 
 	/**
 	 * Constructs and sends a GET request for the URI, with REST application
@@ -89,47 +86,45 @@ public class PortalRestClientBase {
 	 * @param uri
 	 *            URI of the service
 	 * @return Result of the get; null if an error happens
-	 * @throws Exception 
+	 * @throws CipherUtilException
+	 *             If the app password cannot be decrypted
+	 * @throws IOException
+	 *             If the remote end cannot be contacted
 	 */
-	public HttpStatusAndResponse getRestWithCredentials(final URI uri) throws Exception  {
+	public HttpStatusAndResponse getRestWithCredentials(final URI uri) throws CipherUtilException, IOException {
 
 		String uebKey = PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY);
 		App app = appService.getDefaultApp();
 		if (uebKey == null || app == null || app.getUsername() == null || app.getAppPassword() == null)
-			throw new IllegalArgumentException("Missing one or more required properties and/or database entries");
+			throw new IllegalArgumentException(
+					"getRestWithCredentials: Missing one or more required properties and/or database entries");
 		String decryptedPassword = CipherUtil.decrypt(app.getAppPassword());
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(uri);
 		httpGet.setHeader("uebkey", uebKey);
 		httpGet.setHeader("username", app.getUsername());
 		httpGet.setHeader("password", decryptedPassword);
-
 		String responseJson = null;
 		CloseableHttpResponse response = null;
+		logger.info(EELFLoggerDelegate.debugLogger, "getRestWithCredentials: URL {}", uri);
 		try {
-			logger.info(EELFLoggerDelegate.debugLogger, "GET from " + uri);
 			response = httpClient.execute(httpGet);
-			logger.info(EELFLoggerDelegate.debugLogger, "Status is " + response.getStatusLine());
-			if (response.getStatusLine().getStatusCode() != HttpServletResponse.SC_OK)
-			    logger.info(EELFLoggerDelegate.debugLogger, "Status is " + response.getStatusLine().toString());
+			logger.debug(EELFLoggerDelegate.debugLogger, "getRestWithCredentials: status " + response.getStatusLine());
 			HttpEntity entity = response.getEntity();
 			if (entity == null) {
-				logger.info(EELFLoggerDelegate.debugLogger, "Entity is null!");
+				logger.debug(EELFLoggerDelegate.debugLogger, "getRestWithCredentials: entity is null!");
 			} else {
 				// entity content length is never set.
 				// this naively tries to read everything.
 				responseJson = EntityUtils.toString(entity);
-				logger.info(EELFLoggerDelegate.debugLogger, responseJson);
+				logger.debug(EELFLoggerDelegate.debugLogger, "getRestWithCredentials: JSON {}", responseJson);
 				EntityUtils.consume(entity);
 			}
 		} finally {
 			if (response != null)
 				response.close();
-			if (httpClient != null)
-				httpClient.close();
 		}
-		if (response == null)
-			return null;
+		httpClient.close();
 		return new HttpStatusAndResponse(response.getStatusLine().getStatusCode(), responseJson);
 	}
 
@@ -142,49 +137,49 @@ public class PortalRestClientBase {
 	 * @param json
 	 *            Content to post
 	 * @return Result of the post; null if an error happens
-	 * @throws Exception
+	 * @throws CipherUtilException
+	 *             If the app password cannot be decrypted
+	 * @throws IOException
+	 *             If the remote end cannot be contacted
 	 */
-	public HttpStatusAndResponse postRestWithCredentials(final URI uri, final String json) throws Exception {
+	public HttpStatusAndResponse postRestWithCredentials(final URI uri, final String json)
+			throws CipherUtilException, IOException {
 
 		String uebKey = PortalApiProperties.getProperty(PortalApiConstants.UEB_APP_KEY);
 		App app = appService.getDefaultApp();
 		if (uebKey == null || app == null || app.getUsername() == null || app.getAppPassword() == null)
-			throw new Exception("Missing one or more required properties and/or database entries");
-
+			throw new IllegalArgumentException(
+					"postRestWithCredentials: missing one or more required properties and/or database entries");
+		String decryptedPassword = CipherUtil.decrypt(app.getAppPassword());
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(uri);
 		httpPost.setHeader("uebkey", uebKey);
 		httpPost.setHeader("username", app.getUsername());
-		httpPost.setHeader("password", app.getAppPassword());
-
+		httpPost.setHeader("password", decryptedPassword);
 		StringEntity postEntity = new StringEntity(json, ContentType.create("application/json", Consts.UTF_8));
 		httpPost.setEntity(postEntity);
-
 		String responseJson = null;
 		CloseableHttpResponse response = null;
 		try {
-			logger.info(EELFLoggerDelegate.debugLogger, "POST to " + uri);
+			logger.debug(EELFLoggerDelegate.debugLogger, "postRestWithCredentials: POST to {}", uri);
 			response = httpClient.execute(httpPost);
-			logger.info(EELFLoggerDelegate.debugLogger, "Status is " + response.getStatusLine());
-			if (response.getStatusLine().getStatusCode() != HttpServletResponse.SC_OK)
-				throw new Exception("Status is " + response.getStatusLine().toString());
-
+			logger.debug(EELFLoggerDelegate.debugLogger, "postRestWithCredentials: status {} ",
+					response.getStatusLine());
 			HttpEntity entity = response.getEntity();
 			if (entity == null) {
-				logger.info(EELFLoggerDelegate.debugLogger, "Entity is null!");
+				logger.debug(EELFLoggerDelegate.debugLogger, "postRestWithCredentials: entity is null!");
 			} else {
 				// entity content length is never set.
 				// this naively tries to read everything.
 				responseJson = EntityUtils.toString(entity);
-				logger.info(EELFLoggerDelegate.debugLogger, responseJson);
+				logger.debug(EELFLoggerDelegate.debugLogger, "postRestWithCredentials: JSON {}", responseJson);
 				EntityUtils.consume(entity);
 			}
 		} finally {
 			if (response != null)
 				response.close();
-			if (httpClient != null)
-				httpClient.close();
 		}
+		httpClient.close();
 		return new HttpStatusAndResponse(response.getStatusLine().getStatusCode(), responseJson);
 	}
 

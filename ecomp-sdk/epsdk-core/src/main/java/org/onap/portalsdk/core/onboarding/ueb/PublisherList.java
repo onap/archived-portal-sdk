@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -56,17 +56,16 @@ public class PublisherList {
 	private final Log logger = LogFactory.getLog(getClass());
 
 	private final Map<String, Publisher> map;
-	
+
 	public PublisherList() {
-		 map = new ConcurrentHashMap<>();
+		map = new ConcurrentHashMap<>();
 	}
-	
+
 	public void addPublisherToMap(String topicName, Publisher publisher) {
-		if (this.map.containsKey(topicName)) {
+		if (this.map.containsKey(topicName))
 			logger.error("Publisher already exists for " + topicName);
-		} else {
+		else
 			this.map.put(topicName, publisher);
-		}
 	}
 
 	public Publisher getPublisher(String topicName) {
@@ -77,14 +76,13 @@ public class PublisherList {
 		this.map.remove(topicName);
 	}
 
+	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("Map contains " + this.map.size() + " Publishers.");
-		for (Map.Entry<String, Publisher> entry : this.map.entrySet()) {
-			String key = entry.getKey().toString();
-			Publisher pub = entry.getValue();
-			sb.append("Entry msgId, " + key + " publisher" + pub);
-		}
+		for (Map.Entry<String, Publisher> entry : this.map.entrySet())
+			sb.append("Entry msgId, " + entry.getKey() + " publisher" + entry.getValue());
+
 		return sb.toString();
 	}
 

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,74 +37,73 @@
  */
 package org.onap.portalsdk.core.web.support;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessagesList {
 
-    private boolean successMessageDisplayed        = true;
-    private boolean includeCauseInCustomExceptions = false;
+	private boolean successMessageDisplayed = true;
+	private boolean includeCauseInCustomExceptions = false;
 
-    private List successMessages;
-    private List exceptionMessages;
+	private List successMessages;
+	private List exceptionMessages;
 
-    public MessagesList() {
-        setExceptionMessages(new ArrayList());
-        setSuccessMessages(new ArrayList());
-    }
+	public MessagesList() {
+		setExceptionMessages(new ArrayList());
+		setSuccessMessages(new ArrayList());
+	}
 
-    public MessagesList(boolean displaySuccess) {
-        this();
-        setSuccessMessageDisplayed(displaySuccess);
-    }
+	public MessagesList(boolean displaySuccess) {
+		this();
+		setSuccessMessageDisplayed(displaySuccess);
+	}
 
-    public List getExceptionMessages() {
-        return exceptionMessages;
-    }
+	public List getExceptionMessages() {
+		return exceptionMessages;
+	}
 
-    public List getSuccessMessages() {
-        return successMessages;
-    }
+	public List getSuccessMessages() {
+		return successMessages;
+	}
 
-    public boolean isSuccessMessageDisplayed() {
-        return successMessageDisplayed;
-    }
+	public boolean isSuccessMessageDisplayed() {
+		return successMessageDisplayed;
+	}
 
-    public boolean isIncludeCauseInCustomExceptions() {
-        return includeCauseInCustomExceptions;
-    }
+	public boolean isIncludeCauseInCustomExceptions() {
+		return includeCauseInCustomExceptions;
+	}
 
+	public void setExceptionMessages(List exceptionMessages) {
+		this.exceptionMessages = exceptionMessages;
+	}
 
-    public void setExceptionMessages(List exceptionMessages) {
-        this.exceptionMessages = exceptionMessages;
-    }
+	public void setSuccessMessages(List successMessages) {
+		this.successMessages = successMessages;
+	}
 
-    public void setSuccessMessages(List successMessages) {
-        this.successMessages = successMessages;
-    }
+	public void setSuccessMessageDisplayed(boolean successMessageDisplayed) {
+		this.successMessageDisplayed = successMessageDisplayed;
+	}
 
-    public void setSuccessMessageDisplayed(boolean successMessageDisplayed) {
-        this.successMessageDisplayed = successMessageDisplayed;
-    }
+	public void setIncludeCauseInCustomExceptions(boolean includeCauseInCustomExceptions) {
+		this.includeCauseInCustomExceptions = includeCauseInCustomExceptions;
+	}
 
-    public void setIncludeCauseInCustomExceptions(boolean includeCauseInCustomExceptions) {
-        this.includeCauseInCustomExceptions = includeCauseInCustomExceptions;
-    }
+	public void addSuccessMessage(FeedbackMessage message) {
+		getSuccessMessages().add(message);
+	}
 
+	public void addExceptionMessage(FeedbackMessage message) {
+		getExceptionMessages().add(message);
+	}
 
-    public void addSuccessMessage(FeedbackMessage message) {
-        getSuccessMessages().add(message);
-    }
+	public boolean hasExceptionMessages() {
+		return !getExceptionMessages().isEmpty();
+	}
 
-    public void addExceptionMessage(FeedbackMessage message) {
-        getExceptionMessages().add(message);
-    }
-
-    public boolean hasExceptionMessages() {
-        return!getExceptionMessages().isEmpty();
-    }
-
-    public boolean hasSuccessMessages() {
-        return!getSuccessMessages().isEmpty();
-    }
+	public boolean hasSuccessMessages() {
+		return !getSuccessMessages().isEmpty();
+	}
 
 }

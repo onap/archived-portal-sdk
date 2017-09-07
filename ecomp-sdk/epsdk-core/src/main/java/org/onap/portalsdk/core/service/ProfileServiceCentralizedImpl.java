@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,27 +37,25 @@
  */
 package org.onap.portalsdk.core.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.onap.portalsdk.core.domain.Profile;
 import org.onap.portalsdk.core.domain.User;
-import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Transactional
-public class ProfileServiceCentralizedImpl implements ProfileService{
-	
-	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ProfileServiceCentralizedImpl.class);
+public class ProfileServiceCentralizedImpl implements ProfileService {
+		
+	@Autowired
+	private DataAccessService dataAccessService;
 
 	@Autowired
-	AppService appService;
-	
-	@Autowired
-	private DataAccessService  dataAccessService;
-	
+	private RestApiRequestBuilder restApiRequestBuilder;
+
 	public DataAccessService getDataAccessService() {
 		return dataAccessService;
 	}
@@ -66,40 +64,30 @@ public class ProfileServiceCentralizedImpl implements ProfileService{
 		this.dataAccessService = dataAccessService;
 	}
 
-	@Autowired
-	RestApiRequestBuilder restApiRequestBuilder ;
-
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Profile> findAll() throws Exception{	
+	public List<Profile> findAll() throws IOException {
 		return getDataAccessService().getList(Profile.class, null);
 	}
 
 	@Override
-	public Profile getProfile(int id) throws Exception{
+	public Profile getProfile(int id) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		Profile user = null;
-		String responseString = restApiRequestBuilder.getViaREST("/getProfile/" + id, true,Integer.toString(id));
-			user = mapper.readValue(responseString, Profile.class);
-		return user;
+		String responseString = restApiRequestBuilder.getViaREST("/getProfile/" + id, true, Integer.toString(id));
+		Profile profile = mapper.readValue(responseString, Profile.class);
+		return profile;
 	}
 
 	@Override
-	public User getUser(String id) throws Exception{
+	public User getUser(String id) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		User user = new User();
-		String responseString =restApiRequestBuilder.getViaREST("/user/" + id, true,id);
-			user = mapper.readValue(responseString, User.class);
-		
+		String responseString = restApiRequestBuilder.getViaREST("/user/" + id, true, id);
+		User user = mapper.readValue(responseString, User.class);
 		return user;
 	}
 
 	@Override
 	public void saveUser(User user) {
-		try {
-			getDataAccessService().saveDomainObject(user, null);
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "saveUser failed", e);
-		}
-	}	
+		getDataAccessService().saveDomainObject(user, null);
+	}
 }

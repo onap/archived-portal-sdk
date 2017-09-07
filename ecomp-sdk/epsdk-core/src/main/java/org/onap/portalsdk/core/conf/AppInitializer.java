@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -46,34 +46,29 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 public abstract class AppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppInitializer.class);
-	
-	private final String activeProfile = "src";
+
+	private static final String activeProfile = "src";
 
 	@Override
 	protected WebApplicationContext createServletApplicationContext() {
 		WebApplicationContext context = super.createServletApplicationContext();
-
 		try {
-
 			((ConfigurableEnvironment) context.getEnvironment()).setActiveProfiles(activeProfile);
 		} catch (Exception e) {
-
-			logger.error(EELFLoggerDelegate.errorLogger, "Unable to set the active profile" + e.getMessage(),AlarmSeverityEnum.MAJOR);
+			logger.error(EELFLoggerDelegate.errorLogger, "Unable to set the active profile" + e.getMessage(),
+					AlarmSeverityEnum.MAJOR);
 			throw e;
-
 		}
-
 		return context;
 	}
 
 	@Override
 	protected Class<?>[] getRootConfigClasses() {
-		return null;
+		return new Class<?>[0];
 	}
 
 	@Override
 	protected Class<?>[] getServletConfigClasses() {
-
 		return new Class[] { AppConfig.class };
 	}
 

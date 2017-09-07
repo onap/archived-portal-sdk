@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -46,139 +46,150 @@ import java.util.Date;
 import java.util.Set;
 
 import org.onap.portalsdk.core.domain.FusionVo;
-
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 
 /* Super class from which all data objects descend */
 public class DomainVo extends FusionVo implements Serializable, Cloneable, Comparable {
 
-    protected Long id;
-    protected Date created;
-    protected Date modified;
-    protected Long createdId;
-    protected Long modifiedId;
-    protected Long rowNum;
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(DomainVo.class);
 
-    protected Serializable auditUserId;
+	private static final long serialVersionUID = 1L;
+	protected Long id;
+	protected Date created;
+	protected Date modified;
+	protected Long createdId;
+	protected Long modifiedId;
+	protected Long rowNum;
+	protected Serializable auditUserId;
+	protected Set auditTrail = null;
 
-    Set auditTrail = null;
+	public DomainVo() {
+		super();
+	}
 
-    public DomainVo() {}
+	public void setId(Long i) {
+		id = i;
+	}
 
+	public void setCreated(Date created) {
+		this.created = created;
+	}
 
-    public void setId(Long i) {
-        id = i;
-    }
+	public void setModified(Date modified) {
+		this.modified = modified;
+	}
 
-    public void setCreated(Date created) {
-        this.created = created;
-    }
+	public void setCreatedId(Long createdId) {
+		this.createdId = createdId;
+	}
 
-    public void setModified(Date modified) {
-        this.modified = modified;
-    }
+	public void setModifiedId(Long modifiedId) {
+		this.modifiedId = modifiedId;
+	}
 
-    public void setCreatedId(Long createdId) {
-        this.createdId = createdId;
-    }
+	public void setAuditUserId(Serializable auditUserId) {
+		this.auditUserId = auditUserId;
+	}
 
-    public void setModifiedId(Long modifiedId) {
-        this.modifiedId = modifiedId;
-    }
+	public void setRowNum(Long rowNum) {
+		this.rowNum = rowNum;
+	}
 
-    public void setAuditUserId(Serializable auditUserId) {
-        this.auditUserId = auditUserId;
-    }
+	public void setAuditTrail(Set auditTrail) {
+		this.auditTrail = auditTrail;
+	}
 
-    public void setRowNum(Long rowNum) {
-        this.rowNum = rowNum;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setAuditTrail(Set auditTrail) {
-        this.auditTrail = auditTrail;
-    }
+	public Date getCreated() {
+		return created;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Date getModified() {
+		return modified;
+	}
 
-    public Date getCreated() {
-        return created;
-    }
+	public Long getCreatedId() {
+		return createdId;
+	}
 
-    public Date getModified() {
-        return modified;
-    }
+	public Long getModifiedId() {
+		return modifiedId;
+	}
 
-    public Long getCreatedId() {
-        return createdId;
-    }
+	public Serializable getAuditUserId() {
+		return auditUserId;
+	}
 
-    public Long getModifiedId() {
-        return modifiedId;
-    }
+	public Long getRowNum() {
+		return rowNum;
+	}
 
-    public Serializable getAuditUserId() {
-        return auditUserId;
-    }
+	public Set getAuditTrail() {
+		return auditTrail;
+	}
 
-    public Long getRowNum() {
-        return rowNum;
-    }
+	public Object copy() {
+		return copy(false);
+	}
 
-    public Set getAuditTrail() {
-        return auditTrail;
-    }
+	public Object copy(boolean isIdNull) {
+		// let's create a "copy" of the object using serialization
+		ByteArrayOutputStream baos = null;
+		ByteArrayInputStream bais = null;
+		ObjectOutputStream oos = null;
+		ObjectInputStream ois = null;
 
+		DomainVo newVo = null;
+		try {
+			baos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(this);
 
+			bais = new ByteArrayInputStream(baos.toByteArray());
+			ois = new ObjectInputStream(bais);
+			newVo = (DomainVo) ois.readObject();
+
+			if (isIdNull) {
+				newVo.setId(null);
+			}
+
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "copy failed", e);
+		}
+
+		return newVo;
+	}
+	
+	@Override
     public Object clone() throws CloneNotSupportedException {
       return super.clone();
     }
+    
+    @Override
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		if (other == null)
+			return false;
+		if (!(other instanceof DomainVo))
+			return false;
+		DomainVo castOther = (DomainVo) other;
+		return this.getId() == castOther.getId()
+				&& this.getCreated().equals(castOther.getCreated())
+				&& this.getCreatedId() == castOther.getCreatedId()
+				&& this.getModified().equals(castOther.getModified())
+				&& this.getModifiedId() == castOther.getModifiedId()
+		;
+	}
 
-
-    public Object copy() {
-      return copy(false);
-    }
-
-
-    public Object copy(boolean isIdNull) {
-       // let's create a "copy" of the object using serialization
-       ByteArrayOutputStream baos = null;
-       ByteArrayInputStream  bais = null;
-       ObjectOutputStream     oos = null;
-       ObjectInputStream      ois = null;
-
-       DomainVo newVo = null;
-
-       try {
-
-         baos = new ByteArrayOutputStream();
-         oos  = new ObjectOutputStream(baos);
-         oos.writeObject(this);
-
-         bais  = new ByteArrayInputStream(baos.toByteArray());
-         ois   =  new ObjectInputStream(bais);
-         newVo = (DomainVo)ois.readObject();
-
-         if (isIdNull) {
-           newVo.setId(null);
-         }
-
-       }
-       catch (Exception e) {
-         e.printStackTrace();
-       }
-
-       return newVo;
-     }
-
-
-
-    public int compareTo(Object obj){
-      Long c1 = getId();
-      Long c2 = ((DomainVo)obj).getId();
-
-      return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
-    }
-
+	@Override
+	public int compareTo(Object obj) {
+		Long c1 = getId();
+		Long c2 = ((DomainVo) obj).getId();
+		return (c1 == null || c2 == null) ? 1 : c1.compareTo(c2);
+	}
 
 }

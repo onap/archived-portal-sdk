@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -39,8 +39,9 @@ package org.onap.portalsdk.core.objectcache.jcs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -60,19 +61,19 @@ public abstract class JCSCacheManager extends AbstractCacheManager implements Ca
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(JCSCacheManager.class);
 
-	public static String LOOKUP_OBJECT_CACHE_NAME = "lookUpObjectCache";
-	public static String JCS_CONFIG_FILE_PATH = "cache_config_file_path";
-	public static String CACHE_LOAD_ON_STARTUP = "cache_load_on_startup";
-	public static String CACHE_PROPERTY_VALUE_TRUE = "true";
-	public static String CACHE_CONTROL_SWITCH_ON = "1";
-	public static String CACHE_CONTROL_SWITCH_OFF = "0";
-	public static String CACHE_CONTROL_SWITCH = "cache_switch";
+	public static final String LOOKUP_OBJECT_CACHE_NAME = "lookUpObjectCache";
+	public static final String JCS_CONFIG_FILE_PATH = "cache_config_file_path";
+	public static final String CACHE_LOAD_ON_STARTUP = "cache_load_on_startup";
+	public static final String CACHE_PROPERTY_VALUE_TRUE = "true";
+	public static final String CACHE_CONTROL_SWITCH_ON = "1";
+	public static final String CACHE_CONTROL_SWITCH_OFF = "0";
+	public static final String CACHE_CONTROL_SWITCH = "cache_switch";
 
-	private static JCS lookUpCache;
+	private JCS lookUpCache;
 	private ServletContext servletContext;
 
 	private Properties cacheConfigProperties = null;
-	private final Vector<String> jscManagedCacheList = new Vector<String>();
+	private final ArrayList<String> jscManagedCacheList = new ArrayList<>();
 
 	private DataAccessService dataAccessService;
 
@@ -81,6 +82,7 @@ public abstract class JCSCacheManager extends AbstractCacheManager implements Ca
 		jscManagedCacheList.add(LOOKUP_OBJECT_CACHE_NAME);
 	}
 
+	@Override
 	@PostConstruct
 	public void configure() throws IOException {
 		super.configure();
@@ -93,8 +95,8 @@ public abstract class JCSCacheManager extends AbstractCacheManager implements Ca
 		if (jcsConfigInputStream == null)
 			throw new IOException("configure: failed to open stream for config property " + JCS_CONFIG_FILE_PATH
 					+ " with name " + jcsConfigFilePath);
-		logger.debug(EELFLoggerDelegate.debugLogger,
-				"configure: loading cache properties from classpath resource {} ", jcsConfigFilePath);
+		logger.debug(EELFLoggerDelegate.debugLogger, "configure: loading cache properties from classpath resource {} ",
+				jcsConfigFilePath);
 		Properties p = new Properties();
 		p.load(jcsConfigInputStream);
 		jcsConfigInputStream.close();
@@ -126,6 +128,7 @@ public abstract class JCSCacheManager extends AbstractCacheManager implements Ca
 		}
 	}
 
+	@Override
 	public Object getObject(String key) {
 		if (CACHE_CONTROL_SWITCH_ON.equalsIgnoreCase(SystemProperties.getProperty(CACHE_CONTROL_SWITCH))) {
 			if (lookUpCache == null)
@@ -136,12 +139,12 @@ public abstract class JCSCacheManager extends AbstractCacheManager implements Ca
 			return null;
 	}
 
+	@Override
 	public void putObject(String key, Object objectToCache) {
 		try {
-			if (CACHE_CONTROL_SWITCH_ON.equalsIgnoreCase(SystemProperties.getProperty(CACHE_CONTROL_SWITCH))) {
-				if (lookUpCache != null) {
-					lookUpCache.put(key, objectToCache);
-				}
+			if (CACHE_CONTROL_SWITCH_ON.equalsIgnoreCase(SystemProperties.getProperty(CACHE_CONTROL_SWITCH))
+					&& lookUpCache != null) {
+				lookUpCache.put(key, objectToCache);
 			}
 		} catch (CacheException ce) {
 			logger.error(EELFLoggerDelegate.errorLogger, "putObject: failed to put the object with key " + key, ce);
@@ -158,6 +161,7 @@ public abstract class JCSCacheManager extends AbstractCacheManager implements Ca
 		}
 	}
 
+	@Override
 	public void clearCache() {
 		clearCache(LOOKUP_OBJECT_CACHE_NAME);
 	}
@@ -181,7 +185,7 @@ public abstract class JCSCacheManager extends AbstractCacheManager implements Ca
 		this.cacheConfigProperties = cacheConfigProperties;
 	}
 
-	public Vector<String> getJscManagedCacheList() {
+	public List<String> getJscManagedCacheList() {
 		return jscManagedCacheList;
 	}
 
@@ -197,6 +201,7 @@ public abstract class JCSCacheManager extends AbstractCacheManager implements Ca
 		return servletContext;
 	}
 
+	@Override
 	public void setServletContext(ServletContext servletContext) {
 		this.servletContext = servletContext;
 	}

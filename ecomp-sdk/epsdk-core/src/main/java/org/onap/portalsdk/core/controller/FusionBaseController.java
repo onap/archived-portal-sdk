@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -63,77 +63,70 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
-public abstract class FusionBaseController implements SecurityInterface{
-	
+public abstract class FusionBaseController implements SecurityInterface {
+
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FusionBaseController.class);
-	
-	@Override
-	public boolean isAccessible() {
-		return true;
-	}
-	
-	public boolean isRESTfulCall(){
-		return true;
-	}
+
 	@Autowired
 	private FnMenuService fnMenuService;
-	
+
 	@Autowired
-	private MenuBuilder  menuBuilder;
-	   
+	private MenuBuilder menuBuilder;
+
 	@Autowired
-	private DataAccessService  dataAccessService;
-	
+	private DataAccessService dataAccessService;
+
 	@Autowired
-	AppService appService;
-	
+	private AppService appService;
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@ModelAttribute("menu")
 	public Map<String, Object> getMenu(HttpServletRequest request) {
 		HttpSession session = null;
-		Map<String, Object> model = new HashMap<String, Object>();	 
+		Map<String, Object> model = new HashMap<>();
 		try {
-			try {
-				String appName	= appService.getDefaultAppName();
-				if (appName==null || appName=="") {
-					appName		= SystemProperties.SDK_NAME;
-				}
-		        logger.setRequestBasedDefaultsIntoGlobalLoggingContext(request, appName);
-            } catch (Exception e) {
-            }
-			
+			String appName = appService.getDefaultAppName();
+			if (appName == null || appName == "")
+				appName = SystemProperties.SDK_NAME;
+			logger.setRequestBasedDefaultsIntoGlobalLoggingContext(request, appName);
+
 			session = request.getSession();
 			User user = UserUtils.getUserSession(request);
-			if(session!=null && user!=null){
-				Set<MenuData> menuResult = (Set<MenuData>) session.getAttribute(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_ATTRIBUTE_NAME));
-				if(menuResult==null){
-					 Set appMenu = getMenuBuilder().getMenu(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_SET_NAME),dataAccessService);
-					 session.setAttribute(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_ATTRIBUTE_NAME),    MenuBuilder.filterMenu(appMenu, request));
-					 menuResult = (Set<MenuData>) session.getAttribute(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_ATTRIBUTE_NAME));
+			if (session != null && user != null) {
+				Set<MenuData> menuResult = (Set<MenuData>) session
+						.getAttribute(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_ATTRIBUTE_NAME));
+				if (menuResult == null) {
+					Set appMenu = getMenuBuilder().getMenu(
+							SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_SET_NAME),
+							dataAccessService);
+					session.setAttribute(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_ATTRIBUTE_NAME),
+							MenuBuilder.filterMenu(appMenu, request));
+					menuResult = (Set<MenuData>) session.getAttribute(
+							SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_ATTRIBUTE_NAME));
 				}
-				model = setMenu(menuResult);				
+				model = setMenu(menuResult);
 			}
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "getMenu failed", e);
 		}
 		return model;
 	}
-	
-	public Map<String, Object> setMenu(Set<MenuData> menuResult) throws Exception{
+
+	public Map<String, Object> setMenu(Set<MenuData> menuResult) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
-		List<List<MenuData>> childItemList = new ArrayList<List<MenuData>>();;
-		List<MenuData> parentList = new ArrayList<MenuData>();;
-		Map<String, Object> model = new HashMap<String, Object>();
-		try{
-			fnMenuService.setMenuDataStructure(childItemList, parentList, menuResult);		
-		}catch(Exception e){
-			logger.error(EELFLoggerDelegate.errorLogger, e.getMessage());
-		}		
+		List<List<MenuData>> childItemList = new ArrayList<>();
+		List<MenuData> parentList = new ArrayList<>();
+		try {
+			fnMenuService.setMenuDataStructure(childItemList, parentList, menuResult);
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "setMenu failed", e);
+		}
+		Map<String, Object> model = new HashMap<>();
 		model.put("childItemList", mapper.writeValueAsString(childItemList));
 		model.put("parentList", mapper.writeValueAsString(parentList));
 		return model;
 	}
-	
+
 	public MenuBuilder getMenuBuilder() {
 		return menuBuilder;
 	}
@@ -149,5 +142,14 @@ public abstract class FusionBaseController implements SecurityInterface{
 	public void setDataAccessService(DataAccessService dataAccessService) {
 		this.dataAccessService = dataAccessService;
 	}
-	
+
+	@Override
+	public boolean isAccessible() {
+		return true;
+	}
+
+	public boolean isRESTfulCall() {
+		return true;
+	}
+
 }

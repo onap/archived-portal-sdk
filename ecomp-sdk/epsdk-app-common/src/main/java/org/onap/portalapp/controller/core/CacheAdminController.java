@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,6 +37,7 @@
  */
 package org.onap.portalapp.controller.core;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -47,6 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jcs.JCS;
+import org.apache.jcs.access.exception.CacheException;
 import org.apache.jcs.admin.CacheRegionInfo;
 import org.apache.jcs.admin.JCSAdminBean;
 import org.apache.jcs.engine.behavior.ICacheElement;
@@ -73,16 +75,14 @@ public class CacheAdminController extends RestrictedBaseController {
 	private JCSAdminBean jcsAdminBean = new JCSAdminBean();
 
 	@RequestMapping(value = { "/jcs_admin" }, method = RequestMethod.GET)
-	public ModelAndView cacheAdmin(HttpServletRequest request) {
-		Map<String, Object> model = new HashMap<String, Object>();
-
+	public ModelAndView cacheAdmin() {
+		Map<String, Object> model = new HashMap<>();
 		model.put("model", getRegions());
-
 		return new ModelAndView(getViewName(), model);
 	}
 
 	@RequestMapping(value = { "/get_regions" }, method = RequestMethod.GET)
-	public void getRegions(HttpServletRequest request, HttpServletResponse response) {
+	public void getRegions(HttpServletResponse response) {
 		try {
 			JsonMessage msg = new JsonMessage(getRegions().toString());
 			JSONObject j = new JSONObject(msg);
@@ -93,41 +93,37 @@ public class CacheAdminController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/jcs_admin/clearRegion" }, method = RequestMethod.GET)
-	public void clearRegion(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		String cacheName = (String) request.getParameter("cacheName");
+	public void clearRegion(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String cacheName = request.getParameter("cacheName");
 		clearCacheRegion(cacheName);
-
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		out.write(getRegions().toString());
 	}
 
 	@RequestMapping(value = { "/jcs_admin/clearAll" }, method = RequestMethod.GET)
-	public void clearAll(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public void clearAll(HttpServletResponse response) throws IOException {
 		clearAllRegions();
-
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		out.write(getRegions().toString());
 	}
 
 	@RequestMapping(value = { "/jcs_admin/clearItem" }, method = RequestMethod.GET)
-	public void clearItem(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		String keyName = (String) request.getParameter("keyName");
-		String cacheName = (String) request.getParameter("cacheName");
+	public void clearItem(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String keyName = request.getParameter("keyName");
+		String cacheName = request.getParameter("cacheName");
 		clearCacheRegionItem(cacheName, keyName);
-
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		out.write(getRegions().toString());
 	}
 
 	@RequestMapping(value = { "/jcs_admin/showItemDetails" }, method = RequestMethod.GET)
-	public void showItemDetails(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		String cacheName = (String) request.getParameter("cacheName");
-		String keyName = (String) request.getParameter("keyName");
+	public void showItemDetails(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String cacheName = request.getParameter("cacheName");
+		String keyName = request.getParameter("keyName");
 		String details = null;
-
 		try {
 			details = getItemDetails(cacheName, keyName);
 		} catch (Exception e) {
@@ -136,14 +132,13 @@ public class CacheAdminController extends RestrictedBaseController {
 		}
 		JSONObject j = new JSONObject(details);
 		response.setContentType("application/json");
-		// response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
 		out.write(j.toString());
 	}
 
 	@RequestMapping(value = { "/jcs_admin/showRegionDetails" }, method = RequestMethod.GET)
-	public void showRegionDetails(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		String cacheName = (String) request.getParameter("cacheName");
+	public void showRegionDetails(HttpServletRequest request, HttpServletResponse response) {
+		String cacheName = request.getParameter("cacheName");
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			String details = getRegionStats(cacheName);
@@ -190,21 +185,18 @@ public class CacheAdminController extends RestrictedBaseController {
 		return ja;
 	}
 
-	private String getRegionStats(String cacheName) throws Exception {
-		String stats = "";
-
+	private String getRegionStats(String cacheName) throws CacheException {
 		JCS cache = JCS.getInstance(cacheName);
-		stats = cache.getStats();
-
+		String stats = cache.getStats();
 		return stats;
 	}
 
 	private String getItemDetails(String cacheName, String keyName) throws Exception {
-		String details = "";
 
 		JCS cache = JCS.getInstance(cacheName);
 		ICacheElement element = cache.getCacheElement(keyName);
 
+		String details = "";
 		if (element != null) {
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);

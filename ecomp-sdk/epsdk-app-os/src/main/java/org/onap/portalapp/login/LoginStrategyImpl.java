@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onap.portalsdk.core.auth.LoginStrategy;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
 import org.onap.portalsdk.core.onboarding.exception.PortalAPIException;
 import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -91,16 +92,16 @@ public class LoginStrategyImpl extends LoginStrategy {
 	 * @param request
 	 *            HttpServletRequest
 	 * @return User ID
-	 * @throws Exception
-	 *             On any failure
+	 * @throws CipherUtilException
+	 *             On any failure to decrypt
 	 */
-	private String getUserIdFromCookie(HttpServletRequest request) throws Exception {
+	private String getUserIdFromCookie(HttpServletRequest request) throws CipherUtilException {
 		String userId = "";
 		Cookie userIdCookie = getCookie(request, USER_ID);
 		if (userIdCookie != null) {
 			final String cookieValue = userIdCookie.getValue();
 			if (!SystemProperties.containsProperty(SystemProperties.Decryption_Key))
-				throw new Exception("Failed to find property " + SystemProperties.Decryption_Key);
+				throw new IllegalStateException("Failed to find property " + SystemProperties.Decryption_Key);
 			final String decryptionKey = SystemProperties.getProperty(SystemProperties.Decryption_Key);
 			userId = CipherUtil.decrypt(cookieValue, decryptionKey);
 			logger.debug(EELFLoggerDelegate.debugLogger, "getUserIdFromCookie: decrypted as {}", userId);

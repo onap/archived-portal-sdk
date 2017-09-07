@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -46,44 +46,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-public class ProfileServiceImpl implements ProfileService{
+public class ProfileServiceImpl implements ProfileService {
 
 	@Autowired
 	private ProfileDao profileDao;
-	
+
 	@Autowired
 	private DataAccessService dataAccessService;
-	
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Profile> findAll() {
-		//List msgDB = getDataAccessService().getList(Profile.class, null);
 		return getDataAccessService().getList(Profile.class, null);
 	}
-	
-	public User getUser(String userId){
+
+	@Override
+	public User getUser(String userId) {
 		return (User) getDataAccessService().getDomainObject(User.class, Long.parseLong(userId), null);
 	}
-	
-	public void saveUser(User user){
-		
+
+	@Override
+	public void saveUser(User user) {
 		getDataAccessService().saveDomainObject(user, null);
 	}
-	
-	
+
+	@Override
 	public Profile getProfile(int id) {
 		return profileDao.getProfile(id);
 	}
-
 
 	public DataAccessService getDataAccessService() {
 		return dataAccessService;
 	}
 
-
 	public void setDataAccessService(DataAccessService dataAccessService) {
 		this.dataAccessService = dataAccessService;
 	}
-	
-	
 
 }

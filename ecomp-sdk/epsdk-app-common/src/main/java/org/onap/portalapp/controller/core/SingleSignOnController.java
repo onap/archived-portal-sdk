@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -81,6 +81,9 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 	@Autowired
 	private LoginStrategy loginStrategy;
 
+	@Autowired
+	private RoleService roleService;
+
 	private String viewName;
 	private String welcomeView;
 
@@ -91,13 +94,10 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 	public void setWelcomeView(String welcomeView) {
 		this.welcomeView = welcomeView;
 	}
-	
-	@Autowired
-	RoleService roleService;
 
 	/**
-	 * Handles requests directed to the single sign-on page by the session
-	 * timeout interceptor.
+	 * Handles requests directed to the single sign-on page by the session timeout
+	 * interceptor.
 	 * 
 	 * @param request
 	 * @return Redirect to an appropriate address
@@ -106,8 +106,8 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 	@RequestMapping(value = { "/single_signon.htm" }, method = RequestMethod.GET)
 	public ModelAndView singleSignOnLogin(HttpServletRequest request) throws Exception {
 
-		Map<String, String> model = new HashMap<String, String>();
-		HashMap<String, String> additionalParamsMap = new HashMap<String, String>();
+		Map<String, String> model = new HashMap<>();
+		HashMap<String, String> additionalParamsMap = new HashMap<>();
 		LoginBean commandBean = new LoginBean();
 
 		// SessionTimeoutInterceptor sets these parameters
@@ -115,8 +115,7 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 		String redirectToPortal = request.getParameter("redirectToPortal");
 
 		if (isLoginCookieExist(request) && redirectToPortal == null) {
-			HttpSession session = null;
-			session = AppUtils.getSession(request);
+			HttpSession session = AppUtils.getSession(request);
 			User user = UserUtils.getUserSession(request);
 			if (session == null || user == null) {
 
@@ -126,7 +125,7 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 				commandBean = getLoginService().findUser(commandBean,
 						(String) request.getAttribute(MenuProperties.MENU_PROPERTIES_FILENAME_KEY),
 						additionalParamsMap);
-				List<RoleFunction> roleFunctionList=  roleService.getRoleFunctions(userId);
+				List<RoleFunction> roleFunctionList = roleService.getRoleFunctions(userId);
 				if (commandBean.getUser() == null) {
 					String loginErrorMessage = (commandBean.getLoginErrorMessage() != null)
 							? commandBean.getLoginErrorMessage()
@@ -165,19 +164,17 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 
 		} else {
 			/*
-			 * Login cookie not found, or redirect-to-portal parameter was
-			 * found.
+			 * Login cookie not found, or redirect-to-portal parameter was found.
 			 * 
-			 * Redirect the user to the portal with a suitable return URL. The
-			 * forwardURL parameter that arrives as a parameter is a partial
-			 * (not absolute) request path for a page in the application. The
-			 * challenge here is to compute the correct absolute path for the
-			 * original request so the portal can redirect the user back to the
-			 * right place. If the application sits behind WebJunction, or if
-			 * separate FE-BE hosts are used, then the URL yielded by the
-			 * request has a host name that is not reachable by the user.
+			 * Redirect the user to the portal with a suitable return URL. The forwardURL
+			 * parameter that arrives as a parameter is a partial (not absolute) request
+			 * path for a page in the application. The challenge here is to compute the
+			 * correct absolute path for the original request so the portal can redirect the
+			 * user back to the right place. If the application sits behind WebJunction, or
+			 * if separate FE-BE hosts are used, then the URL yielded by the request has a
+			 * host name that is not reachable by the user.
 			 */
-			String returnToAppUrl = null;
+			String returnToAppUrl;
 			if (SystemProperties.containsProperty(SystemProperties.APP_BASE_URL)) {
 				// New feature as of 1610, release 3.3.3:
 				// application can publish a base URL in system.properties
@@ -191,7 +188,7 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 				// This is the controller for the single_signon.htm page, so the
 				// replace
 				// should always find the specified token.
-				returnToAppUrl = ((HttpServletRequest) request).getRequestURL().toString().replace("single_signon.htm",
+				returnToAppUrl = request.getRequestURL().toString().replace("single_signon.htm",
 						forwardURL);
 				logger.debug(EELFLoggerDelegate.debugLogger, "singleSignOnLogin: computed redirectURL {}",
 						returnToAppUrl);
@@ -217,7 +214,7 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 
 	public boolean isLoginCookieExist(HttpServletRequest request) {
 		Cookie ep = WebUtils.getCookie(request, LoginStrategy.EP_SERVICE);
-		return (ep != null);
+		return ep != null;
 	}
 
 	public String getPortalJSessionId(HttpServletRequest request) {
@@ -229,10 +226,12 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 		return request.getSession().getId();
 	}
 
+	@Override
 	public String getViewName() {
 		return viewName;
 	}
 
+	@Override
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
 	}

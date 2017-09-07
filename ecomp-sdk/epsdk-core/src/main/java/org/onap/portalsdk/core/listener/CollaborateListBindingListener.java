@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -50,20 +50,19 @@ public class CollaborateListBindingListener implements HttpSessionBindingListene
 	private String userName;
 	public static final String SESSION_ATTR_NAME = "CollaborateListSessionAttrName";
 
-	public CollaborateListBindingListener(String _userName) {
-		userName = _userName;
+	public CollaborateListBindingListener(final String userName) {
+		this.userName = userName;
 	}
 
 	@Override
 	public void valueBound(HttpSessionBindingEvent event) {
-		final CollaborateListBindingListener value = ((CollaborateListBindingListener) event.getValue());
+		final CollaborateListBindingListener value = (CollaborateListBindingListener) event.getValue();
 		CollaborateList.addUserName(value.getUserName());
-
 	}
 
 	@Override
 	public void valueUnbound(HttpSessionBindingEvent event) {
-		final CollaborateListBindingListener value = ((CollaborateListBindingListener) event.getValue());
+		final CollaborateListBindingListener value = (CollaborateListBindingListener) event.getValue();
 		if (value != null)
 			CollaborateList.delUserName(value.getUserName());
 	}

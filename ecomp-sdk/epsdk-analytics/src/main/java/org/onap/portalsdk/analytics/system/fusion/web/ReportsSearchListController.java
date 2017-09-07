@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -38,14 +38,11 @@
 package org.onap.portalsdk.analytics.system.fusion.web;
 
 
-import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import javax.servlet.http.*;
-
-import org.onap.portalsdk.analytics.system.fusion.domain.CR_Report;
 import org.onap.portalsdk.analytics.system.fusion.service.RaptorService;
-import org.springframework.web.bind.*;
-import org.springframework.web.servlet.*;
+import org.springframework.web.servlet.ModelAndView;
 
 
 public class ReportsSearchListController  {

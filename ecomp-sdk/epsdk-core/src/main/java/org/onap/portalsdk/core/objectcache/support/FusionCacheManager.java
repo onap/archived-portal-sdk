@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,18 +37,21 @@
  */
 package org.onap.portalsdk.core.objectcache.support;
 
-import java.io.*;
+import java.io.IOException;
 
 import org.onap.portalsdk.core.FusionObject;
 
 public interface FusionCacheManager extends FusionObject {
 
-  Object  getObject(String key);
-  void    putObject(String key, Object objectToCache);
-  boolean isObjectInCache(String key);
+	Object getObject(String key);
 
-  void removeObject(String key);
-  void clearCache();
-  void configure() throws IOException;
+	void putObject(String key, Object objectToCache);
+
+	boolean isObjectInCache(String key);
+
+	void removeObject(String key);
+
+	void clearCache();
+
+	void configure() throws IOException;
 }
-

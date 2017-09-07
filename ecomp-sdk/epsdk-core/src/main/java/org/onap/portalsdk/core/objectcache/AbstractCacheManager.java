@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,42 +37,40 @@
  */
 package org.onap.portalsdk.core.objectcache;
 
-import java.io.*;
+import java.io.IOException;
 
-import org.onap.portalsdk.core.objectcache.support.*;
-
+import org.onap.portalsdk.core.objectcache.support.FusionCacheManager;
 
 public abstract class AbstractCacheManager implements FusionCacheManager {
-  public AbstractCacheManager() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
 
-  public Object getObject(String key) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+	public AbstractCacheManager() {
+		super();
+	}
 
-  public void putObject(String key, Object objectToCache) {
-    // TODO Auto-generated method stub
-  }
+	@Override
+	public Object getObject(String key) {
+		return null;
+	}
 
-  public boolean isObjectInCache(String key) {
-    // TODO Auto-generated method stub
-    return false;
-  }
+	@Override
+	public void putObject(String key, Object objectToCache) {
+	}
 
-  public void removeObject(String key) {
-    // TODO Auto-generated method stub
-  }
+	@Override
+	public boolean isObjectInCache(String key) {
+		return false;
+	}
 
-  public void clearCache() {
-    // TODO Auto-generated method stub
-  }
+	@Override
+	public void removeObject(String key) {
+	}
 
-  public void configure() throws IOException {
-    // TODO Auto-generated method stub
+	@Override
+	public void clearCache() {
+	}
 
-  }
+	@Override
+	public void configure() throws IOException {
+	}
+
 }
-

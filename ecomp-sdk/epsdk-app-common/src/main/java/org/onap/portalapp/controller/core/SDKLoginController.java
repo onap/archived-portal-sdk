@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,6 +37,7 @@
  */
 package org.onap.portalapp.controller.core;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,19 +69,19 @@ public class SDKLoginController extends UnRestrictedBaseController {
 	private String viewName;
 
 	@RequestMapping(value = { "/login.htm" }, method = RequestMethod.GET)
-	public ModelAndView login(HttpServletRequest request) {
-		Map<String, Object> model = new HashMap<String, Object>();
+	public ModelAndView login() {
+		Map<String, Object> model = new HashMap<>();
 		return new ModelAndView("login", "model", model);
 	}
 
 	@RequestMapping(value = { "/login_external.htm" }, method = RequestMethod.GET)
-	public ModelAndView externalLogin(HttpServletRequest request) {
-		Map<String, Object> model = new HashMap<String, Object>();
+	public ModelAndView externalLogin() {
+		Map<String, Object> model = new HashMap<>();
 		return new ModelAndView("login_external", "model", model);
 	}
 
 	@RequestMapping(value = { "/login_external" }, method = RequestMethod.POST)
-	public ModelAndView doexternalLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView doexternalLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		return loginStrategy.doExternalLogin(request, response);
 	}
 
@@ -98,10 +99,12 @@ public class SDKLoginController extends UnRestrictedBaseController {
 		PortalTimeoutHandler.sessionCreated(jSessionId, jSessionId, AppUtils.getSession(request));
 	}
 
+	@Override
 	public String getViewName() {
 		return viewName;
 	}
 
+	@Override
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
 	}

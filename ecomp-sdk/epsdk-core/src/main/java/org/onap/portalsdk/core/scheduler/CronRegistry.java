@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -49,94 +49,89 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-public abstract class CronRegistry {	
-	
+public abstract class CronRegistry {
+
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(CronRegistry.class);
-	
+
 	protected JobDetailFactoryBean jobDetailFactory;
 	protected CronTriggerFactoryBean cronTriggerFactory;
 
 	private ComboPooledDataSource dataSource;
-	
+
 	public CronRegistry() {
 		try {
-		jobDetailFactoryBean();
-		cronTriggerFactoryBean();
-		}
-		catch(Exception e) {
-			logger.error(EELFLoggerDelegate.debugLogger, e.getMessage());
+			jobDetailFactoryBean();
+			cronTriggerFactoryBean();
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "CronRegistry::ctor 1 failed", e);
 		}
 	}
-	
-	//@Autowired
+
+	// @Autowired
 	public CronRegistry(ComboPooledDataSource dataSource) {
 		try {
-		this.dataSource = dataSource;
-		jobDetailFactoryBean();
-		cronTriggerFactoryBean();
-		}
-		catch(Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, e.getMessage(),AlarmSeverityEnum.MAJOR);
+			this.dataSource = dataSource;
+			jobDetailFactoryBean();
+			cronTriggerFactoryBean();
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, e.getMessage(), AlarmSeverityEnum.MAJOR);
 		}
 	}
-	
-	//@Autowired
+
+	// @Autowired
 	public CronRegistry(Object... initializeObjects) {
 		try {
 			initializeObjects(initializeObjects);
 			jobDetailFactoryBean();
 			cronTriggerFactoryBean();
-		}
-		catch(Exception e) {
-			logger.info(EELFLoggerDelegate.errorLogger, e.getMessage());
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "CronRegistry::ctor 3 failed", e);
 		}
 	}
-	
-	protected void initializeObjects(Object... initializeObjects) {	
+
+	protected void initializeObjects(Object... initializeObjects) {
 	}
-	
+
 	public abstract JobDetailFactoryBean jobDetailFactoryBean() throws ParseException;
-	
+
 	protected JobDetailFactoryBean jobDetailFactoryBean(String groupName, String jobName,
 			Class<? extends QuartzJobBean> jobClass, Map<String, Object> map) {
-		
+
 		jobDetailFactory = new JobDetailFactoryBean();
 		jobDetailFactory.setJobClass(jobClass);
 		jobDetailFactory.setJobDataAsMap(map);
 		jobDetailFactory.setGroup(groupName);
 		jobDetailFactory.setName(jobName);
 		jobDetailFactory.afterPropertiesSet();
-	
+
 		return jobDetailFactory;
-	} 
-	
+	}
+
 	public abstract CronTriggerFactoryBean cronTriggerFactoryBean() throws ParseException;
-	
-	protected CronTriggerFactoryBean cronTriggerFactoryBean(String groupName, String triggerName, String cronExpression) throws ParseException {
+
+	protected CronTriggerFactoryBean cronTriggerFactoryBean(String groupName, String triggerName, String cronExpression)
+			throws ParseException {
 		cronTriggerFactory = new CronTriggerFactoryBean();
 		cronTriggerFactory.setJobDetail(jobDetailFactory.getObject());
 		cronTriggerFactory.setStartDelay(3000);
 		cronTriggerFactory.setName(triggerName);
 		cronTriggerFactory.setGroup(groupName);
 		logger.info(EELFLoggerDelegate.applicationLogger, triggerName + " Scheduled: " + cronExpression);
-		cronTriggerFactory.setCronExpression( cronExpression);  //"0 * * * * ? *"
+		cronTriggerFactory.setCronExpression(cronExpression); // "0 * * * * ? *"
 		cronTriggerFactory.afterPropertiesSet();
 		return cronTriggerFactory;
-	} 
-	
+	}
+
 	public CronTrigger getTrigger() {
 		return cronTriggerFactory.getObject();
 	}
 
-	
 	public void setDataSource(ComboPooledDataSource dataSource) {
 		this.dataSource = dataSource;
 	}
-
 
 	public ComboPooledDataSource getDataSource() {
 		return dataSource;
 	}
 
-	
 }

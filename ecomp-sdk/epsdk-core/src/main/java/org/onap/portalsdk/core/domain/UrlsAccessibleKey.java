@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,72 +37,57 @@
  */
 package org.onap.portalsdk.core.domain;
 
-import java.io.*;
-
+import java.io.Serializable;
 
 public class UrlsAccessibleKey implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-    private String url;
-    private String functionCd;
+	private String url;
+	private String functionCd;
 
-    public UrlsAccessibleKey() {
-    }
+	public UrlsAccessibleKey() {
+		super();
+	}
 
-    public UrlsAccessibleKey(String url, String functionCd) {
-      setUrl(url);
-      setFunctionCd(functionCd);
-    }
+	public UrlsAccessibleKey(String url, String functionCd) {
+		setUrl(url);
+		setFunctionCd(functionCd);
+	}
 
+	public String getUrl() {
+		return url;
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	public String getFunctionCd() {
+		return functionCd;
+	}
 
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    public String getFunctionCd() {
-        return functionCd;
-    }
+	public void setFunctionCd(String functionCd) {
+		this.functionCd = functionCd;
+	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) 
+			return true;
+		if (o == null) 
+			return false;
+		if (!(o instanceof UrlsAccessibleKey)) 
+			return false;
+		final UrlsAccessibleKey key = (UrlsAccessibleKey) o;
+		if (getFunctionCd().equals(key.getFunctionCd()) && getUrl().equals(key.getUrl()))
+			return true;
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+		return false;
+	}
 
-
-    public void setFunctionCd(String functionCd) {
-        this.functionCd = functionCd;
-    }
-
-
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-
-      if (o == null) {
-        return false;
-      }
-
-      if (!(o instanceof UrlsAccessibleKey)) {
-        return false;
-      }
-
-      final UrlsAccessibleKey key = (UrlsAccessibleKey)o;
-
-      if (getFunctionCd().equals(key.getFunctionCd()) & getUrl().equals(key.getUrl())) {
-        return true;
-      }
-
-      return false;
-    }
-
-
-    public int hashCode() {
-      return getUrl().hashCode() + getFunctionCd().hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return getUrl().hashCode() + getFunctionCd().hashCode();
+	}
 
 }

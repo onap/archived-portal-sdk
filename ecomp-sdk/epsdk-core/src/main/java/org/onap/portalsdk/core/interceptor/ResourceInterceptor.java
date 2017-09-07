@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -79,8 +79,8 @@ public class ResourceInterceptor extends HandlerInterceptorAdapter {
 	private AbstractCacheManager cacheManager;
 
 	@Autowired
-	UrlAccessService urlAccessService;
-	
+	private UrlAccessService urlAccessService;
+
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
@@ -98,19 +98,20 @@ public class ResourceInterceptor extends HandlerInterceptorAdapter {
 					try {
 						if (!webServiceCallService.verifyRESTCredential(secretKey, request.getHeader("username"),
 								request.getHeader("password"))) {
-							logger.error(EELFLoggerDelegate.errorLogger, "Error accesing RESTful service. Un-authorized",AlarmSeverityEnum.MINOR);
+							logger.error(EELFLoggerDelegate.errorLogger,
+									"Error accesing RESTful service. Un-authorized", AlarmSeverityEnum.MINOR);
 							throw new UrlAccessRestrictedException();
 						}
 					} catch (Exception e) {
-						logger.error(EELFLoggerDelegate.errorLogger, "Error authenticating RESTful service :" + e,AlarmSeverityEnum.MINOR);
-						//throw new UrlAccessRestrictedException();
-						 HttpSession httpSession = request.getSession();
-						    ((HttpServletResponse) response).setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
-						    return false;
+						logger.error(EELFLoggerDelegate.errorLogger, "Error authenticating RESTful service :" + e,
+								AlarmSeverityEnum.MINOR);
+						response.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
+						return false;
 					}
 				}
 				if (!urlAccessService.isUrlAccessible(request, url)) {
-					logger.error(EELFLoggerDelegate.errorLogger, "Error accesing URL. Un-authorized",AlarmSeverityEnum.MINOR);
+					logger.error(EELFLoggerDelegate.errorLogger, "Error accesing URL. Un-authorized",
+							AlarmSeverityEnum.MINOR);
 					throw new UrlAccessRestrictedException();
 				}
 			}
@@ -130,7 +131,7 @@ public class ResourceInterceptor extends HandlerInterceptorAdapter {
 	 */
 	protected void handleSessionUpdates(HttpServletRequest request) {
 
-		App app = null;
+		App app;
 		Object appObj = getCacheManager().getObject(APP_METADATA);
 		if (appObj == null) {
 			app = findApp();
@@ -141,12 +142,12 @@ public class ResourceInterceptor extends HandlerInterceptorAdapter {
 		}
 
 		String ecompRestURL = PortalApiProperties.getProperty(PortalApiConstants.ECOMP_REST_URL);
-		String decreptedPwd = "";
+		String decreptedPwd = null;
 		try {
 			decreptedPwd = CipherUtil.decrypt(app.getAppPassword(),
 					SystemProperties.getProperty(SystemProperties.Decryption_Key));
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "Could not decrypt Password" + e.getMessage(),AlarmSeverityEnum.MINOR);
+			logger.error(EELFLoggerDelegate.errorLogger, "handleSessionUpdates failed to decrypt password", e);
 		}
 
 		PortalTimeoutHandler.handleSessionUpdatesNative(request, app.getUsername(), decreptedPwd,
@@ -155,10 +156,10 @@ public class ResourceInterceptor extends HandlerInterceptorAdapter {
 
 	public App findApp() {
 		List<?> list = null;
-		StringBuffer criteria = new StringBuffer();
+		StringBuilder criteria = new StringBuilder();
 		criteria.append(" where id = 1");
 		list = getDataAccessService().getList(App.class, criteria.toString(), null, null);
-		return (list == null || list.size() == 0) ? null : (App) list.get(0);
+		return (list == null || list.isEmpty()) ? null : (App) list.get(0);
 	}
 
 	public DataAccessService getDataAccessService() {

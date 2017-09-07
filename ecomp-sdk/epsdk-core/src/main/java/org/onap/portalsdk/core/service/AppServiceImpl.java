@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -47,19 +47,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service("appService")
 @Transactional
-public class AppServiceImpl implements AppService{
+public class AppServiceImpl implements AppService {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AppServiceImpl.class);
-	
+
 	@Autowired
-	private DataAccessService  dataAccessService;
+	private DataAccessService dataAccessService;
 
 	/**
-	 * Loads the appName once from database and
-	 * keep refers to it as required.
+	 * Loads the appName once from database and keep refers to it as required.
 	 */
 	private static String defaultAppName = "";
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<App> getApps() {
@@ -68,16 +67,17 @@ public class AppServiceImpl implements AppService{
 
 	@Override
 	public App getApp(Long appId) {
-		return (App)getDataAccessService().getDomainObject(App.class, appId, null);
+		return (App) getDataAccessService().getDomainObject(App.class, appId, null);
 	}
 
 	@Override
 	public App getDefaultApp() {
 		return getApp(1L);
 	}
-	
+
 	/**
 	 * Gets the data access service.
+	 * 
 	 * @return DataAccessService
 	 */
 	public DataAccessService getDataAccessService() {
@@ -86,25 +86,28 @@ public class AppServiceImpl implements AppService{
 
 	/**
 	 * Sets the data access service.
+	 * 
 	 * @param dataAccessService
 	 */
 	public void setDataAccessService(DataAccessService dataAccessService) {
 		this.dataAccessService = dataAccessService;
 	}
-	
+
 	/**
-	 * Fetches the application name once from database
-	 * and keep refers to the same name later on as required.
+	 * Fetches the application name once from database and keep refers to the same
+	 * name later on as required.
+	 * 
 	 * @return Default Application Name
 	 */
 	@Override
 	public String getDefaultAppName() {
-		if (AppServiceImpl.defaultAppName==null || AppServiceImpl.defaultAppName=="") {
+		if (AppServiceImpl.defaultAppName == null || AppServiceImpl.defaultAppName == "") {
 			App app = getApp(1L);
-			if (app!=null) {
-				AppServiceImpl.defaultAppName		= app.getName();
+			if (app != null) {
+				AppServiceImpl.defaultAppName = app.getName();
 			} else {
-				logger.warn(EELFLoggerDelegate.errorLogger, ("Unable to locate the app information from the database."));
+				logger.warn(EELFLoggerDelegate.errorLogger,
+						"Unable to locate the app information from the database.");
 			}
 		}
 		return AppServiceImpl.defaultAppName;

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -92,15 +92,14 @@ public class MenuListController extends RestrictedBaseController {
 		logger.debug(EELFLoggerDelegate.debugLogger, "getMenu begins");
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			Set<MenuData> menuResult = null;
 			HttpSession session = request.getSession();
 			List<List<MenuData>> childItemList = (List<List<MenuData>>) session
 					.getAttribute(SystemProperties.LEFT_MENU_CHILDREND);
 			List<MenuData> parentList = (List<MenuData>) session.getAttribute(SystemProperties.LEFT_MENU_PARENT);
-			if (parentList == null || childItemList == null || parentList.size() == 0 || childItemList.size() == 0) {
-				childItemList = new ArrayList<List<MenuData>>();
-				parentList = new ArrayList<MenuData>();
-				menuResult = (Set<MenuData>) session
+			if (parentList == null || childItemList == null || parentList.isEmpty() || childItemList.isEmpty()) {
+				childItemList = new ArrayList<>();
+				parentList = new ArrayList<>();
+				Set<MenuData> menuResult = (Set<MenuData>) session
 						.getAttribute(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_ATTRIBUTE_NAME));
 				fnMenuService.setMenuDataStructure(childItemList, parentList, menuResult);
 				logger.debug(EELFLoggerDelegate.debugLogger, "storing leftmenu items into session");
@@ -157,15 +156,15 @@ public class MenuListController extends RestrictedBaseController {
 	public Map<String, Object> getLeftMenuJSP(HttpServletRequest request) {
 		logger.debug(EELFLoggerDelegate.debugLogger, "getLeftMenuJSP begins");
 		ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		try {
 			HttpSession session = request.getSession();
 			List<List<MenuData>> childItemList = (List<List<MenuData>>) session
 					.getAttribute(SystemProperties.LEFT_MENU_CHILDREND);
 			List<MenuData> parentList = (List<MenuData>) session.getAttribute(SystemProperties.LEFT_MENU_PARENT);
 			if (parentList == null || childItemList == null) {
-				childItemList = new ArrayList<List<MenuData>>();
-				parentList = new ArrayList<MenuData>();
+				childItemList = new ArrayList<>();
+				parentList = new ArrayList<>();
 				Set<MenuData> menuResult = (Set<MenuData>) session
 						.getAttribute(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_ATTRIBUTE_NAME));
 				fnMenuService.setMenuDataStructure(childItemList, parentList, menuResult);
@@ -203,7 +202,7 @@ public class MenuListController extends RestrictedBaseController {
 			List<SharedContext> sharedContextRes = sharedContextRestClient.getUserContext(contextId);
 			logger.debug(EELFLoggerDelegate.debugLogger, "getUserInfo: Shared Context Response is {}",
 					sharedContextRes);
-			Map<String, Object> model = new HashMap<String, Object>();
+			Map<String, Object> model = new HashMap<>();
 			for (SharedContext sharedContext : sharedContextRes) {
 				model.put(sharedContext.getCkey(), sharedContext.getCvalue());
 			}
@@ -223,7 +222,6 @@ public class MenuListController extends RestrictedBaseController {
 	 */
 	@RequestMapping(value = { "/get_topMenuInfo" }, method = RequestMethod.GET)
 	public void getTopMenu(HttpServletRequest request, HttpServletResponse response) {
-		@SuppressWarnings("unused")
 		boolean isAppCentralized = false;
 		HttpSession session = request.getSession();
 		try {
@@ -231,7 +229,7 @@ public class MenuListController extends RestrictedBaseController {
 			String firstName = (String) session.getAttribute(SystemProperties.FIRST_NAME);
 			String lastName = (String) session.getAttribute(SystemProperties.LAST_NAME);
 			User user = (User) session.getAttribute(SystemProperties.getProperty(SystemProperties.USER_ATTRIBUTE_NAME));
-			Map<String, String> map = new HashMap<String, String>();
+			Map<String, String> map = new HashMap<>();
 			String redirectUrl = PortalApiProperties.getProperty(PortalApiConstants.ECOMP_REDIRECT_URL);
 			String portalDomain = redirectUrl.substring(0, redirectUrl.lastIndexOf('/'));
 			String portalUrl = portalDomain + "/process_csp";
@@ -244,10 +242,10 @@ public class MenuListController extends RestrictedBaseController {
 			map.put("lastName", lastName);
 			map.put("userid", user.getOrgUserId());
 			map.put("email", user.getEmail());
-			map.put("getAccessUrl", getAccessUrl); 
+			map.put("getAccessUrl", getAccessUrl);
 			String roleAccessCentralized = PortalApiProperties.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED);
 			if (roleAccessCentralized != null && "remote".equals(roleAccessCentralized))
-			isAppCentralized = true;
+				isAppCentralized = true;
 			map.put("isAppCentralized", Boolean.toString(isAppCentralized));
 			JSONObject j = new JSONObject(map);
 			response.setContentType("application/json");
@@ -263,9 +261,9 @@ public class MenuListController extends RestrictedBaseController {
 		String pageToURL = null;
 		try {
 			String pageTo = request.getParameter("page");
-			if (pageTo.equals("contact"))
+			if ("contact".equals(pageTo))
 				pageToURL = SystemProperties.getProperty(SystemProperties.CONTACT_US_LINK);
-			else if (pageTo.equals("access")) {
+			else if ("access".equals(pageTo)) {
 				String redirectUrl = PortalApiProperties.getProperty(PortalApiConstants.ECOMP_REDIRECT_URL);
 				String portalDomain = redirectUrl.substring(0, redirectUrl.lastIndexOf('/'));
 				pageToURL = portalDomain + "/get_access";

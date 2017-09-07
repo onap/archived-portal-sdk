@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,8 +37,9 @@
  */
 package org.onap.portalsdk.core.service;
 
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
 
 public interface WebServiceCallService {
-	public boolean verifyRESTCredential(String secretKey, String requestAppName, String requestPassword)throws Exception;
-	/*public String get(String restURL, String restPath);*/
+	public boolean verifyRESTCredential(String secretKey, String requestAppName, String requestPassword)
+			throws CipherUtilException;
 }

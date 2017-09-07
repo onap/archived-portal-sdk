@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,6 +37,7 @@
  */
 package org.onap.portalsdk.core.service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +49,7 @@ import java.util.Set;
 import org.onap.portalsdk.core.command.LoginBean;
 import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.domain.User;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.menu.MenuBuilder;
 import org.onap.portalsdk.core.service.support.FusionService;
 import org.onap.portalsdk.core.util.SystemProperties;
@@ -56,19 +58,17 @@ import org.onap.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Transactional
 public class LoginServiceCentralizedImpl extends FusionService implements LoginService {
 
-	@Autowired
-	private AppService appService;
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(LoginServiceCentralizedImpl.class);
 
 	@Autowired
 	private DataAccessService dataAccessService;
-	
+
 	@Autowired
 	private RestApiRequestBuilder restApiRequestBuilder;
-	
+
 	@Autowired
 	private UserService userService;
 
@@ -76,28 +76,26 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 	private MenuBuilder menuBuilder;
 
 	@Override
-	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename, HashMap additionalParams)
-			throws Exception {
+	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename, Map additionalParams) throws IOException {
 		return findUser(bean, menuPropertiesFilename, additionalParams, true);
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
-	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename, HashMap additionalParams,
-			boolean matchPassword) throws Exception {
-		User user = null;
-		User userCopy = null;
+	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename, Map additionalParams,
+			boolean matchPassword) throws IOException {
 
-		if (bean.getUserid() != null && bean.getUserid() != null) {
-			user = (User) findUser(bean);
+		User user;
+		if (bean.getUserid() != null) {
+			user = findUser(bean);
 		} else {
 			if (matchPassword)
-				user = (User) findUser(bean.getLoginId(), bean.getLoginPwd());
+				user = findUser(bean.getLoginId(), bean.getLoginPwd());
 			else
-				user = (User) findUserWithoutPwd(bean.getLoginId());
+				user = findUserWithoutPwd(bean.getLoginId());
 		}
 
 		if (user != null) {
-
 			if (AppUtils.isApplicationLocked()
 					&& !UserUtils.hasRole(user, SystemProperties.getProperty(SystemProperties.SYS_ADMIN_ROLE_ID))) {
 				bean.setLoginErrorMessage(SystemProperties.MESSAGE_KEY_LOGIN_ERROR_APPLICATION_LOCKED);
@@ -116,14 +114,19 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 
 				// this will be a snapshot of the user's information as
 				// retrieved from the database
-				userCopy = (User) user.clone();
+				User userCopy = null;
+				try {
+					userCopy = (User) user.clone();
+				} catch (CloneNotSupportedException ex) {
+					// Never happens
+					logger.error(EELFLoggerDelegate.errorLogger, "findUser failed", ex);
+				}
 
 				User appuser = getUser(userCopy);
 
 				appuser.setLastLoginDate(new Date());
 
 				// update the last logged in date for the user
-				// user.setLastLoginDate(new Date());
 				getDataAccessService().saveDomainObject(appuser, additionalParams);
 
 				// update the audit log of the user
@@ -162,17 +165,15 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 		return hasActiveRole;
 	}
 
-	@SuppressWarnings("null")
-	public User findUser(LoginBean bean) throws Exception {
-		User user = null;
+	public User findUser(LoginBean bean) throws IOException {
 		String repsonse = restApiRequestBuilder.getViaREST("/user/" + bean.getUserid(), true, bean.getUserid());
-		user = userService.userMapper(repsonse);
+		User user = userService.userMapper(repsonse);
 		user.setId(getUserIdByOrgUserId(user.getOrgUserId()));
 		return user;
 	}
-	
+
 	public Long getUserIdByOrgUserId(String orgUserId) {
-		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> params = new HashMap<>();
 		params.put("orgUserId", orgUserId);
 		@SuppressWarnings("rawtypes")
 		List list = getDataAccessService().executeNamedQuery("getUserIdByorgUserId", params, null);
@@ -181,26 +182,20 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 			userId = (Long) list.get(0);
 		return userId;
 	}
-	
 
 	public User findUser(String loginId, String password) {
-
-		List list = null;
-
-		StringBuffer criteria = new StringBuffer();
+		StringBuilder criteria = new StringBuilder();
 		criteria.append(" where login_id = '").append(loginId).append("'").append(" and login_pwd = '").append(password)
 				.append("'");
-
-		list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
-		return (list == null || list.size() == 0) ? null : (User) list.get(0);
+		List list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
+		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}
 
 	private User findUserWithoutPwd(String loginId) {
-		List list = null;
-		StringBuffer criteria = new StringBuffer();
+		StringBuilder criteria = new StringBuilder();
 		criteria.append(" where login_id = '").append(loginId).append("'");
-		list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
-		return (list == null || list.size() == 0) ? null : (User) list.get(0);
+		List list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
+		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}
 
 	public DataAccessService getDataAccessService() {
@@ -220,14 +215,10 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 	}
 
 	public User getUser(User user) {
-		List list = null;
-
-		StringBuffer criteria = new StringBuffer();
+		StringBuilder criteria = new StringBuilder();
 		criteria.append(" where login_id = '").append(user.getLoginId()).append("'");
-
-		list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
-		return (list == null || list.size() == 0) ? null : (User) list.get(0);
-
+		List list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
+		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}
 
 }

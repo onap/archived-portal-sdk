@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -54,7 +54,6 @@ import org.onap.portalsdk.core.domain.UserApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Transactional
@@ -94,7 +93,7 @@ public class UserServiceCentalizedImpl implements UserService {
 	}
 
 	@Override
-	public User userMapper(String res) throws IOException, JsonProcessingException {
+	public User userMapper(String res) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		User user = mapper.readValue(res, User.class);
 		Set<RoleFunction> roleFunctionListNew = new HashSet<>();
@@ -108,9 +107,9 @@ public class UserServiceCentalizedImpl implements UserService {
 			Role role = nextApp.getRole();
 			@SuppressWarnings("unchecked")
 			Set<RoleFunction> roleFunctionList = role.getRoleFunctions();
-			Iterator<RoleFunction> itetaror = roleFunctionList.iterator();
-			while (itetaror.hasNext()) {
-				Object nextValue = itetaror.next();
+			Iterator<RoleFunction> roleFnIter = roleFunctionList.iterator();
+			while (roleFnIter.hasNext()) {
+				Object nextValue = roleFnIter.next();
 				RoleFunction roleFunction = mapper.convertValue(nextValue, RoleFunction.class);
 				roleFunctionListNew.add(roleFunction);
 			}

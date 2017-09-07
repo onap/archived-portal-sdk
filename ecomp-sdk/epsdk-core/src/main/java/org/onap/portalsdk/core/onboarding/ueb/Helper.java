@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -38,6 +38,7 @@
 package org.onap.portalsdk.core.onboarding.ueb;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +46,7 @@ import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 
 /**
- * Provides utility methods. 
+ * Provides utility methods.
  */
 public class Helper {
 
@@ -57,17 +58,16 @@ public class Helper {
 	 * 
 	 * @return List of UEB server names
 	 */
-	public static LinkedList<String> uebUrlList() {
-		LinkedList<String> urlList = null;
-			String url = PortalApiProperties.getProperty(PortalApiConstants.UEB_URL_LIST);
-			if (url == null) {
-				logger.error("uebUrlList: failed to get property " + PortalApiConstants.UEB_URL_LIST);
-				return null;
-			}
-			urlList = new LinkedList<String>();
-			for (String u : url.split(",")) {
-				urlList.add(u.trim());
-			}
+	public static List<String> uebUrlList() {
+		String url = PortalApiProperties.getProperty(PortalApiConstants.UEB_URL_LIST);
+		if (url == null) {
+			logger.error("uebUrlList: failed to get property " + PortalApiConstants.UEB_URL_LIST);
+			return new LinkedList<String>();
+		}
+		LinkedList<String> 		urlList = new LinkedList<>();
+		for (String u : url.split(",")) {
+			urlList.add(u.trim());
+		}
 		return urlList;
 	}
 
@@ -75,7 +75,7 @@ public class Helper {
 		try {
 			Thread.sleep(milliseconds);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			logger.warn("sleep was interrupted", e);
 		}
 	}
 

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -61,9 +62,7 @@ import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.menu.MenuBuilder;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
-import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.util.SystemProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @SuppressWarnings("rawtypes")
 public class UserUtils {
@@ -72,10 +71,8 @@ public class UserUtils {
 
 	public static final String KEY_USER_ROLES_CACHE = "userRoles";
 
-	private static DataAccessService dataAccessService;
-
 	public static void setUserSession(HttpServletRequest request, User user, Set applicationMenuData,
-			Set businessDirectMenuData, String loginMethod , List<RoleFunction> roleFunctionList) {
+			Set businessDirectMenuData, String loginMethod, List<RoleFunction> roleFunctionList) {
 		HttpSession session = request.getSession(true);
 
 		UserUtils.clearUserSession(request); // let's clear the current user
@@ -97,7 +94,7 @@ public class UserUtils {
 		try {
 			licenseVarificationFlag = (Integer) context.getAttribute("licenseVerification");
 		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.debugLogger, "Error while get license varification " + e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "setUserSession failed on license verification", e);
 		}
 		String displayName = "";
 		if (SystemProperties.getProperty(SystemProperties.APP_DISPLAY_NAME) != null)
@@ -146,14 +143,12 @@ public class UserUtils {
 
 	@SuppressWarnings("unchecked")
 	public static Set getRoleFunctions(HttpServletRequest request) {
-		HashSet roleFunctions = null;
-//		HashSet<RoleFunction> rolefun = null;
 		HttpSession session = request.getSession();
-		roleFunctions = (HashSet) session
+		HashSet roleFunctions = (HashSet) session
 				.getAttribute(SystemProperties.getProperty(SystemProperties.ROLE_FUNCTIONS_ATTRIBUTE_NAME));
 
 		if (roleFunctions == null) {
-			HashMap roles = getRoles(request);
+			Map roles = getRoles(request);
 			roleFunctions = new HashSet();
 
 			Iterator i = roles.keySet().iterator();
@@ -175,12 +170,10 @@ public class UserUtils {
 		return roleFunctions;
 	}
 
-	public static HashMap getRoles(HttpServletRequest request) {
-		HashMap roles = null;
-
+	public static Map getRoles(HttpServletRequest request) {
 		// HttpSession session = request.getSession();
 		HttpSession session = AppUtils.getSession(request);
-		roles = (HashMap) session.getAttribute(SystemProperties.getProperty(SystemProperties.ROLES_ATTRIBUTE_NAME));
+		Map roles = (Map) session.getAttribute(SystemProperties.getProperty(SystemProperties.ROLES_ATTRIBUTE_NAME));
 
 		// if roles are not already cached, let's grab them from the user
 		// session
@@ -208,7 +201,7 @@ public class UserUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static HashMap getAllUserRoles(User user) {
+	public static Map getAllUserRoles(User user) {
 		HashMap roles = new HashMap();
 		Iterator i = user.getRoles().iterator();
 
@@ -228,9 +221,9 @@ public class UserUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void addChildRoles(Role role, HashMap roles) {
+	private static void addChildRoles(Role role, Map roles) {
 		Set childRoles = role.getChildRoles();
-		if (childRoles != null && childRoles.size() > 0) {
+		if (childRoles != null && !childRoles.isEmpty()) {
 			Iterator j = childRoles.iterator();
 			while (j.hasNext()) {
 				Role childRole = (Role) j.next();
@@ -242,8 +235,6 @@ public class UserUtils {
 		}
 
 	}
-
-
 
 	public static boolean hasRole(HttpServletRequest request, String roleKey) {
 		return getRoles(request).keySet().contains(new Long(roleKey));
@@ -268,27 +259,15 @@ public class UserUtils {
 				.getAttribute(SystemProperties.getProperty(SystemProperties.LOGIN_METHOD_ATTRIBUTE_NAME));
 	}
 
-	public static DataAccessService getDataAccessService() {
-		return dataAccessService;
-	}
-
-	@Autowired
-	public void setDataAccessService(DataAccessService dataAccessService) {
-		UserUtils.dataAccessService = dataAccessService;
-	}
-
 	public static int getUserId(HttpServletRequest request) {
 		return getUserIdAsLong(request).intValue();
 	}
 
 	public static Long getUserIdAsLong(HttpServletRequest request) {
 		Long userId = new Long(SystemProperties.getProperty(SystemProperties.APPLICATION_USER_ID));
-
-		if (request != null) {
-			if (getUserSession(request) != null) {
+		if (request != null  && getUserSession(request) != null) 
 				userId = getUserSession(request).getId();
-			}
-		}
+
 		return userId;
 	}
 
@@ -313,8 +292,7 @@ public class UserUtils {
 	}
 
 	/**
-	 * Gets the full URL of the request by joining the request and any query
-	 * string.
+	 * Gets the full URL of the request by joining the request and any query string.
 	 * 
 	 * @param request
 	 * @return Full URL of the request including query parameters
@@ -334,8 +312,8 @@ public class UserUtils {
 	}
 
 	/**
-	 * Gets or generates a request ID by searching for header X-ECOMP-RequestID.
-	 * If not found, generates a new random UUID.
+	 * Gets or generates a request ID by searching for header X-ECOMP-RequestID. If
+	 * not found, generates a new random UUID.
 	 * 
 	 * @param request
 	 * @return Request ID for the specified request
@@ -346,7 +324,7 @@ public class UserUtils {
 		String requestId = "";
 		try {
 			while (headerNames.hasMoreElements()) {
-				String headerName = (String) headerNames.nextElement();
+				String headerName = headerNames.nextElement();
 				if (logger.isTraceEnabled())
 					logger.trace(EELFLoggerDelegate.debugLogger, "getRequestId: header {} = {}", headerName,
 							request.getHeader(headerName));
@@ -386,7 +364,7 @@ public class UserUtils {
 		userJson.setOrgId(user.getOrgId());
 		userJson.setPhone(user.getPhone());
 		userJson.setOrgUserId(user.getOrgUserId());
-		Set<EcompRole> ecompRoles = new TreeSet<EcompRole>();
+		Set<EcompRole> ecompRoles = new TreeSet<>();
 		for (Role role : user.getRoles()) {
 			ecompRoles.add(convertToEcompRole(role));
 		}
@@ -408,6 +386,4 @@ public class UserUtils {
 		return ecompRole;
 	}
 
-	}
-
-
+}

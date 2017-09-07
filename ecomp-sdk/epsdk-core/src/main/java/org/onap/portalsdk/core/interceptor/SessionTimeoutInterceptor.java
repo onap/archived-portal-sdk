@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -56,14 +56,12 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SessionTimeoutInterceptor.class);
-
-	public SessionTimeoutInterceptor() {
-	}
-
+	
 	/**
-	 * Checks all requests for valid session information. If not found,
-	 * redirects to a controller that will establish a valid session.
+	 * Checks all requests for valid session information. If not found, redirects to
+	 * a controller that will establish a valid session.
 	 */
+	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		if (handler instanceof HandlerMethod) {
@@ -83,7 +81,7 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 						throw new Exception("preHandle: user not found in session");
 					} else {
 						// session binding listener will add this value to the
-						// map, and with session replication the listener will 
+						// map, and with session replication the listener will
 						// fire in all tomcat instances
 						session.setAttribute(CollaborateListBindingListener.SESSION_ATTR_NAME,
 								new CollaborateListBindingListener(user.getOrgUserId()));
@@ -96,22 +94,25 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 					final String singleSignonPrefix = "/single_signon.htm?";
 					if (ex instanceof SessionExpiredException) {
 						// Session is expired; send to portal.
-						// Redirect to an absolute path in the webapp; e.g., "/context/single_signon.htm"
-						final String redirectUrl = request.getContextPath() + singleSignonPrefix + "redirectToPortal=Yes&" + forwardUrlParm;
+						// Redirect to an absolute path in the webapp; e.g.,
+						// "/context/single_signon.htm"
+						final String redirectUrl = request.getContextPath() + singleSignonPrefix
+								+ "redirectToPortal=Yes&" + forwardUrlParm;
 						logger.debug(EELFLoggerDelegate.debugLogger, "preHandle: session is expired, redirecting to {}",
 								redirectUrl);
 						response.sendRedirect(redirectUrl);
 						return false;
 					} else {
 						// Other issue; do not send to portal.
-						// Redirect to an absolute path in the webapp; e.g., "/context/single_signon.htm"
+						// Redirect to an absolute path in the webapp; e.g.,
+						// "/context/single_signon.htm"
 						final String redirectUrl = request.getContextPath() + singleSignonPrefix + forwardUrlParm;
 						logger.debug(EELFLoggerDelegate.debugLogger, "preHandle: took exception {}, redirecting to {}",
 								ex.getMessage(), redirectUrl);
 						response.sendRedirect(redirectUrl);
 						return false;
 					}
-				} 
+				}
 			}
 		}
 

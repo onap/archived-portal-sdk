@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -44,22 +44,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.util.YamlUtils;
 
 public class ElementLinkService {
 
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(ElementLinkService.class);
+
 	/**
 	 * Builds renderable model of element links in the network map. Parses YAML
-	 * files with metadata and builds input for JoinJS to render in the browser
-	 * as SVG.
+	 * files with metadata and builds input for JoinJS to render in the browser as
+	 * SVG.
 	 *
 	 * @param args
 	 *            arg 0 - realPath; arg 1 - callFlowName; arg 2 - callFlowStep.
 	 * @return Renderable model of element links
-	 * @throws Exception
+	 * @throws IOException
 	 */
-	public String buildElementLinkYaml(String[] args) throws Exception {
+	public String buildElementLinkYaml(String[] args) throws IOException {
 		String relFilePath;
 		if (args[1].startsWith("custom"))
 			relFilePath = SystemProperties.getProperty("customCallFlow_path");
@@ -82,69 +85,26 @@ public class ElementLinkService {
 		return linkYaml;
 	}
 
-	/*
-	 * public String main2(String[] args) throws Exception {
-	 * 
-	 * String filePath = SystemProperties.getProperty("element_map_file_path") +
-	 * File.separator; String callFlowBusinessYml = ""; String callFlowStep =
-	 * "";
-	 * 
-	 * if (args != null && args.length > 0) {
-	 * 
-	 * if (args[0] != null) { callFlowBusinessYml = args[0] + "-Override.yml"; }
-	 * 
-	 * if (args[1] != null) { callFlowStep = args[1]; } }
-	 * 
-	 * ElementLinkService mapper = new ElementLinkService();
-	 * 
-	 * return mapper.createLinkFileAdditional(filePath, callFlowBusinessYml,
-	 * callFlowStep); }
-	 */
-
-	public static void main(String[] args) throws Exception {
-
-		String filePath = "\\D2Platform\\war\\WEB-INF\\resources\\trisim_files";
-		String callFlowBusinessYml = "call_flow_hc-origination-termination-to-volteue-3.3.16-Override.yml";
-
-		ElementLinkService mapper = new ElementLinkService();
-
-		// System.out.print(mapper.createLinkFile(filePath, networkToscaYml,
-		// networkToscaUeYml, networkLayoutYml, callFlowBusinessYml,"Step_1"));
-		System.out.print(mapper.createLinkFileAdditional(filePath, callFlowBusinessYml, "Step_2"));
-	}
-
 	@SuppressWarnings("unchecked")
 	protected String createLinkFile(String resourceFilePath, String callFLowBsFileName, String callFlowStep)
-			throws Exception {
-
+			throws IOException {
 		Map<String, Object> callFlowBs = YamlUtils.readYamlFile(resourceFilePath, callFLowBsFileName);
-
 		List<Map<String, Object>> callSteps = (List<Map<String, Object>>) callFlowBs.get("callSequenceSteps");
 		String callFlowName = (String) callFlowBs.get("shortName");
 		return addLinks(resourceFilePath, callFlowName, callSteps, callFlowStep);
-
 	}
 
 	@SuppressWarnings("unchecked")
 	protected String createLinkFileAdditional(String resourceFilePath, String callFLowBsFileName, String callFlowStep)
 			throws Exception {
-
-		// Map<String, Object> callFlowBs =
-		// YamlUtils.readYamlFile(resourceFilePath, callFLowBsFileName);
-
-		// return YamlUtils.returnYaml(callFlowBs);
-
 		Map<String, Object> callFlowBs;
-
 		try {
 			callFlowBs = YamlUtils.readYamlFile(resourceFilePath, callFLowBsFileName);
-
 			List<Map<String, Object>> callSteps = (List<Map<String, Object>>) callFlowBs.get("callSequenceSteps");
 			String callFlowName = (String) callFlowBs.get("shortName");
 			return addLinksAdditional(resourceFilePath, callFlowName, callSteps, callFlowStep);
-
 		} catch (Exception e) {
-
+			logger.error(EELFLoggerDelegate.errorLogger, "createLinkFileAdditional failed", e);
 			return "";
 		}
 
@@ -154,22 +114,18 @@ public class ElementLinkService {
 	protected String addLinks(String filePath, String callFlowName, List<Map<String, Object>> callSteps,
 			String callFlowStep) throws IOException {
 
-		Map<String, List<String>> checkDuplicateMap = new HashMap<String, List<String>>();
+		Map<String, List<String>> checkDuplicateMap = new HashMap<>();
 
 		for (Map<String, Object> callStep : callSteps) {
 
 			if (((String) callStep.get("name")).split(":")[0].trim().replace(" ", "_").equals(callFlowStep)) {
 
-				// String callFlowStepName = callFlowName + "_" +
-				// ((String)callStep.get("name")).split("-")[0].trim().replace("
-				// ", "_")+".yml";
-
-				List<Map<String, Object>> links = new ArrayList<Map<String, Object>>();
+				List<Map<String, Object>> links = new ArrayList<>();
 
 				List<Map<String, Object>> subSteps = (List<Map<String, Object>>) callStep.get("subSteps");
 
 				for (Map<String, Object> subStep : subSteps) {
-					Map<String, Object> link = new HashMap<String, Object>();
+					Map<String, Object> link = new HashMap<>();
 
 					String source = (String) subStep.get("source_tosca_id");
 					String destination = (String) subStep.get("destination_tosca_id");
@@ -177,12 +133,12 @@ public class ElementLinkService {
 					if ((checkDuplicateMap.get(source) == null || checkDuplicateMap.get(source).isEmpty()
 							|| !checkDuplicateMap.get(source).contains(destination)) && !source.equals(destination)) {
 						if (checkDuplicateMap.get(destination) == null) {
-							List<String> toscaList = new ArrayList<String>();
+							List<String> toscaList = new ArrayList<>();
 							checkDuplicateMap.put(destination, toscaList);
 						}
 
 						if (checkDuplicateMap.get(source) == null) {
-							List<String> toscaList = new ArrayList<String>();
+							List<String> toscaList = new ArrayList<>();
 							checkDuplicateMap.put(source, toscaList);
 						}
 
@@ -195,30 +151,14 @@ public class ElementLinkService {
 						link.put("s", source);
 						link.put("d", destination);
 						links.add(link);
-
-						/*
-						 * may be needed in future but nnot currently
-						 * 
-						 * if((String) subStep.get("link_visibility")!=null){
-						 * if(((String)
-						 * subStep.get("link_visibility")).equals("No")){
-						 * 
-						 * } }else{
-						 * 
-						 * links.add(link); }
-						 */
-
 					}
 
 				}
 
-				Map<String, Object> callFlowUI = new HashMap<String, Object>();
+				Map<String, Object> callFlowUI = new HashMap<>();
 				callFlowUI.put("linkList", links);
 
 				return YamlUtils.returnYaml(callFlowUI);
-
-				// YamlUtils.writeYamlFile(filePath, callFlowStepName,
-				// callFlowUI);
 			}
 
 		}
@@ -232,25 +172,24 @@ public class ElementLinkService {
 
 			if (((String) callStep.get("name")).split(":")[0].trim().replace(" ", "_").equals(callFlowStep)) {
 
-				// String callFlowStepName = callFlowName + "_" +
-				// ((String)callStep.get("name")).split("-")[0].trim().replace("
-				// ", "_")+".yml";
-
-				Map<String, Object> callFlowUI = new HashMap<String, Object>();
+				Map<String, Object> callFlowUI = new HashMap<>();
 				try {
 					List<Map<String, Object>> links = addLinkVertices(callStep);
 					callFlowUI.put("linkList", links);
 				} catch (Exception e) {
+					logger.error(EELFLoggerDelegate.errorLogger, "addLinksAdditional failed", e);
 				}
 				try {
 					List<String> activeIds = addActiveNodes(callStep);
 					callFlowUI.put("activeIds", activeIds);
 				} catch (Exception e) {
+					logger.error(EELFLoggerDelegate.errorLogger, "addLinksAdditional failed", e);
 				}
 				try {
 					List<Map<String, Object>> disconnectLinks = addDisconnectLinks(callStep);
 					callFlowUI.put("disconnectLinks", disconnectLinks);
 				} catch (Exception e) {
+					logger.error(EELFLoggerDelegate.errorLogger, "addLinksAdditional failed", e);
 				}
 
 				return YamlUtils.returnYaml(callFlowUI);
@@ -274,13 +213,13 @@ public class ElementLinkService {
 
 	@SuppressWarnings("unchecked")
 	List<Map<String, Object>> addLinkVertices(Map<String, Object> callStep) {
-		List<Map<String, Object>> links = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> links = new ArrayList<>();
 
 		List<Map<String, Object>> vertices = (List<Map<String, Object>>) callStep.get("vertices");
 
 		for (int i = 0; i < vertices.size() - 1; i++) {
-			Map<String, Object> vertex = (Map<String, Object>) vertices.get(i);
-			Map<String, Object> vertexNext = (Map<String, Object>) vertices.get(i + 1);
+			Map<String, Object> vertex = vertices.get(i);
+			Map<String, Object> vertexNext = vertices.get(i + 1);
 
 			Integer sourceX = (Integer) vertex.get("x");
 			Integer sourceY = (Integer) vertex.get("y");
@@ -297,7 +236,7 @@ public class ElementLinkService {
 			if (destinationX == -999) // there is a break in the linkage
 				continue;
 
-			Map<String, Object> link = new HashMap<String, Object>();
+			Map<String, Object> link = new HashMap<>();
 
 			link.put("s", sourceX + "," + sourceY + "," + sourceD + "," + sourceL);
 			link.put("d", destinationX + "," + destinationY + "," + destinationD);
@@ -305,4 +244,12 @@ public class ElementLinkService {
 		}
 		return links;
 	}
+
+	public static void main(String[] args) throws Exception {
+		String filePath = "\\D2Platform\\war\\WEB-INF\\resources\\trisim_files";
+		String callFlowBusinessYml = "call_flow_hc-origination-termination-to-volteue-3.3.16-Override.yml";
+		ElementLinkService mapper = new ElementLinkService();
+		System.out.print(mapper.createLinkFileAdditional(filePath, callFlowBusinessYml, "Step_2"));
+	}
+
 }

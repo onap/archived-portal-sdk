@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -38,10 +38,18 @@
 package org.onap.portalsdk.rnotebookintegration.exception;
 
 public class RNotebookIntegrationException extends Exception {
+
+	private static final long serialVersionUID = -2930083784603307194L;
+	
 	public static final String ERROR_CODE_TOKEN_EXPIRED = "ERROR_CODE_TOKEN_EXPIRED";
 	public static final String ERROR_CODE_TOKEN_INVALID = "ERROR_CODE_TOKEN_INVALID";
 	
-	String errorCode;
+	private final String errorCode;
+	
+	public RNotebookIntegrationException(Exception ex){
+		super(ex);
+		this.errorCode = null;
+	}
 	
 	public RNotebookIntegrationException(String errorCodeStr){
 		super(errorCodeStr);
@@ -52,8 +60,4 @@ public class RNotebookIntegrationException extends Exception {
 		return errorCode;
 	}
 
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
-	}
-	
 }

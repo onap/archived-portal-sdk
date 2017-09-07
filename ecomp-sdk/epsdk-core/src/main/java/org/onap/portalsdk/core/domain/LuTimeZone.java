@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,44 +37,41 @@
  */
 package org.onap.portalsdk.core.domain;
 
-
-import org.onap.portalsdk.core.domain.support.*;
-
-
 /**
- * <p>LuTimeZone.java</p>
+ * <p>
+ * LuTimeZone.java
+ * </p>
  *
- * <p>Represents a LuTimeZone data object.</p>
+ * <p>
+ * Represents a LuTimeZone data object.
+ * </p>
  *
  * @version 1.0
  */
 public class LuTimeZone extends DomainVo {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	
-    LuTimeZone() {}
+	private String name;
+	private Long timezoneId;
+	private String value;
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getValue() {
-        return value;
-    }
+	public String getValue() {
+		return value;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-
-    public Long getTimezoneId() {
+	public Long getTimezoneId() {
 		return timezoneId;
 	}
 
@@ -82,16 +79,11 @@ public class LuTimeZone extends DomainVo {
 		this.timezoneId = timezoneId;
 	}
 
-	public int compareTo(Object obj){
-      Long c1 = getId();
-      Long c2 = ((LuTimeZone)obj).getId();
-
-      return c1.compareTo(c2);
-    }
-
-
-    private String name;
-    private Long timezoneId;
-    private String value;
+	@Override
+	public int compareTo(Object obj) {
+		Long c1 = getId();
+		Long c2 = ((LuTimeZone) obj).getId();
+		return c1.compareTo(c2);
+	}
 
 }

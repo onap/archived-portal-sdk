@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -39,36 +39,34 @@ package org.onap.portalsdk.core.domain.support;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Set;
 
-public class CollaborateList implements  Serializable {
-	
+public class CollaborateList implements Serializable {
+
 	private static final long serialVersionUID = -4104440747626736243L;
-	private HashSet<String> userNameList = new HashSet<String>();
+	private HashSet<String> userNameList = new HashSet<>();
 	private static CollaborateList userListData = new CollaborateList();
-	private CollaborateList(){}
 
-	public static CollaborateList getInstance(){
+	private CollaborateList() {
+	}
+
+	public static CollaborateList getInstance() {
 		return userListData;
 	}
-	
-	public HashSet<String> getAllUserName(){
+
+	public Set<String> getAllUserName() {
 		return userNameList;
 	}
-	
-	public static void addUserName(String name){
-		final HashSet<String> allUserName = CollaborateList.getInstance().getAllUserName();
-		if(allUserName.contains(name)){
-			//System.out.println("cannot add this user");
-		}else{
+
+	public static void addUserName(String name) {
+		final Set<String> allUserName = CollaborateList.getInstance().getAllUserName();
+		if (!allUserName.contains(name))
 			allUserName.add(name);
-		}
 	}
-	
-	public static void delUserName(String name){
-		final HashSet<String> allUserName = CollaborateList.getInstance().getAllUserName();
+
+	public static void delUserName(String name) {
+		final Set<String> allUserName = CollaborateList.getInstance().getAllUserName();
 		allUserName.remove((String) name);
 	}
-	
-
 
 }

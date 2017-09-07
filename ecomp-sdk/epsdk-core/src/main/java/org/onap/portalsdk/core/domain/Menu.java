@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,114 +37,124 @@
  */
 package org.onap.portalsdk.core.domain;
 
-
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 public class Menu extends DomainVo {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
-    public Menu() {}
 
-    public String getAction() {
-        return action;
-    }
+	private String menuLevel;
+	private String label;
+	private Long parentId;
+	private String action;
+	private String functionCd;
+	private Short sortOrder;
+	private String servlet;
+	private String queryString;
+	private String externalUrl;
+	private String target;
+	private boolean active;
+	private String menuSetCode;
+	private boolean separator;
+	private String imageSrc;
 
-    public boolean isActive() {
-        return active;
-    }
+	public String getAction() {
+		return action;
+	}
 
-    public String getExternalUrl() {
-        return externalUrl;
-    }
+	public boolean isActive() {
+		return active;
+	}
 
-    public String getFunctionCd() {
-        return functionCd;
-    }
+	public String getExternalUrl() {
+		return externalUrl;
+	}
 
-    public String getLabel() {
-        return label;
-    }
+	public String getFunctionCd() {
+		return functionCd;
+	}
 
-    public String getMenuLevel() {
-        return menuLevel;
-    }
+	public String getLabel() {
+		return label;
+	}
 
-    public Long getParentId() {
-        return parentId;
-    }
+	public String getMenuLevel() {
+		return menuLevel;
+	}
 
-    public String getQueryString() {
-        return queryString;
-    }
+	public Long getParentId() {
+		return parentId;
+	}
 
-    public String getServlet() {
-        return servlet;
-    }
+	public String getQueryString() {
+		return queryString;
+	}
 
-    public Short getSortOrder() {
-        return sortOrder;
-    }
+	public String getServlet() {
+		return servlet;
+	}
 
-    public String getTarget() {
-        return target;
-    }
+	public Short getSortOrder() {
+		return sortOrder;
+	}
 
-    public String getMenuSetCode() {
-        return menuSetCode;
-    }
+	public String getTarget() {
+		return target;
+	}
 
-    public void setAction(String action) {
-        this.action = action;
-    }
+	public String getMenuSetCode() {
+		return menuSetCode;
+	}
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+	public void setAction(String action) {
+		this.action = action;
+	}
 
-    public void setExternalUrl(String externalUrl) {
-        this.externalUrl = externalUrl;
-    }
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 
-    public void setFunctionCd(String functionCd) {
-        this.functionCd = functionCd;
-    }
+	public void setExternalUrl(String externalUrl) {
+		this.externalUrl = externalUrl;
+	}
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
+	public void setFunctionCd(String functionCd) {
+		this.functionCd = functionCd;
+	}
 
-    public void setMenuLevel(String menuLevel) {
-        this.menuLevel = menuLevel;
-    }
+	public void setLabel(String label) {
+		this.label = label;
+	}
 
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
+	public void setMenuLevel(String menuLevel) {
+		this.menuLevel = menuLevel;
+	}
 
-    public void setQueryString(String queryString) {
-        this.queryString = queryString;
-    }
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
+	}
 
-    public void setServlet(String servlet) {
-        this.servlet = servlet;
-    }
+	public void setQueryString(String queryString) {
+		this.queryString = queryString;
+	}
 
-    public void setSortOrder(Short sortOrder) {
-        this.sortOrder = sortOrder;
-    }
+	public void setServlet(String servlet) {
+		this.servlet = servlet;
+	}
 
-    public void setTarget(String target) {
-        this.target = target;
-    }
+	public void setSortOrder(Short sortOrder) {
+		this.sortOrder = sortOrder;
+	}
 
-    public void setMenuSetCode(String menuSetCode) {
-        this.menuSetCode = menuSetCode;
-    }
+	public void setTarget(String target) {
+		this.target = target;
+	}
 
-    public boolean isSeparator() {
+	public void setMenuSetCode(String menuSetCode) {
+		this.menuSetCode = menuSetCode;
+	}
+
+	public boolean isSeparator() {
 		return separator;
 	}
 
@@ -159,20 +169,5 @@ public class Menu extends DomainVo {
 	public void setImageSrc(String imageSrc) {
 		this.imageSrc = imageSrc;
 	}
-
-	private String  menuLevel;
-    private String  label;
-    private Long    parentId;
-	private String  action;
-    private String  functionCd;
-    private Short   sortOrder;
-    private String  servlet;
-    private String  queryString;
-    private String  externalUrl;
-    private String  target;
-    private boolean active;
-    private String  menuSetCode;
-    private boolean separator;
-    private String  imageSrc;
 
 }

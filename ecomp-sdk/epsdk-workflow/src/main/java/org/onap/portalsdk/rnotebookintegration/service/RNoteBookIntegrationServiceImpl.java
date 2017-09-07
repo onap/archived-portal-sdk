@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,7 +37,6 @@
  */
 package org.onap.portalsdk.rnotebookintegration.service;
 
-import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,28 +45,27 @@ import java.util.UUID;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
 import org.onap.portalsdk.core.service.DataAccessService;
-import org.onap.portalsdk.core.web.support.UserUtils;
 import org.onap.portalsdk.rnotebookintegration.domain.RNoteBookCredentials;
 import org.onap.portalsdk.rnotebookintegration.exception.RNotebookIntegrationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service("RNoteBookIntegrationService")
 @Transactional
 public class RNoteBookIntegrationServiceImpl implements RNoteBookIntegrationService {
-	
-	private final long tokenTTL = 50000L;
-	
-	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RNoteBookIntegrationServiceImpl.class);
-	
+
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate
+			.getLogger(RNoteBookIntegrationServiceImpl.class);
+
+	private static final long TOKEN_TTL = 50000L;
+
 	@Autowired
-	private DataAccessService  dataAccessService;
-	
+	private DataAccessService dataAccessService;
+
 	public DataAccessService getDataAccessService() {
 		return dataAccessService;
 	}
@@ -75,89 +73,78 @@ public class RNoteBookIntegrationServiceImpl implements RNoteBookIntegrationServ
 	public void setDataAccessService(DataAccessService dataAccessService) {
 		this.dataAccessService = dataAccessService;
 	}
-	
+
 	@Override
-	public String getRNotebookCredentials(String token) throws RNotebookIntegrationException, Exception {
+	public String getRNotebookCredentials(String token) throws RNotebookIntegrationException {
 		String retString = "";
-		
-		try{
-			RNoteBookCredentials notebookCredentials = (RNoteBookCredentials) this.getDataAccessService().getDomainObject(RNoteBookCredentials.class, token, new HashMap<String, String>());
-			if (notebookCredentials.getToken() == null || notebookCredentials.getToken().equals("")){
+
+		try {
+			RNoteBookCredentials notebookCredentials = (RNoteBookCredentials) this.getDataAccessService()
+					.getDomainObject(RNoteBookCredentials.class, token, new HashMap<String, String>());
+			if (notebookCredentials.getToken() == null || "".equals(notebookCredentials.getToken())) {
 				throw new RNotebookIntegrationException(RNotebookIntegrationException.ERROR_CODE_TOKEN_INVALID);
 			}
 			Date currDate = new Date();
-			if ((currDate.getTime() - notebookCredentials.getCreatedDate().getTime() > tokenTTL) || (notebookCredentials.getTokenReadDate() != null)){
+			if ((currDate.getTime() - notebookCredentials.getCreatedDate().getTime() > TOKEN_TTL)
+					|| (notebookCredentials.getTokenReadDate() != null)) {
 				throw new RNotebookIntegrationException(RNotebookIntegrationException.ERROR_CODE_TOKEN_EXPIRED);
 			}
 			ObjectMapper mapper = new ObjectMapper();
-			
-			try{
+
+			try {
 				EcompUser userInfo = mapper.readValue(notebookCredentials.getUserString(), EcompUser.class);
-				notebookCredentials.setUserInfo(userInfo);			
-			} catch(JsonMappingException me){
-				logger.error("error converting string to user. from JSON" + me.getMessage());
-			} catch(JsonParseException pe){
-				logger.error("error converting string to user. from JSON" + pe.getMessage());
+				notebookCredentials.setUserInfo(userInfo);
+			} catch (JsonProcessingException me) {
+				logger.error(EELFLoggerDelegate.errorLogger, "error converting string to user. from JSON", me);
 			}
-			
-			try{
-				Map<String, String> params = mapper.readValue(notebookCredentials.getParametersString(), HashMap.class);
+
+			try {
+				Map<String, String> params = mapper.readValue(notebookCredentials.getParametersString(), Map.class);
 				notebookCredentials.setParameters(params);
-			} catch(JsonMappingException me){
-				logger.error("error converting string to parameters. from JSON" + me.getMessage());
-			} catch(JsonParseException pe){
-				logger.error("error converting string to parameters. from JSON" + pe.getMessage());
+			} catch (JsonProcessingException me) {
+				logger.error(EELFLoggerDelegate.errorLogger, "error converting string to parameters. from JSON", me);
 			}
-			
-			//expiring the token
-			try{
+
+			// expiring the token
+			try {
 				notebookCredentials.setTokenReadDate(new Date());
 				this.getDataAccessService().saveDomainObject(notebookCredentials, null);
-			} catch(Exception e){
-				logger.info("Error while expiring the token");
-				logger.error(e.getMessage());
-				throw new Exception();
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "Error while expiring the token", e);
+				throw new RNotebookIntegrationException(e);
 			}
-			//notebookCredentials.setUserString(null);
 			retString = mapper.writeValueAsString(notebookCredentials);
-		} catch(RNotebookIntegrationException re){
-			logger.error(re.getMessage());
+		} catch (RNotebookIntegrationException re) {
+			logger.error(EELFLoggerDelegate.errorLogger, "getRNotebookCredentials failed", re);
 			throw re;
-		} catch(Exception e){
-			logger.info("Error while parsing the rcloud notebook credentials");
-			logger.error(e.getMessage());
-			throw new Exception();
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "Error while parsing the rcloud notebook credentials", e);
+			throw new RNotebookIntegrationException(e);
 		}
-		
-		return  retString;
+
+		return retString;
 	}
-	
+
 	@Override
-	public String saveRNotebookCredentials(String notebookId, EcompUser user, Map<String, String> params) throws RNotebookIntegrationException, Exception {
-		
+	public String saveRNotebookCredentials(String notebookId, EcompUser user, Map<String, String> params)
+			throws RNotebookIntegrationException {
+
 		String token = "";
-		try{
+		try {
 			token = UUID.randomUUID().toString();
-			
 			ObjectMapper mapper = new ObjectMapper();
-			;
 			RNoteBookCredentials rc = new RNoteBookCredentials();
 			rc.setToken(token);
 			rc.setCreatedDate(new Date());
 			rc.setNotebookID(notebookId);
 			rc.setParametersString(mapper.writeValueAsString(params));
 			rc.setUserString(mapper.writeValueAsString(user));
-			
 			this.getDataAccessService().saveDomainObject(rc, null);
-			
-		} catch(Exception e){
-			logger.info("Error while parsing the rcloud notebook credentials");
-			logger.error(e.getMessage());
-			throw new Exception();
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "Error while parsing the rcloud notebook credentials", e);
+			throw new RNotebookIntegrationException(e);
 		}
-		
-		return  token;
+		return token;
 	}
-
 
 }

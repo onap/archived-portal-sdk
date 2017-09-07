@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -54,128 +54,118 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SuppressWarnings("rawtypes")
 public class MenuBuilder implements FusionObject {
 
-    @Autowired
-	private DataAccessService  dataAccessService;
+	@Autowired
+	private DataAccessService dataAccessService;
 
-    public MenuBuilder() {
-    }
+	@SuppressWarnings("unchecked")
+	public Set getMenu(String menuSetName, DataAccessService dataAccessService) {
 
-    @SuppressWarnings("unchecked")
-    public Set getMenu(String menuSetName, DataAccessService dataAccessService) {
+		Set menu = null;
 
-        Set      menu = null;
-        MenuData root = null;
+		HashMap params = new HashMap();
 
-        HashMap params = new HashMap();
+		params.put("menu_set_cd", menuSetName);
 
-        params.put("menu_set_cd", menuSetName);
+		// execute a query of the latest configuration of the FN_MENU table for the
+		// given menu_set_cd.
+		List menuItems = dataAccessService
+				.executeNamedQuery(SystemProperties.getProperty(SystemProperties.MENU_QUERY_NAME), params, null);
 
-        // execute a query of the latest configuration of the FN_MENU table for the given menu_set_cd.
-        List menuItems = dataAccessService.executeNamedQuery(SystemProperties.getProperty(SystemProperties.MENU_QUERY_NAME), params, null);
+		Iterator i = menuItems.iterator();
+		if (i.hasNext()) {
+			MenuData root = (MenuData) i.next();
+			menu = root.getChildMenus();
+		}
 
-        Iterator i = menuItems.iterator();
-        if (i.hasNext()) {
-            root = (MenuData)i.next();
-            menu = root.getChildMenus();
-        }
-
-        return menu;
-    }
-    
-    @SuppressWarnings("unchecked")
-    public Set getMenu(String menuSetName) {
-
-        Set      menu = null;
-        MenuData root = null;
-
-        HashMap params = new HashMap();
-
-        params.put("menu_set_cd", menuSetName);
-
-        // execute a query of the latest configuration of the FN_MENU table for the given menu_set_cd.
-        List menuItems = getDataAccessService().executeNamedQuery(SystemProperties.getProperty(SystemProperties.MENU_QUERY_NAME), params, null);
-
-        Iterator i = menuItems.iterator();
-        if (i.hasNext()) {
-            root = (MenuData)i.next();
-            menu = root.getChildMenus();
-        }
-
-        return menu;
-    }
-
-    public static Set filterMenu(Set menus, HttpServletRequest request) {
-        Iterator j = menus.iterator();
-
-        while (j.hasNext()) {
-      	  MenuData menuItem = (MenuData)j.next();
-
-      	  if (!UserUtils.isAccessible(request, menuItem.getFunctionCd())) { 
-      	    // remove the menu if the user doesn't have access to it
-      	    j.remove();	
-      	  }
-      	  else { 
-       	    // if an accessible menu has a child menu, let's filter that recursively
-
-      	    Set childMenus = menuItem.getChildMenus();
-      	    if (childMenus != null && childMenus.size() > 0) {
-      		  filterMenu(childMenus, request);            	  
-      	    }
-
-      	  }
-        }
-
-        return menus;
-    }
-
-    
-    public static String getUrlHtml(MenuData menuData) {
-      String html = "";
-
-      if (menuData.getExternalUrl() != null && menuData.getExternalUrl().length() > 0) {
-        html = menuData.getExternalUrl();
-      }
-      else if (menuData.getServlet() != null && menuData.getServlet().length() > 0) {
-        html = "/" + menuData.getServlet();
-      }
-      else if (menuData.getAction() != null && menuData.getAction().length() > 0) {
-        html = "/" + menuData.getAction();
-      }
-
-      return html;
-    }
-
-
-    public static String getTargetHtml(MenuData menuData) {
-      String html = "";
-
-      if (menuData.getTarget() != null && menuData.getTarget().length() > 0) {
-        html = "target=\"" + menuData.getTarget() + "\"";
-      }
-
-      return html;
-    }
-
-
-    public static String getQueryStringHtml(MenuData menuData) {
-      String html = "";
-
-      if (menuData.getQueryString() != null && menuData.getQueryString().length() > 0) {
-        html = "?" + menuData.getQueryString();
-      }
-
-      return html;
-    }
-    
-    public DataAccessService getDataAccessService() {
-		return dataAccessService;
+		return menu;
 	}
 
+	@SuppressWarnings("unchecked")
+	public Set getMenu(String menuSetName) {
+
+		Set menu = null;
+
+		HashMap params = new HashMap();
+
+		params.put("menu_set_cd", menuSetName);
+
+		// execute a query of the latest configuration of the FN_MENU table for the
+		// given menu_set_cd.
+		List menuItems = getDataAccessService()
+				.executeNamedQuery(SystemProperties.getProperty(SystemProperties.MENU_QUERY_NAME), params, null);
+
+		Iterator i = menuItems.iterator();
+		if (i.hasNext()) {
+			MenuData root = (MenuData) i.next();
+			menu = root.getChildMenus();
+		}
+
+		return menu;
+	}
+
+	public static Set filterMenu(Set menus, HttpServletRequest request) {
+		Iterator j = menus.iterator();
+
+		while (j.hasNext()) {
+			MenuData menuItem = (MenuData) j.next();
+
+			if (!UserUtils.isAccessible(request, menuItem.getFunctionCd())) {
+				// remove the menu if the user doesn't have access to it
+				j.remove();
+			} else {
+				// if an accessible menu has a child menu, let's filter that recursively
+
+				Set childMenus = menuItem.getChildMenus();
+				if (childMenus != null && ! childMenus.isEmpty()) {
+					filterMenu(childMenus, request);
+				}
+
+			}
+		}
+
+		return menus;
+	}
+
+	public static String getUrlHtml(MenuData menuData) {
+		String html = "";
+
+		if (menuData.getExternalUrl() != null && menuData.getExternalUrl().length() > 0) {
+			html = menuData.getExternalUrl();
+		} else if (menuData.getServlet() != null && menuData.getServlet().length() > 0) {
+			html = "/" + menuData.getServlet();
+		} else if (menuData.getAction() != null && menuData.getAction().length() > 0) {
+			html = "/" + menuData.getAction();
+		}
+
+		return html;
+	}
+
+	public static String getTargetHtml(MenuData menuData) {
+		String html = "";
+
+		if (menuData.getTarget() != null && menuData.getTarget().length() > 0) {
+			html = "target=\"" + menuData.getTarget() + "\"";
+		}
+
+		return html;
+	}
+
+	public static String getQueryStringHtml(MenuData menuData) {
+		String html = "";
+
+		if (menuData.getQueryString() != null && menuData.getQueryString().length() > 0) {
+			html = "?" + menuData.getQueryString();
+		}
+
+		return html;
+	}
+
+	public DataAccessService getDataAccessService() {
+		return dataAccessService;
+	}
 
 	public void setDataAccessService(DataAccessService dataAccessService) {
 		this.dataAccessService = dataAccessService;
 	}
 
 }
-
-

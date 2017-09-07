@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,6 +37,7 @@
  */
 package org.onap.portalsdk.core.auth;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,65 +72,45 @@ public abstract class LoginStrategy {
 
 	@Autowired
 	private LoginService loginService;
-	
+
 	@Autowired
-	RoleService roleService;
+	private RoleService roleService;
 
 	public abstract ModelAndView doLogin(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 	public abstract String getUserId(HttpServletRequest request) throws PortalAPIException;
 
-	public ModelAndView doExternalLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
+	public ModelAndView doExternalLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
 		invalidateExistingSession(request);
 
-		Map<String, String> model = new HashMap<String, String>();
 		LoginBean commandBean = new LoginBean();
 		String loginId = request.getParameter("loginId");
 		String password = request.getParameter("password");
 		commandBean.setLoginId(loginId);
 		commandBean.setLoginPwd(password);
-		HashMap additionalParamsMap = new HashMap();
-
-		// Get the client device type and pass it into LoginService for audit
-		// logging.
-		/**
-		 * ClientDeviceType clientDevice = (ClientDeviceType)request.getAttribut
-		 * (SystemProperties.getProperty(SystemProperties.CLIENT_DEVICE_ATTRIBUTE_NAME));
-		 * additionalParamsMap.put(Parameters.PARAM_CLIENT_DEVICE,
-		 * clientDevice);
-		 **/
 		commandBean = loginService.findUser(commandBean,
-				(String) request.getAttribute(MenuProperties.MENU_PROPERTIES_FILENAME_KEY), additionalParamsMap);
-		List<RoleFunction> roleFunctionList=  roleService.getRoleFunctions(loginId);
-
-		
+				(String) request.getAttribute(MenuProperties.MENU_PROPERTIES_FILENAME_KEY), new HashMap());
+		List<RoleFunction> roleFunctionList = roleService.getRoleFunctions(loginId);
 
 		if (commandBean.getUser() == null) {
 			String loginErrorMessage = (commandBean.getLoginErrorMessage() != null) ? commandBean.getLoginErrorMessage()
 					: "login.error.external.invalid";
+			Map<String, String> model = new HashMap<>();
 			model.put("error", loginErrorMessage);
-
-			String[] errorCodes = new String[1];
-			errorCodes[0] = loginErrorMessage;
-
 			return new ModelAndView("login_external", "model", model);
-
 		} else {
 			// store the currently logged in user's information in the session
 			UserUtils.setUserSession(request, commandBean.getUser(), commandBean.getMenu(),
 					commandBean.getBusinessDirectMenu(),
 					SystemProperties.getProperty(SystemProperties.LOGIN_METHOD_BACKDOOR), roleFunctionList);
 			initateSessionMgtHandler(request);
-
 			// user has been authenticated, now take them to the welcome page
-			// return new ModelAndView("redirect:/profile_search");
 			return new ModelAndView("redirect:welcome.htm");
-
 		}
 	}
-	
-	protected void invalidateExistingSession(HttpServletRequest request){
+
+	protected void invalidateExistingSession(HttpServletRequest request) {
 		request.getSession().invalidate();
 	}
 

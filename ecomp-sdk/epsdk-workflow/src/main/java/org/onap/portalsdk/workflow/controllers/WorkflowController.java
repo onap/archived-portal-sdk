@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -47,7 +47,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONObject;
 import org.onap.portalsdk.core.controller.RestrictedBaseController;
 import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -73,19 +72,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Controller
 @RequestMapping("/")
 public class WorkflowController extends RestrictedBaseController {
- 
+
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WorkflowController.class);
 
 	@Autowired
 	private WorkflowService workflowService;
-	// @Autowired
-	// private CronJobService cronJobService;
 
 	@RequestMapping(value = { "workflows/saveCronJob" }, method = RequestMethod.POST)
 	public void saveCronJob(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		try {
-			// System.out.println("inside save cron job...");
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			JsonNode root = mapper.readTree(request.getReader());
@@ -93,38 +89,33 @@ public class WorkflowController extends RestrictedBaseController {
 			WorkflowSchedule domainCronJobData = new WorkflowSchedule();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-			domainCronJobData.setCronDetails(root.get("cronJobDataObj").get("startDateTime_CRON").textValue());
-			domainCronJobData.setWorkflowKey(root.get("cronJobDataObj").get("workflowKey").textValue());
-			domainCronJobData.setArguments(root.get("cronJobDataObj").get("workflow_arguments").textValue());
-			domainCronJobData.setServerUrl(root.get("cronJobDataObj").get("workflow_server_url").textValue());
-			domainCronJobData
-					.setStartDateTime(dateFormat.parse(root.get("cronJobDataObj").get("startDateTime").textValue()));
-			domainCronJobData
-					.setEndDateTime(dateFormat.parse(root.get("cronJobDataObj").get("endDateTime").textValue()));
-			domainCronJobData.setRecurrence(root.get("cronJobDataObj").get("recurrence").textValue());
-
+			final JsonNode cronJobDataObj = root.get("cronJobDataObj");
+			domainCronJobData.setCronDetails(cronJobDataObj.get("startDateTime_CRON").textValue());
+			domainCronJobData.setWorkflowKey(cronJobDataObj.get("workflowKey").textValue());
+			domainCronJobData.setArguments(cronJobDataObj.get("workflow_arguments").textValue());
+			domainCronJobData.setServerUrl(cronJobDataObj.get("workflow_server_url").textValue());
+			domainCronJobData.setStartDateTime(dateFormat.parse(cronJobDataObj.get("startDateTime").textValue()));
+			domainCronJobData.setEndDateTime(dateFormat.parse(cronJobDataObj.get("endDateTime").textValue()));
+			domainCronJobData.setRecurrence(cronJobDataObj.get("recurrence").textValue());
 			workflowService.saveCronJob(domainCronJobData);
-
-			// response.getWriter().write("hello".toString());
-
 		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "saveCronJob failed", e);
 			response.setCharacterEncoding("UTF-8");
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
 			out.write(e.getMessage());
-
 		}
 
 	}
 
 	@RequestMapping(value = { "workflows/list" }, method = RequestMethod.GET, produces = "application/json")
-	public @ResponseBody String getWorkflowList() {
+	@ResponseBody
+	public String getWorkflowList() {
 		ObjectMapper mapper = new ObjectMapper();
 		List<Workflow> workflows = workflowService.getAllWorkflows();
-		List<WorkflowLite> workflowLites = new ArrayList<WorkflowLite>();
+		List<WorkflowLite> workflowLites = new ArrayList<>();
 
 		try {
-
 			for (Workflow workflow : workflows) {
 				WorkflowLite wfl = new WorkflowLite();
 				wfl.setId(workflow.getId());
@@ -146,59 +137,43 @@ public class WorkflowController extends RestrictedBaseController {
 
 			return mapper.writeValueAsString(workflowLites);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(EELFLoggerDelegate.errorLogger, "getWorkflowList failed", e);
 		}
 		return "";
 	}
 
 	@RequestMapping(value = "workflows/addWorkflow", method = RequestMethod.POST, consumes = "application/json")
-	public @ResponseBody Workflow addWorkflow(@RequestBody Workflow workflow, HttpServletRequest request,
-			HttpServletResponse response) {
+	@ResponseBody
+	public Workflow addWorkflow(@RequestBody Workflow workflow, HttpServletRequest request) {
 		String loginId = ((User) (request.getSession().getAttribute("user"))).getLoginId();
 		return workflowService.addWorkflow(workflow, loginId);
 	}
 
 	@RequestMapping(value = "workflows/editWorkflow", method = RequestMethod.POST, consumes = "application/json")
-	public @ResponseBody Workflow editWorkflow(@RequestBody WorkflowLite workflow, HttpServletRequest request,
-			HttpServletResponse response) {
+	@ResponseBody
+	public Workflow editWorkflow(@RequestBody WorkflowLite workflow, HttpServletRequest request) {
 		String loginId = ((User) (request.getSession().getAttribute("user"))).getLoginId();
 		return workflowService.editWorkflow(workflow, loginId);
 	}
 
-	// @RequestMapping(value = "workflows/removeWorkflow", method =
-	// RequestMethod.DELETE)
 	@RequestMapping(value = { "workflows/removeWorkflow" }, method = RequestMethod.POST, consumes = "application/json")
-	public @ResponseBody void removeWorkflow(@RequestBody Long workflowId, HttpServletRequest request,
-			HttpServletResponse response) {
-
-		// System.out.println("Removing ... " + workflowId);
-
+	@ResponseBody
+	public String removeWorkflow(@RequestBody Long workflowId, HttpServletRequest request, HttpServletResponse response) {
 		workflowService.deleteWorkflow(workflowId);
-
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("application / json");
-		PrintWriter out = null;
-		try {
-			request.setCharacterEncoding("UTF-8");
-			out = response.getWriter();
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "removeWorkflow failed", e);
-		}
-
-		JSONObject j = new JSONObject("{removed: 123}");
-		out.write(j.toString());
-
+		return "{removed: 123}";
 	}
 
 	@RequestMapping(value = "workflows/removeAllWorkflows", method = RequestMethod.DELETE)
-	public @ResponseBody void removeAllWorkflows() {
-		// workflowService.deleteAll();
+	@ResponseBody
+	public void removeAllWorkflows() {
+		throw new UnsupportedOperationException();
 	}
 
 	@RequestMapping(value = { "/workflows" }, method = RequestMethod.GET)
 	public ModelAndView getWorkflowPartialPage() {
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		return new ModelAndView(getViewName(), "workflows", model);
 	}
 }

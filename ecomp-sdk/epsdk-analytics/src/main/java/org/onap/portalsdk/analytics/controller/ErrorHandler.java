@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -40,15 +40,19 @@ package org.onap.portalsdk.analytics.controller;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.*;
-import javax.servlet.http.*;
+import java.util.ArrayList;
 
-import org.onap.portalsdk.analytics.error.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.onap.portalsdk.analytics.error.RaptorException;
+import org.onap.portalsdk.analytics.error.ReportSQLException;
 import org.onap.portalsdk.analytics.model.definition.ReportDefinition;
 import org.onap.portalsdk.analytics.model.runtime.ErrorJSONRuntime;
 import org.onap.portalsdk.analytics.model.runtime.ReportRuntime;
-import org.onap.portalsdk.analytics.system.*;
-import org.onap.portalsdk.analytics.util.*;
+import org.onap.portalsdk.analytics.system.AppUtils;
+import org.onap.portalsdk.analytics.system.Globals;
+import org.onap.portalsdk.analytics.util.AppConstants;
 import org.onap.portalsdk.core.logging.format.AlarmSeverityEnum;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 

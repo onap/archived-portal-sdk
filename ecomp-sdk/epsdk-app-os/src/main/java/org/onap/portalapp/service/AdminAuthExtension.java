@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -39,7 +39,6 @@ package org.onap.portalapp.service;
 
 import java.util.Set;
 
-import org.onap.portalapp.service.IAdminAuthExtension;
 import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
@@ -56,16 +55,19 @@ public class AdminAuthExtension implements IAdminAuthExtension {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(AdminAuthExtension.class);
 
+	@Override
 	public void saveUserExtension(User user) {
-		logger.debug("saveUserExtension");
+		logger.debug(EELFLoggerDelegate.debugLogger, "saveUserExtension");
 	}
 
+	@Override
 	public void editUserExtension(User user) {
-		logger.debug("editUserExtension");
+		logger.debug(EELFLoggerDelegate.debugLogger, "editUserExtension");
 	}
 
+	@Override
 	public void saveUserRoleExtension(Set<Role> roles, User user) {
-		logger.debug("saveUserRoleExtension");
+		logger.debug(EELFLoggerDelegate.debugLogger, "saveUserRoleExtension");
 	}
 
 }

@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -40,6 +40,7 @@ package org.onap.portalsdk.core.web.support;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.crossapi.PortalAPIResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,26 +48,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonMessage {
 
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(JsonMessage.class);
+
 	private String data;
 	private String data2;
 	private String data3;
+
 	public JsonMessage(String data) {
 		super();
 		this.data = data;
 	}
-	public JsonMessage(String data,String data2) {
+
+	public JsonMessage(String data, String data2) {
 		super();
 		this.data = data;
 		this.data2 = data2;
 	}
 
-	public JsonMessage(String data,String data2,String data3) {
+	public JsonMessage(String data, String data2, String data3) {
 		super();
 		this.data = data;
 		this.data2 = data2;
 		this.data3 = data3;
 	}
-	
+
 	public String getData() {
 		return data;
 	}
@@ -74,20 +79,23 @@ public class JsonMessage {
 	public void setData(String data) {
 		this.data = data;
 	}
+
 	public String getData2() {
 		return data2;
 	}
+
 	public void setData2(String data2) {
 		this.data2 = data2;
 	}
+
 	public String getData3() {
 		return data3;
 	}
+
 	public void setData3(String data3) {
 		this.data3 = data3;
 	}
-	
-	
+
 	/**
 	 * Builds JSON object with status + message response body.
 	 * 
@@ -107,15 +115,16 @@ public class JsonMessage {
 		try {
 			json = new ObjectMapper().writeValueAsString(response);
 		} catch (JsonProcessingException ex) {
-			// Truly should never, ever happen
+			// Truly should never happen
+			logger.error(EELFLoggerDelegate.errorLogger, "buildJsonResponse failed", ex);
 			json = "{ \"status\": \"error\",\"message\":\"" + ex.toString() + "\" }";
 		}
 		return json;
 	}
 
 	/**
-	 * Builds JSON object with status of error and message containing stack
-	 * trace for the specified throwable.
+	 * Builds JSON object with status of error and message containing stack trace
+	 * for the specified throwable.
 	 * 
 	 * @param t
 	 *            Throwable with stack trace to use as message
@@ -131,6 +140,5 @@ public class JsonMessage {
 		t.printStackTrace(pw);
 		return buildJsonResponse(false, sw.toString());
 	}
-	
-	
+
 }

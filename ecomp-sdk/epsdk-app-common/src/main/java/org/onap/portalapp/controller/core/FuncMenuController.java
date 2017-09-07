@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -74,26 +74,29 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/")
 @org.springframework.context.annotation.Configuration
 @EnableAspectJAutoProxy
-public class FuncMenuController extends RestrictedBaseController{
-	
+public class FuncMenuController extends RestrictedBaseController {
+
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FuncMenuController.class);
 
 	@Autowired
 	private AppService appService;
 
 	@AuditLog
-	@RequestMapping(value = {"/get_functional_menu" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/get_functional_menu" }, method = RequestMethod.GET)
 	public void functionalMenu(HttpServletRequest request, HttpServletResponse response) {
-		
-    	User user = UserUtils.getUserSession(request);
-    	//JSONArray validMenu = new JSONArray("[{\"menuId\":140,\"column\":1,\"text\":\"RT SDK Menu\",\"parentMenuId\":139,\"url\":\"http://www.cnn.com\"},{\"menuId\":139,\"column\":1,\"text\":\"RT Menu\",\"parentMenuId\":11,\"url\":\"\"},{\"menuId\":11,\"column\":1,\"text\":\"Product Design\",\"parentMenuId\":1,\"url\":\"\"},{\"menuId\":1,\"column\":1,\"text\":\"Design\",\"url\":\"\"}]");
- 
+
+		User user = UserUtils.getUserSession(request);
+
 		try {
-			if ( user != null ) {
-				String useRestForFunctionalMenu = PortalApiProperties.getProperty(PortalApiConstants.USE_REST_FOR_FUNCTIONAL_MENU);
-				String funcMenuJsonString = "";
-				if (useRestForFunctionalMenu==null || useRestForFunctionalMenu=="" || useRestForFunctionalMenu.equalsIgnoreCase("false")) {
-					logger.info(EELFLoggerDelegate.errorLogger, "Making use of UEB communication and Requesting functional menu for user " + user.getOrgUserId());
+			if (user != null) {
+				String useRestForFunctionalMenu = PortalApiProperties
+						.getProperty(PortalApiConstants.USE_REST_FOR_FUNCTIONAL_MENU);
+				String funcMenuJsonString;
+				if (useRestForFunctionalMenu == null || "".equals(useRestForFunctionalMenu)
+						|| "false".equalsIgnoreCase(useRestForFunctionalMenu)) {
+					logger.debug(EELFLoggerDelegate.debugLogger,
+							"Making use of UEB communication and Requesting functional menu for user "
+									+ user.getOrgUserId());
 					funcMenuJsonString = getFunctionalMenu(user.getOrgUserId());
 				} else {
 					funcMenuJsonString = getFunctionalMenuViaREST(user.getOrgUserId());
@@ -101,93 +104,95 @@ public class FuncMenuController extends RestrictedBaseController{
 				response.setContentType("application/json");
 				response.getWriter().write(funcMenuJsonString);
 			} else {
-				logger.info(EELFLoggerDelegate.errorLogger, "Http request did not contain user info, cannot retrieve functional menu");
-			    response.setContentType("application/json");
-			    JSONArray jsonResponse = new JSONArray();
-			    JSONObject error = new JSONObject();
-			    error.put("error","Http request did not contain user info, cannot retrieve functional menu");
+				logger.error(EELFLoggerDelegate.errorLogger,
+						"Http request did not contain user info, cannot retrieve functional menu");
+				response.setContentType("application/json");
+				JSONArray jsonResponse = new JSONArray();
+				JSONObject error = new JSONObject();
+				error.put("error", "Http request did not contain user info, cannot retrieve functional menu");
 				jsonResponse.put(error);
 				response.getWriter().write(jsonResponse.toString());
-			}	
-		} catch (Exception e) {	
+			}
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "functionalMenu failed", e);
 			response.setCharacterEncoding("UTF-8");
-		    response.setContentType("application/json");
-		    JSONArray jsonResponse = new JSONArray();
-		    JSONObject error = new JSONObject();
+			response.setContentType("application/json");
+			JSONArray jsonResponse = new JSONArray();
+			JSONObject error = new JSONObject();
 			try {
-				if ( null == e.getMessage() ) {
-					error.put("error","No menu data");
+				if (null == e.getMessage()) {
+					error.put("error", "No menu data");
 				} else {
-					error.put("error",e.getMessage());
+					error.put("error", e.getMessage());
 				}
 				jsonResponse.put(error);
 				response.getWriter().write(jsonResponse.toString());
-				logger.error(EELFLoggerDelegate.errorLogger, "Error getting functional_menu: " + e.getMessage(),AlarmSeverityEnum.MAJOR);
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				logger.error(EELFLoggerDelegate.errorLogger, "Error getting functional_menu", e1);
 			}
 		}
-		
+
 	}
-	
-	//--------------------------------------------------------------------------
+
+	// --------------------------------------------------------------------------
 	// Makes a synchronous call to ECOMP Portal to get the JSON file that
-	// contains the contents of the functional menu.  The JSON file will be
+	// contains the contents of the functional menu. The JSON file will be
 	// in the payload of the returned UEB message.
-	//--------------------------------------------------------------------------
-	private String getFunctionalMenu(String userId) throws UebException
-	{
+	// --------------------------------------------------------------------------
+	private String getFunctionalMenu(String userId) throws UebException {
 		String returnString = null;
-		UebMsg funcMenuUebMsg = null;
 		UebMsg msg = new UebMsg();
 		msg.putMsgType(UebMsgTypes.UEB_MSG_TYPE_GET_FUNC_MENU);
 		msg.putUserId(userId);
-		funcMenuUebMsg = UebManager.getInstance().requestReply(msg); 
+		UebMsg funcMenuUebMsg = UebManager.getInstance().requestReply(msg);
 		if (funcMenuUebMsg != null) {
 			if (funcMenuUebMsg.getPayload().startsWith("Error:")) {
-				logger.error(EELFLoggerDelegate.errorLogger, "getFunctionalMenu received an error in UEB msg = " + funcMenuUebMsg.getPayload());
+				logger.error(EELFLoggerDelegate.errorLogger,
+						"getFunctionalMenu received an error in UEB msg = " + funcMenuUebMsg.getPayload());
 			} else {
 				returnString = funcMenuUebMsg.getPayload();
 			}
 		}
-		
+
 		logger.debug(EELFLoggerDelegate.debugLogger, "FunctionalMenu response: " + returnString);
-		
-		return returnString; 
+		return returnString;
 	}
-	
+
 	private String getFunctionalMenuViaREST(String userId) {
-		String appName			= "";
-		String requestId 		= "";
-		String appUserName 		= "";
-		String decryptedPwd 	= "";
-		
-		logger.info(EELFLoggerDelegate.debugLogger, "Making use of REST API communication and Requesting functional menu for user " + userId);
-		
+		String appName;
+		String requestId;
+		String appUserName = "";
+		String decryptedPwd = null;
+
+		logger.debug(EELFLoggerDelegate.debugLogger,
+				"Making use of REST API communication and Requesting functional menu for user " + userId);
+
 		App app = appService.getDefaultApp();
-		if (app!=null) {
-			appName	= app.getName();
+		if (app != null) {
+			appName = app.getName();
 			appUserName = app.getUsername();
-			try{
-				decryptedPwd = CipherUtil.decrypt(app.getAppPassword(), SystemProperties.getProperty(SystemProperties.Decryption_Key));
-			} catch(Exception e) {
-				logger.error(EELFLoggerDelegate.errorLogger, "Exception occurred in WebServiceCallServiceImpl.get while decrypting the password. Details: " + e.toString());
+			try {
+				decryptedPwd = CipherUtil.decrypt(app.getAppPassword(),
+						SystemProperties.getProperty(SystemProperties.Decryption_Key));
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger,
+						"getFunctionalMenuViaREST failed while decrypting the password", e);
 			}
 		} else {
-			logger.warn(EELFLoggerDelegate.errorLogger, "Unable to locate the app information from the database.");
-			appName	= SystemProperties.SDK_NAME;
+			logger.error(EELFLoggerDelegate.errorLogger, "Unable to locate the app information from the database.");
+			appName = SystemProperties.SDK_NAME;
 		}
 		requestId = MDC.get(MDC_KEY_REQUEST_ID);
-		
+
 		String fnMenu = null;
 		try {
 			fnMenu = FunctionalMenuClient.getFunctionalMenu(userId, appName, requestId, appUserName, decryptedPwd);
-		}catch(Exception ex) {
+		} catch (Exception ex) {
+			logger.error(EELFLoggerDelegate.errorLogger, "getFunctionalMenuViaREST failed", ex);
 			fnMenu = "Failed to get functional menu: " + ex.toString();
 		}
-		
+
 		logger.debug(EELFLoggerDelegate.debugLogger, "FunctionalMenu response: {}", fnMenu);
-		
 		return fnMenu;
 	}
 }

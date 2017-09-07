@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -82,17 +82,19 @@ public class RoleController extends RestrictedBaseController {
 	private String viewName;
 
 	@RequestMapping(value = { "/role" }, method = RequestMethod.GET)
-	public ModelAndView role(HttpServletRequest request) throws Exception {
-		Map<String, Object> model = new HashMap<String, Object>();
+	public ModelAndView role(HttpServletRequest request) throws IOException {
+		Map<String, Object> model = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
 
-
-		Role role = roleService.getRole(user.getOrgUserId(),new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
+		Role role = roleService.getRole(user.getOrgUserId(),
+				new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
 		logger.info("role_id" + role.getId());
 		try {
-			model.put("availableRoleFunctions", mapper.writeValueAsString(roleService.getRoleFunctions(user.getOrgUserId())));
-			model.put("availableRoles", mapper.writeValueAsString(roleService.getAvailableChildRoles(user.getOrgUserId(),role.getId())));
+			model.put("availableRoleFunctions",
+					mapper.writeValueAsString(roleService.getRoleFunctions(user.getOrgUserId())));
+			model.put("availableRoles",
+					mapper.writeValueAsString(roleService.getAvailableChildRoles(user.getOrgUserId(), role.getId())));
 			model.put("role", mapper.writeValueAsString(role));
 		} catch (Exception e) {
 			logger.error("role: failed", e);
@@ -102,16 +104,19 @@ public class RoleController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/get_role" }, method = RequestMethod.GET)
-	public void getRole(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		Map<String, Object> model = new HashMap<String, Object>();
+	public void getRole(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Map<String, Object> model = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 		User user = UserUtils.getUserSession(request);
 
-		Role role = roleService.getRole(user.getOrgUserId(),new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
+		Role role = roleService.getRole(user.getOrgUserId(),
+				new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
 		logger.info(EELFLoggerDelegate.applicationLogger, "role_id" + role.getId());
 		try {
-			model.put("availableRoleFunctions", mapper.writeValueAsString(roleService.getRoleFunctions(user.getOrgUserId())));
-			model.put("availableRoles", mapper.writeValueAsString(roleService.getAvailableChildRoles(user.getOrgUserId(),role.getId())));
+			model.put("availableRoleFunctions",
+					mapper.writeValueAsString(roleService.getRoleFunctions(user.getOrgUserId())));
+			model.put("availableRoles",
+					mapper.writeValueAsString(roleService.getAvailableChildRoles(user.getOrgUserId(), role.getId())));
 			model.put("role", mapper.writeValueAsString(role));
 
 			JsonMessage msg = new JsonMessage(mapper.writeValueAsString(model));
@@ -149,11 +154,10 @@ public class RoleController extends RestrictedBaseController {
 			List<RoleFunction> roleFunctions = mapper.readValue(root.get("roleFunctions").toString(),
 					TypeFactory.defaultInstance().constructCollectionType(List.class, RoleFunction.class));
 
-			Role domainRole = null;
+			Role domainRole;
 			if (role.getId() != null) {
 				doAuditLog("saveRole: updating existing role {}", role.getId());
-				domainRole = roleService.getRole(user.getOrgUserId(),role.getId());
-
+				domainRole = roleService.getRole(user.getOrgUserId(), role.getId());
 				domainRole.setName(role.getName());
 				domainRole.setPriority(role.getPriority());
 			} else {
@@ -167,23 +171,19 @@ public class RoleController extends RestrictedBaseController {
 				domainRole = new Role();
 				domainRole.setName(role.getName());
 				domainRole.setPriority(role.getPriority());
-				if(role.getChildRoles() != null && role.getChildRoles().size() > 0 ){
-//				if (role.getChildRoles().size() > 0 ) {
+				if (role.getChildRoles() != null && role.getChildRoles().size() > 0) {
 					for (Object childRole : childRoles) {
 						domainRole.addChildRole((Role) childRole);
 					}
-//				}
 				}
-				if(role.getRoleFunctions() != null && role.getRoleFunctions().size() > 0){
-//				if (role.getRoleFunctions().size() > 0) {
+				if (role.getRoleFunctions() != null && role.getRoleFunctions().size() > 0) {
 					for (Object roleFunction : roleFunctions) {
 						domainRole.addRoleFunction((RoleFunction) roleFunction);
 					}
-//				}
 				}
 			}
 
-			roleService.saveRole(user.getOrgUserId(),domainRole);
+			roleService.saveRole(user.getOrgUserId(), domainRole);
 
 			String responseString = mapper.writeValueAsString(domainRole);
 			j = new JSONObject("{role: " + responseString + "}");
@@ -201,7 +201,7 @@ public class RoleController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/role/removeRoleFunction" }, method = RequestMethod.POST)
-	public ModelAndView removeRoleFunction(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView removeRoleFunction(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		User user = UserUtils.getUserSession(request);
 		logger.info(EELFLoggerDelegate.applicationLogger, "RoleController.removeRoleFunction");
 		try {
@@ -211,13 +211,14 @@ public class RoleController extends RestrictedBaseController {
 			JsonNode root = mapper.readTree(request.getReader());
 			RoleFunction roleFunction = mapper.readValue(root.get("roleFunction").toString(), RoleFunction.class);
 
-			Role domainRole = roleService.getRole(user.getOrgUserId(),new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
+			Role domainRole = roleService.getRole(user.getOrgUserId(),
+					new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
 			doAuditLog("Remove role function {} from role {}", roleFunction.getCode(),
 					ServletRequestUtils.getIntParameter(request, "role_id", 0));
 
 			domainRole.removeRoleFunction(roleFunction.getCode());
 
-			roleService.saveRole(user.getOrgUserId(),domainRole);
+			roleService.saveRole(user.getOrgUserId(), domainRole);
 
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application/json");
@@ -237,7 +238,7 @@ public class RoleController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/role/addRoleFunction" }, method = RequestMethod.POST)
-	public ModelAndView addRoleFunction(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView addRoleFunction(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		User user = UserUtils.getUserSession(request);
 		logger.info(EELFLoggerDelegate.applicationLogger, "RoleController.removeRoleFunction");
 		try {
@@ -247,11 +248,12 @@ public class RoleController extends RestrictedBaseController {
 			JsonNode root = mapper.readTree(request.getReader());
 			RoleFunction roleFunction = mapper.readValue(root.get("roleFunction").toString(), RoleFunction.class);
 
-			Role domainRole = roleService.getRole(user.getOrgUserId(),new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
+			Role domainRole = roleService.getRole(user.getOrgUserId(),
+					new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
 
 			domainRole.addRoleFunction(roleFunction);
 
-			roleService.saveRole(user.getOrgUserId(),domainRole);
+			roleService.saveRole(user.getOrgUserId(), domainRole);
 			doAuditLog("Add role function {} to role {}", roleFunction.getCode(),
 					ServletRequestUtils.getIntParameter(request, "role_id", 0));
 
@@ -273,7 +275,7 @@ public class RoleController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/role/removeChildRole" }, method = RequestMethod.POST)
-	public ModelAndView removeChildRole(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView removeChildRole(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		User user = UserUtils.getUserSession(request);
 		logger.info(EELFLoggerDelegate.applicationLogger, "RoleController.removeChileRole");
 		try {
@@ -282,13 +284,14 @@ public class RoleController extends RestrictedBaseController {
 			JsonNode root = mapper.readTree(request.getReader());
 			Role childRole = mapper.readValue(root.get("childRole").toString(), Role.class);
 
-			Role domainRole = roleService.getRole(user.getOrgUserId(),new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
+			Role domainRole = roleService.getRole(user.getOrgUserId(),
+					new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0)));
 
 			domainRole.removeChildRole(childRole.getId());
 			doAuditLog("remove child role {} from role {}", childRole.getId(),
 					ServletRequestUtils.getIntParameter(request, "role_id", 0));
 
-			roleService.saveRole(user.getOrgUserId(),domainRole);
+			roleService.saveRole(user.getOrgUserId(), domainRole);
 
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application/json");
@@ -308,7 +311,7 @@ public class RoleController extends RestrictedBaseController {
 	}
 
 	@RequestMapping(value = { "/role/addChildRole" }, method = RequestMethod.POST)
-	public ModelAndView addChildRole(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView addChildRole(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		User user = UserUtils.getUserSession(request);
 		logger.info(EELFLoggerDelegate.applicationLogger, "RoleController.addChileRole");
 		try {
@@ -317,13 +320,13 @@ public class RoleController extends RestrictedBaseController {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			JsonNode root = mapper.readTree(request.getReader());
 			Role childRole = mapper.readValue(root.get("childRole").toString(), Role.class);
-			long role_id = new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0));
+			Long role_id = new Long(ServletRequestUtils.getIntParameter(request, "role_id", 0));
 
-			Role domainRole = roleService.getRole(user.getOrgUserId(),role_id );
+			Role domainRole = roleService.getRole(user.getOrgUserId(), role_id);
 
 			domainRole.addChildRole(childRole);
 
-			roleService.saveRole(user.getOrgUserId(),domainRole);
+			roleService.saveRole(user.getOrgUserId(), domainRole);
 			doAuditLog("Add child role {} to role {}", childRole.getId(),
 					ServletRequestUtils.getIntParameter(request, "role_id", 0));
 
@@ -345,8 +348,8 @@ public class RoleController extends RestrictedBaseController {
 	}
 
 	/**
-	 * Sets context with begin and end timestamps at current date & time, writes
-	 * the specified message and parameters to the audit log, then removes the
+	 * Sets context with begin and end timestamps at current date & time, writes the
+	 * specified message and parameters to the audit log, then removes the
 	 * timestamps from context.
 	 * 
 	 * @param message
@@ -362,11 +365,14 @@ public class RoleController extends RestrictedBaseController {
 		MDC.remove(SystemProperties.AUDITLOG_END_TIMESTAMP);
 	}
 
+	@Override
 	public String getViewName() {
 		return viewName;
 	}
 
+	@Override
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
 	}
+	
 }

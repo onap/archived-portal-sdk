@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,42 +37,42 @@
  */
 package org.onap.portalsdk.core.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.onap.portalsdk.core.domain.Profile;
 import org.onap.portalsdk.core.domain.User;
 
-
 public interface ProfileService {
-	
+
 	/**
 	 * 
 	 * @return returns list of profiles
-	 * @throws Exception
+	 * @throws IOException
 	 */
-	List<Profile> findAll() throws Exception;
-	
+	List<Profile> findAll() throws IOException;
+
 	/**
 	 * 
 	 * @param id
 	 * @return returns profile of requested ID
-	 * @throws Exception
+	 * @throws IOException
 	 */
-	Profile getProfile(int id) throws Exception;
-	
-	
+	Profile getProfile(int id) throws IOException;
+
 	/**
 	 * 
-	 * @param id loginId
+	 * @param id
+	 *            loginId
 	 * @return returns User info of requested ID
-	 * @throws Exception
+	 * @throws IOException
 	 */
-	User getUser(String id) throws Exception;
-	
+	User getUser(String id) throws IOException;
+
 	/**
 	 * 
 	 * @param user
-	 *saveUser method saves the user object
+	 *            saveUser method saves the user object
 	 */
 	void saveUser(User user);
 }

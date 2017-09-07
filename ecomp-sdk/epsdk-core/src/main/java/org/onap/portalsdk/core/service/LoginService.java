@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -37,36 +37,34 @@
  */
 package org.onap.portalsdk.core.service;
 
+import java.io.IOException;
+import java.util.Map;
 
-import java.util.*;
-
-import org.onap.portalsdk.core.command.*;
-
+import org.onap.portalsdk.core.command.LoginBean;
 
 public interface LoginService {
 
 	/**
-	 * 
+	 * validate user exists in the system
 	 * @param bean
 	 * @param menuPropertiesFilename
 	 * @param additionalParams
 	 * @return returns login user bean
-	 * @throws Exception
+	 * @throws IOException
 	 */
-    // validate user exists in the system
 	@SuppressWarnings("rawtypes")
-    LoginBean findUser(LoginBean bean, String menuPropertiesFilename, HashMap additionalParams) throws Exception;
-    
-	
+	LoginBean findUser(LoginBean bean, String menuPropertiesFilename, Map additionalParams) throws IOException;
+
 	/**
 	 * 
 	 * @param bean
 	 * @param menuPropertiesFilename
 	 * @param additionalParams
 	 * @param matchPassword
-	 * @return returns login user bean 
-	 * @throws Exception
+	 * @return returns login user bean
+	 * @throws IOException
 	 */
 	@SuppressWarnings("rawtypes")
-    LoginBean findUser(LoginBean bean, String menuPropertiesFilename, HashMap additionalParams, boolean matchPassword) throws Exception;
+	LoginBean findUser(LoginBean bean, String menuPropertiesFilename, Map additionalParams, boolean matchPassword)
+			throws IOException;
 }

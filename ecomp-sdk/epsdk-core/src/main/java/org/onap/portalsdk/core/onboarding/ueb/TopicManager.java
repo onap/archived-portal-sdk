@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -39,7 +39,7 @@ package org.onap.portalsdk.core.onboarding.ueb;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,7 +55,7 @@ import com.att.nsa.cambria.client.CambriaTopicManager;
  * Provides methods to facilitate creating topics, and adding publishers and
  * subscribers to existing topics.
  * 
- * Utilizes UEB/Cambria subscriber/publisher messaging service. 
+ * Utilizes UEB/Cambria subscriber/publisher messaging service.
  */
 public class TopicManager {
 
@@ -78,25 +78,24 @@ public class TopicManager {
 	 */
 	public void createTopic(String key, String secret, String topicName, String topicDescription)
 			throws HttpException, CambriaApiException, IOException {
-		final LinkedList<String> urlList = Helper.uebUrlList();
+		final List<String> urlList = Helper.uebUrlList();
 		if (logger.isInfoEnabled()) {
 			logger.info("==> createTopic");
 			logger.info("topicName: " + topicName);
 			logger.info("topicDescription: " + topicDescription);
 		}
-		CambriaTopicManager tm =null;
+		CambriaTopicManager tm = null;
 		try {
 			tm = CambriaClientFactory.createTopicManager(null, urlList, key, secret);
 		} catch (GeneralSecurityException e) {
-			logger.error("pub.build Exception ", e);			
+			logger.error("pub.build Exception ", e);
 			throw new CambriaApiException(topicName);
 		}
 		tm.createTopic(topicName, topicDescription, 1, 1);
 	}
 
 	/**
-	 * Modifies the specified topic to accept a subscriber using the specified
-	 * key.
+	 * Modifies the specified topic to accept a subscriber using the specified key.
 	 * 
 	 * @param topicOwnerKey
 	 * @param topicOwnerSecret
@@ -109,10 +108,11 @@ public class TopicManager {
 	public void addSubscriber(String topicOwnerKey, String topicOwnerSecret, String subscriberKey, String topicName)
 			throws HttpException, CambriaApiException, IOException {
 		logger.info("==> addSubscriber to topic " + topicName);
-		final LinkedList<String> urlList = Helper.uebUrlList();
+		final List<String> urlList = Helper.uebUrlList();
 		CambriaTopicManager tm = null;
 		try {
-			tm = new CambriaClientBuilders.TopicManagerBuilder().usingHosts(urlList).authenticatedBy(topicOwnerKey, topicOwnerSecret).build();
+			tm = new CambriaClientBuilders.TopicManagerBuilder().usingHosts(urlList)
+					.authenticatedBy(topicOwnerKey, topicOwnerSecret).build();
 			tm.allowConsumer(topicName, subscriberKey);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -121,8 +121,7 @@ public class TopicManager {
 	}
 
 	/**
-	 * Modifies the specified topic to accept a publisher using the specified
-	 * key.
+	 * Modifies the specified topic to accept a publisher using the specified key.
 	 * 
 	 * @param topicOwnerKey
 	 * @param topicOwnerSecret
@@ -137,13 +136,13 @@ public class TopicManager {
 	public void addPublisher(String topicOwnerKey, String topicOwnerSecret, String publisherKey, String topicName)
 			throws HttpException, CambriaApiException, IOException {
 		logger.info("==> addPublisher to topic " + topicName);
-		final LinkedList<String> urlList = Helper.uebUrlList();
-		CambriaTopicManager tm =null;
+		final List<String> urlList = Helper.uebUrlList();
+		CambriaTopicManager tm = null;
 		try {
 			tm = CambriaClientFactory.createTopicManager(HttpClient.ConnectionType.HTTPS, urlList, topicOwnerKey,
 					topicOwnerSecret);
 		} catch (GeneralSecurityException e) {
-			logger.error("pub.build Exception ", e);			
+			logger.error("pub.build Exception ", e);
 			throw new CambriaApiException(topicName);
 		}
 		tm.allowProducer(topicName, publisherKey);

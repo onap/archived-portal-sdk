@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -43,18 +43,15 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-public class WorkFlowScheduleJob extends QuartzJobBean{
-	
+public class WorkFlowScheduleJob extends QuartzJobBean {
+
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(WorkFlowScheduleJob.class);
 
 	@Override
-	protected void executeInternal(JobExecutionContext context)
-			throws JobExecutionException {
-		
-		String serverUrl = (String)context.getMergedJobDataMap().get("serverUrl");
-		String workflowKey = (String)context.getMergedJobDataMap().get("workflowKey");
-		//String arguments = (String)context.getMergedJobDataMap().get("arguments");
-		logger.info(EELFLoggerDelegate.debugLogger, ("Executing the job for the workflow " + workflowKey));
+	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+		String serverUrl = (String) context.getMergedJobDataMap().get("serverUrl");
+		String workflowKey = (String) context.getMergedJobDataMap().get("workflowKey");
+		logger.debug(EELFLoggerDelegate.debugLogger, "Executing the job for the workflow {}", workflowKey);
 		WorkflowScheduleExecutor executor = new WorkflowScheduleExecutor(serverUrl, workflowKey);
 		executor.execute();
 	}

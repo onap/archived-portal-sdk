@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -365,7 +365,7 @@ public class RestWebServiceClient {
 		con.getOutputStream().close();
 
 		int responseCode = con.getResponseCode();
-		logger.debug("Response Code : " + responseCode);
+		logger.debug("RestWebServiceClient.post: response code " + responseCode);
 		final String response = readAndCloseStream(con.getInputStream());
 		return response;
 	}
@@ -461,7 +461,7 @@ public class RestWebServiceClient {
 			throws IOException {
 
 		if (logger.isDebugEnabled())
-			logger.debug("RestWebServiceClient.post to URL " + url);
+			logger.debug("RestWebServiceClient.delete to URL " + url);
 		if (appName == null || appName.trim().length() == 0)
 			appName = "Unknown";
 		if (requestId == null || requestId.trim().length() == 0)
@@ -505,14 +505,13 @@ public class RestWebServiceClient {
 		con.getOutputStream().close();
 
 		int responseCode = con.getResponseCode();
-		logger.debug("Response Code : " + responseCode);
+		logger.debug("RestWebServiceClient.delete: response code " + responseCode);
 		final String response = readAndCloseStream(con.getInputStream());
 		return response;
 	}
 
 	/**
-	 * Reads content of string to a StringBuffer, decoded as UTF-8, and returns as
-	 * string.
+	 * Reads content of stream, decodes as UTF-8, and returns as string.
 	 * 
 	 * @param inputStream
 	 *            Stream to read
@@ -520,17 +519,15 @@ public class RestWebServiceClient {
 	 * @throws IOException
 	 */
 	private String readAndCloseStream(InputStream inputStream) throws IOException {
-		StringBuffer sb = new StringBuffer();
-		InputStreamReader in = null;
-		char[] buf = new char[8196];
-		int bytes;
-		try {
-			in = new InputStreamReader(inputStream, "UTF-8");
+		StringBuilder sb = new StringBuilder();
+		try (InputStreamReader in = new InputStreamReader(inputStream, "UTF-8")) {
+			char[] buf = new char[8196];
+			int bytes;
 			while ((bytes = in.read(buf)) > 0)
 				sb.append(new String(buf, 0, bytes));
-		} finally {
-			if (in != null)
-				in.close();
+		}
+		catch (Exception ex) {
+			logger.error("readAndCloseStream", ex);
 		}
 		return sb.toString();
 	}

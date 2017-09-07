@@ -6,7 +6,7 @@
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
- * under the Apache License, Version 2.0 (the “License”);
+ * under the Apache License, Version 2.0 (the "License");
  * you may not use this software except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  * Unless otherwise specified, all documentation contained herein is licensed
- * under the Creative Commons License, Attribution 4.0 Intl. (the “License”);
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
  * you may not use this documentation except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -44,162 +44,169 @@ import org.onap.portalsdk.core.domain.support.FusionCommand;
 @SuppressWarnings("rawtypes")
 public class LoginBean extends FusionCommand {
 
-    private String loginId;
-    private String loginPwd;
-    private String hrid;
-    private String orgUserId;
-    private String siteAccess;
-    private String loginErrorMessage;
+	private String loginId;
+	private String loginPwd;
+	private String hrid;
+	private String orgUserId;
+	private String siteAccess;
+	private String loginErrorMessage;
 
-    private User user;
-    private Set  menu;
-    private Set  businessDirectMenu;
+	private User user;
+	private Set menu;
+	private Set businessDirectMenu;
 
-    /**
-     * getLoginId
-     *
-     * @return String
-     */
-    public String getLoginId() {
-        return loginId;
-    }
+	/**
+	 * getLoginId
+	 *
+	 * @return String
+	 */
+	public String getLoginId() {
+		return loginId;
+	}
 
-    /**
-     * getLoginPwd
-     *
-     * @return String
-     */
-    public String getLoginPwd() {
-        return loginPwd;
-    }
+	/**
+	 * getLoginPwd
+	 *
+	 * @return String
+	 */
+	public String getLoginPwd() {
+		return loginPwd;
+	}
 
-    /**
-     * getMenu
-     *
-     * @return Set
-     */
-    public Set getMenu() {
-        return menu;
-    }
+	/**
+	 * getMenu
+	 *
+	 * @return Set
+	 */
+	public Set getMenu() {
+		return menu;
+	}
 
-    /**
-     * getUser
-     *
-     * @return User
-     */
-    public User getUser() {
-        return user;
-    }
+	/**
+	 * getUser
+	 *
+	 * @return User
+	 */
+	public User getUser() {
+		return user;
+	}
 
-    /**
-     * getHrid
-     *
-     * @return String
-     */
-    public String getHrid() {
-        return hrid;
-    }
+	/**
+	 * getHrid
+	 *
+	 * @return String
+	 */
+	public String getHrid() {
+		return hrid;
+	}
 
-    /**
-     * getSiteAccess
-     *
-     * @return String
-     */
-    public String getSiteAccess() {
-        return siteAccess;
-    }
+	/**
+	 * getSiteAccess
+	 *
+	 * @return String
+	 */
+	public String getSiteAccess() {
+		return siteAccess;
+	}
 
-    /**
-     * getBusinessDirectMenu
-     *
-     * @return Set
-     */
-    public Set getBusinessDirectMenu() {
-        return businessDirectMenu;
-    }
+	/**
+	 * getBusinessDirectMenu
+	 *
+	 * @return Set
+	 */
+	public Set getBusinessDirectMenu() {
+		return businessDirectMenu;
+	}
 
-    /**
-     * getLoginErrorMessage
-     *
-     * @return String
-     */
-    public String getLoginErrorMessage() {
-        return loginErrorMessage;
-    }
+	/**
+	 * getLoginErrorMessage
+	 *
+	 * @return String
+	 */
+	public String getLoginErrorMessage() {
+		return loginErrorMessage;
+	}
 
-    public String getOrgUserId() {
-        return orgUserId;
-    }
+	public String getOrgUserId() {
+		return orgUserId;
+	}
 
-    /**
-     * setLoginId
-     *
-     * @param loginId String
-     */
-    public void setLoginId(String loginId) {
-        this.loginId = loginId;
-    }
+	/**
+	 * setLoginId
+	 *
+	 * @param loginId
+	 *            String
+	 */
+	public void setLoginId(String loginId) {
+		this.loginId = loginId;
+	}
 
-    /**
-     * setLoginPwd
-     *
-     * @param loginPwd String
-     */
-    public void setLoginPwd(String loginPwd) {
-        this.loginPwd = loginPwd;
-    }
+	/**
+	 * setLoginPwd
+	 *
+	 * @param loginPwd
+	 *            String
+	 */
+	public void setLoginPwd(String loginPwd) {
+		this.loginPwd = loginPwd;
+	}
 
-    public void setMenu(Set menu) {
-        this.menu = menu;
-    }
+	public void setMenu(Set menu) {
+		this.menu = menu;
+	}
 
-    /**
-     * setUser
-     *
-     * @param user User
-     */
-    public void setUser(User user) {
-        this.user = user;
-    }
+	/**
+	 * setUser
+	 *
+	 * @param user
+	 *            User
+	 */
+	public void setUser(User user) {
+		this.user = user;
+	}
 
-    /**
-     * setHrid
-     *
-     * @param hrid String
-     */
-    public void setHrid(String hrid) {
-        this.hrid = hrid;
-    }
+	/**
+	 * setHrid
+	 *
+	 * @param hrid
+	 *            String
+	 */
+	public void setHrid(String hrid) {
+		this.hrid = hrid;
+	}
 
-    /**
-     * setSiteAccess
-     *
-     * @param siteAccess String
-     */
-    public void setSiteAccess(String siteAccess) {
-        this.siteAccess = siteAccess;
-    }
+	/**
+	 * setSiteAccess
+	 *
+	 * @param siteAccess
+	 *            String
+	 */
+	public void setSiteAccess(String siteAccess) {
+		this.siteAccess = siteAccess;
+	}
 
-    /**
-     * setBusinessDirectMenu
-     *
-     * @param businessDirectMenu Set
-     */
-    public void setBusinessDirectMenu(Set businessDirectMenu) {
-        this.businessDirectMenu = businessDirectMenu;
-    }
+	/**
+	 * setBusinessDirectMenu
+	 *
+	 * @param businessDirectMenu
+	 *            Set
+	 */
+	public void setBusinessDirectMenu(Set businessDirectMenu) {
+		this.businessDirectMenu = businessDirectMenu;
+	}
 
-    /**
-     * setLoginErrorMessage
-     *
-     * @param loginErrorMessage String
-     */
-    public void setLoginErrorMessage(String loginErrorMessage) {
-        this.loginErrorMessage = loginErrorMessage;
-    }
+	/**
+	 * setLoginErrorMessage
+	 *
+	 * @param loginErrorMessage
+	 *            String
+	 */
+	public void setLoginErrorMessage(String loginErrorMessage) {
+		this.loginErrorMessage = loginErrorMessage;
+	}
 
-    public void setOrgUserId(String orgUserId) {
-        this.orgUserId = orgUserId;
-    }
+	public void setOrgUserId(String orgUserId) {
+		this.orgUserId = orgUserId;
+	}
 
 }
