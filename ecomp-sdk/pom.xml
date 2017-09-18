@@ -8,7 +8,7 @@
 	<artifactId>epsdk-project</artifactId>
 	<version>1.4.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>ONAP Portal SDK Project (parent)</name>
+	<name>portal-sdk</name>
 	<url>https://wiki.onap.org/display/DW/Portal</url>
 
 	<!-- OParent provides license audit, code audit, distribution management, 
