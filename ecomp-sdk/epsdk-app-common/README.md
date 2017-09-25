@@ -29,6 +29,8 @@ Version 1.4.0
 - PORTAL-42 Use OParent as parent POM
 - PORTAL-72 Address Sonar Scan code issues
 - PORTAL-90 Use approved ONAP license text
+- Portal-86 Remove application specific usages from tests and other files
+
 
 Version 1.3.0, 28 August 2017
 - Portal-19 Renaming the Group Id in the POM file to org.onap.portal.sdk

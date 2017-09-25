@@ -91,7 +91,8 @@ public class SchedulerUtil {
 			stat.executeUpdate(sql);
 			
 		} finally{
-			stat.close();
+			if(stat!=null)
+				stat.close();
 			//conn.close();
 		}
 	}
@@ -113,7 +114,8 @@ public class SchedulerUtil {
     		stat.executeUpdate();
     	
     	} finally{
-			stat.close();
+    		if(stat!=null)
+    			stat.close();
 		}
         	
     }
@@ -195,7 +197,8 @@ public class SchedulerUtil {
 			stat.executeUpdate();
 			
 		} finally{
-			stat.close();
+			if(stat!=null)
+				stat.close();
 			//conn.close();
 		}
 	}

@@ -913,7 +913,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 	            return jsonInString;
 			}
 			//nextPage = (new ErrorHandler()).processFatalError(request, e);
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			t.printStackTrace();
 			ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
 			errorJSONRuntime.setErrormessage(t.toString());
@@ -1146,7 +1146,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 	            try {
 	            	DbUtils.rollbackTransaction(connection);
 	            } catch (Exception e1) {e1.printStackTrace();}
-			} catch (Throwable t) {
+			} catch (Exception t) {
 				t.printStackTrace();
 			}
 			finally {
@@ -1243,7 +1243,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 		            try {
 		            	DbUtils.rollbackTransaction(connection);
 		            } catch (Exception e1) {e1.printStackTrace();}
-				} catch (Throwable t) {
+				} catch (Exception t) {
 					t.printStackTrace();
 				}
 				finally {
@@ -1284,7 +1284,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 			(new ErrorHandler()).processError(request, ve);
 		} catch (RaptorException e) {
 			nextPage = (new ErrorHandler()).processFatalError(request, e);
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			t.printStackTrace();
 		}
 

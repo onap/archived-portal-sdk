@@ -57,7 +57,6 @@
 <script src="app/fusion/scripts/modalService.js"></script>
 <script src="static/js/jquery.mask.min.js" type="text/javascript"></script>
 <script src="static/js/jquery-ui.js" type="text/javascript"></script>
-<script src="app/fusion/external/ebz/sandbox/att-abs-tpls.js" type="text/javascript"></script>
 <script src="static/fusion/js/att_angular_gridster/ui-gridster-tpls.js"></script>
 <script src="static/fusion/js/att_angular_gridster/angular-gridster.js"></script>
 <script src= "app/fusion/external/ebz/angular_js/checklist-model.js"></script>

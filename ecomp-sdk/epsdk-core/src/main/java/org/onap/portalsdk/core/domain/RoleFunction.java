@@ -39,6 +39,8 @@ package org.onap.portalsdk.core.domain;
 
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * <p>
  * RoleFunction.java
@@ -71,7 +73,8 @@ public class RoleFunction extends DomainVo {
 	public void setCode(String code) {
 		this.code = code;
 	}
-
+    
+	@JsonIgnore
 	public String getEditUrl() {
 		return "/role_function.htm?role_function_id=" + getCode();
 	}

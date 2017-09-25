@@ -2329,43 +2329,46 @@ public class WizardProcessor extends org.onap.portalsdk.analytics.RaptorObject {
 			useDefaultSize = "N";
 		if (repMap == null)
 				rdef.setReportMap(new ObjectFactory().createReportMap());
-		repMap.setAddressColumn(addressColumn);
-		repMap.setDataColumn(dataColumn);
-		repMap.setIsMapAllowedYN(isMapAllowed);
-		repMap.setUseDefaultSize(useDefaultSize);
-		repMap.setMarkerColor(color);
-		repMap.setAddAddressInDataYN(addAddress);
-		repMap.setLatColumn(latCol);
-		repMap.setLongColumn(longCol);
-		repMap.setColorColumn(colorCol);
-		repMap.setHeight(height.trim());
-		repMap.setWidth(width.trim());
-		repMap.setLegendColumn(legendColumn);
-		//repMap.setLegendDisplayName(legendDisplayName);
-		
-		Marker m = new ObjectFactory().createMarker();
-		m.setAddressColumn(addressColumn);
-		m.setDataColumn(dataColumn);
-		repMap.getMarkers().add(m);
-		String markerCountString = AppUtils.getRequestNvlValue(request, "markerCount");
-		int markerCount = 0;
-		if (markerCountString != null && markerCountString.equals("") == false){
-			markerCount = new Integer(markerCountString).intValue();
-		}
-		for (int i = 1; i < markerCount; i ++){
-			String additionalAddressColumn = XSSFilter.filterRequestOnlyScript(AppUtils.getRequestNvlValue(request, "addressColumn" + i));
-			String additionalDataHeader = XSSFilter.filterRequestOnlyScript(AppUtils.getRequestNvlValue(request, "dataHeader" + i));
-			String additionalData = XSSFilter.filterRequestOnlyScript(AppUtils.getRequestNvlValue(request, "dataColumn" + i));
-			String additionalColor = XSSFilter.filterRequestOnlyScript(AppUtils.getRequestNvlValue(request, "markerColor" + i));
-			if (additionalAddressColumn.equals("1") == false){
-				m = new ObjectFactory().createMarker();
-				m.setAddressColumn(additionalAddressColumn);
-				m.setDataHeader(additionalDataHeader);
-				m.setDataColumn(additionalData);
-				m.setMarkerColor(additionalColor);
-				repMap.getMarkers().add(m);
+		if(repMap!=null){
+			repMap.setAddressColumn(addressColumn);
+			repMap.setDataColumn(dataColumn);
+			repMap.setIsMapAllowedYN(isMapAllowed);
+			repMap.setUseDefaultSize(useDefaultSize);
+			repMap.setMarkerColor(color);
+			repMap.setAddAddressInDataYN(addAddress);
+			repMap.setLatColumn(latCol);
+			repMap.setLongColumn(longCol);
+			repMap.setColorColumn(colorCol);
+			repMap.setHeight(height.trim());
+			repMap.setWidth(width.trim());
+			repMap.setLegendColumn(legendColumn);
+			//repMap.setLegendDisplayName(legendDisplayName);
+			
+			Marker m = new ObjectFactory().createMarker();
+			m.setAddressColumn(addressColumn);
+			m.setDataColumn(dataColumn);
+			repMap.getMarkers().add(m);
+			String markerCountString = AppUtils.getRequestNvlValue(request, "markerCount");
+			int markerCount = 0;
+			if (markerCountString != null && markerCountString.equals("") == false){
+				markerCount = new Integer(markerCountString).intValue();
+			}
+			for (int i = 1; i < markerCount; i ++){
+				String additionalAddressColumn = XSSFilter.filterRequestOnlyScript(AppUtils.getRequestNvlValue(request, "addressColumn" + i));
+				String additionalDataHeader = XSSFilter.filterRequestOnlyScript(AppUtils.getRequestNvlValue(request, "dataHeader" + i));
+				String additionalData = XSSFilter.filterRequestOnlyScript(AppUtils.getRequestNvlValue(request, "dataColumn" + i));
+				String additionalColor = XSSFilter.filterRequestOnlyScript(AppUtils.getRequestNvlValue(request, "markerColor" + i));
+				if (additionalAddressColumn.equals("1") == false){
+					m = new ObjectFactory().createMarker();
+					m.setAddressColumn(additionalAddressColumn);
+					m.setDataHeader(additionalDataHeader);
+					m.setDataColumn(additionalData);
+					m.setMarkerColor(additionalColor);
+					repMap.getMarkers().add(m);
+				}
 			}
 		}
+		
 		return true;
 	} // processMap
 	/*****For Report Maps - End******/

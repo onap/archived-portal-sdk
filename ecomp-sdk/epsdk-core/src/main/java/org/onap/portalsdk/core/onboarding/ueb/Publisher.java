@@ -56,7 +56,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 /**
  * Provides a publisher that sends messages to a UEB topic.
  * 
- * Utilizes AT&T's UEB/Cambria subscriber/publisher messaging service.
+ * UEB/Cambria subscriber/publisher messaging service.
  */
 public class Publisher {
 

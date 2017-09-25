@@ -93,7 +93,7 @@ public class Lookup extends FusionVo implements Serializable {
       boolean equivalent = false;
       
       Lookup lookup = (Lookup)obj;
-      if( lookup.getValue().equals(getValue()) &&  lookup.getLabel().equals(getLabel())) {
+      if(lookup!=null && lookup.getValue().equals(getValue()) &&  lookup.getLabel().equals(getLabel())) {
         equivalent = true;
       }  
 

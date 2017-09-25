@@ -704,7 +704,7 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 	
 		},function(error){
 			console.log("roleControllerDS2 failed: " + error);
-			reloadPageOnce();
+		//	reloadPageOnce();
 		}).finally(function() {
 			$scope.showLoader=false; // Always execute this on both error and success
 		});
@@ -727,7 +727,13 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
 	})
 
 	$scope.roleFnInit();
-	
+	$scope.updateRoleFunction = function(){
+		$scope.role.roleFunctions=[];
+		for(var i=0;i<$scope.ociavailableRoleFunctions.length;i++){
+			if($scope.ociavailableRoleFunctions[i].selected)
+				$scope.role.roleFunctions.push($scope.ociavailableRoleFunctions[i]);
+		}
+	}
 	$scope.saveRole = function() {
 		var errorMsg;
 		$scope.showLoader=true; 
@@ -841,6 +847,9 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
                 }
 	        }
 		});
+		modalInstance.result.finally(function () {
+		     $scope.updateRoleFunction();
+	    });
 	}
 		
 	$scope.addNewChildRoleFunctionModalPopup = function(data, role,info) {	
@@ -860,6 +869,9 @@ appDS2.controller('adminController', function($scope, $http,AdminService, $modal
                 }
 	        }
 		});
+		modalInstance.result.finally(function () {
+        	 alert();
+	    });
 	}
 	
 	// remove role function associated to a role on Role Edit page

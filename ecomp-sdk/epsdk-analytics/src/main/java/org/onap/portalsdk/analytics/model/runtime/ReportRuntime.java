@@ -2815,7 +2815,7 @@ public List getMapMarkers(ReportData rd, org.onap.portalsdk.analytics.xmlobj.Rep
 				}
 			}
 		if(!ff.hasPredefinedList) {
-            if(oldSQL != null && !oldSQL.equals("")) {
+            if(oldSQL != null && !oldSQL.equals("") && lookup!=null) {
             	((IdNameSql)lookup).setSQL(oldSQL);
             }
 		}
@@ -2970,7 +2970,7 @@ public List getMapMarkers(ReportData rd, org.onap.portalsdk.analytics.xmlobj.Rep
 						}
 					}
 				if(!ff.hasPredefinedList) {
-		            if(oldSQL != null && !oldSQL.equals("")) {
+		            if(oldSQL != null && !oldSQL.equals("") && lookup!=null) {
 		            	((IdNameSql)lookup).setSQL(oldSQL);
 		            }
 				}

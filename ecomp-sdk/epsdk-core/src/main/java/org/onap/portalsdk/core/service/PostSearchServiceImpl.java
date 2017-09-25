@@ -55,7 +55,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("postSearchService")
-@Transactional
 public class PostSearchServiceImpl implements PostSearchService {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PostSearchServiceImpl.class);
@@ -65,7 +64,8 @@ public class PostSearchServiceImpl implements PostSearchService {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public int process(HttpServletRequest request, PostSearchBean postSearch) {
+	@Transactional(rollbackFor = Exception.class)
+	public int process(HttpServletRequest request, PostSearchBean postSearch) throws Exception {
 		HashMap additionalParams = new HashMap();
 		additionalParams.put(Parameters.PARAM_HTTP_REQUEST, request);
 		int numUsersImported = 0;
@@ -202,24 +202,26 @@ public class PostSearchServiceImpl implements PostSearchService {
 					}
 
 					user.setActive(true);
-
+					Role role = null;
 					try {
 						dataAccessService.saveDomainObject(user, additionalParams);
-						Role role = (Role) dataAccessService.getDomainObject(Role.class,
+						 role = (Role) dataAccessService.getDomainObject(Role.class,
 								Long.valueOf(SystemProperties.getProperty(SystemProperties.POST_DEFAULT_ROLE_ID)),
 								null);
+						 if(role.getId() == null){
+								logger.error(EELFLoggerDelegate.errorLogger,
+										"process failed: No Role Exsists in DB with requested RoleId :"+ Long.valueOf(SystemProperties.getProperty(SystemProperties.POST_DEFAULT_ROLE_ID)));
+								throw new Exception("user cannot be added");
+						}
 						user.addRole(role);
 						numUsersImported++;
-					} catch (Exception e) {
-						logger.error(EELFLoggerDelegate.errorLogger,
-								"process: saveDomainObject failed on user " + user.getLoginId(), e);
+						} catch (Exception e) {
+							 logger.error(EELFLoggerDelegate.errorLogger, "process: saveDomainObject failed on user " + user.getLoginId(), e);
+							throw e;
 					}
 				}
 			}
-
 		}
-
 		return numUsersImported;
 	}
-
 }

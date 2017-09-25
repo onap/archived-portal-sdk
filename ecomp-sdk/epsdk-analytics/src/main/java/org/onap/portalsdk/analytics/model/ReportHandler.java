@@ -321,7 +321,7 @@ public class ReportHandler extends org.onap.portalsdk.analytics.RaptorObject {
 						cellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
 						hashMapStyles.put(fmt.getFormatId(), cellStyle);
 					} else {
-						hashMapStyles.put(fmt.getFormatId(), styleDefault);
+					//	hashMapStyles.put(fmt.getFormatId(), styleDefault);  //fmt is null here
 						hashMapStyles.put("default", styleDefault);
 					}
 				}
@@ -2783,9 +2783,11 @@ public class ReportHandler extends org.onap.portalsdk.analytics.RaptorObject {
 						AppConstants.SI_REPORT_RUNTIME);
 			HSSFWorkbook wb = new HSSFWorkbook();
 			HashMap styles = new HashMap();
-			if (rr != null)
+			String xlsFName="";
+			if (rr != null){
 				styles = loadStyles(rr, wb);
-			String xlsFName = AppUtils.generateUniqueFileName(request, rr.getReportName(), AppConstants.FT_XLS);
+				xlsFName = AppUtils.generateUniqueFileName(request, rr.getReportName(), AppConstants.FT_XLS);
+			}
 			logger.debug(EELFLoggerDelegate.debugLogger, ("Xls File name " +
 					  AppUtils.getTempFolderPath()
 					 + xlsFName));
@@ -3354,11 +3356,13 @@ public class ReportHandler extends org.onap.portalsdk.analytics.RaptorObject {
 						readTemplate = new FileInputStream(AppUtils.getTempFolderPath()+ filename+"."+ nvls(extension, "xlsx"));
 			        	wb=new XSSFWorkbook(readTemplate);
 					}
-					if(rrDashRep!=null)
-    						styles = loadXSSFStyles(rrDashRep, wb, styles);
-					String reportSheetName = new HtmlStripper().stripSpecialCharacters(rrDashRep.getReportName());
-    					if(nvl(reportSheetName).length()>28)
-    						reportSheetName = reportSheetName.substring(0, 28);
+					String reportSheetName = "";
+					if(rrDashRep!=null){
+						styles = loadXSSFStyles(rrDashRep, wb, styles);
+						reportSheetName = new HtmlStripper().stripSpecialCharacters(rrDashRep.getReportName());
+					}
+    				if(nvl(reportSheetName).length()>28)
+    					reportSheetName = reportSheetName.substring(0, 28);
 					sheet = wb.createSheet(count+"-"+reportSheetName);
 			        if(!Globals.printExcelInLandscapeMode())
 			        	sheet.getPrintSetup().setLandscape(false);
@@ -4051,22 +4055,24 @@ public class ReportHandler extends org.onap.portalsdk.analytics.RaptorObject {
 		    	buf.available(); 
 		    	sos.write (bOut, 0, readBytes); 
 		    }
-	    		 
-    	}  catch (IOException ex) { 
-    		 ex.printStackTrace(); 
-    	}
-    	catch(Exception e) {
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
-    	}  finally {
-    		 try {
-		      if (sos != null)
-			        sos.close();
-			      if (buf != null)
-			        buf.close();
-			    } catch (Exception e1) {
-			    	e1.printStackTrace();
+		} finally {
+			try {
+				if (sos != null)
+					sos.close();
+				if (buf != null)
+					buf.close();
+				if (fileIn!=null) {
+					fileIn.close();
 			    }
-    	}
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
 				
 		        File f = new File (AppUtils.getTempFolderPath()
 							+ fName); 
@@ -6460,15 +6466,17 @@ public class ReportHandler extends org.onap.portalsdk.analytics.RaptorObject {
 		    		for (rd.reportColumnHeaderRows.resetNext(); rd.reportColumnHeaderRows.hasNext();) {
 		    			chr = rd.reportColumnHeaderRows.getNext();
 		    			csvOut.println("<TR>");
-		    			for (chr.resetNext(); chr.hasNext();) {
-		    				ColumnHeader ch = chr.getNext();
-		    				if(ch.isVisible()) {
-		    					csvOut.print("<TD bgColor=\"8F9381\">" + ch.getColumnTitle() + "</TD>");
-		    					//for (int i = 1; i < ch.getColSpan(); i++)
-		    					//	csvOut.print(",");
-		    					
-		    				}
-		    			} // for
+		    			if(chr!=null){
+		    				for (chr.resetNext(); chr.hasNext();) {
+			    				ColumnHeader ch = chr.getNext();
+			    				if(ch.isVisible()) {
+			    					csvOut.print("<TD bgColor=\"8F9381\">" + ch.getColumnTitle() + "</TD>");
+			    					//for (int i = 1; i < ch.getColSpan(); i++)
+			    					//	csvOut.print(",");
+			    					
+			    				}
+			    			} // for
+		    			}	    
 		    			csvOut.println("</TR>");
 		    		} // for
 	    		
@@ -6606,15 +6614,18 @@ public class ReportHandler extends org.onap.portalsdk.analytics.RaptorObject {
            if(row==null){
                sheet.createRow(rowNum);
            }
-           for(int colNum=region.getFirstColumn();colNum<=region.getLastColumn();colNum++){
-               XSSFCell currentCell = row.getCell(colNum); 
-              if(currentCell==null){
-                  currentCell = row.createCell(colNum);
-              }    
+           if(row!=null){
+        	   for(int colNum=region.getFirstColumn();colNum<=region.getLastColumn();colNum++){
+                   XSSFCell currentCell = row.getCell(colNum); 
+                  if(currentCell==null){
+                      currentCell = row.createCell(colNum);
+                  }    
 
-              currentCell.setCellStyle(cellStyle);
+                  currentCell.setCellStyle(cellStyle);
 
+               }
            }
+           
        }
 
 

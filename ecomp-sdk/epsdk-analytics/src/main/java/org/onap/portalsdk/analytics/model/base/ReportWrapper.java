@@ -1887,7 +1887,9 @@ public class ReportWrapper extends org.onap.portalsdk.analytics.RaptorObject {
 					for (Iterator iter1 = getFormFieldList().getFormField().iterator(); iter1.hasNext();) {
 						FormFieldType fft = (FormFieldType) iter1.next();
 						String fieldDisplay = getFormFieldDisplayName(fft);
-						String fieldId = fft.getFieldId();
+						String fieldId = "";
+						if(fft!=null)
+							fieldId = fft.getFieldId();
 						if(!fft.getFieldType().equals(FormField.FFT_BLANK) && !fft.getFieldType().equals(FormField.FFT_LIST_MULTI) && !fft.getFieldType().equals(FormField.FFT_TEXTAREA)) {
 							String paramValue = Utils.oracleSafe(nvl(reportParamValues.getParamValue(fieldId)));
 							chartYAxis = Utils.replaceInString(chartYAxis, fieldDisplay, nvl(

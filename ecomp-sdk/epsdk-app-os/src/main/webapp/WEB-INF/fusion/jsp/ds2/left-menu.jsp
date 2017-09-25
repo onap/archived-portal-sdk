@@ -47,26 +47,6 @@
 <link rel="stylesheet" type="text/css" href="app/fusion/external/ebz/sandbox/styles/style.css" >
 
 
-<!-- <script src= "app/fusion/external/ebz/angular_js/angular.js"></script> 
-<script src= "app/fusion/external/ebz/angular_js/angular-route.min.js"></script>
-<script src= "app/fusion/external/ebz/angular_js/angular-sanitize.js"></script>
-<script src= "app/fusion/external/ebz/angular_js/angular-cookies.js"></script>
-<script src= "app/fusion/external/ebz/angular_js/app.js"></script>
-<script src= "app/fusion/external/ebz/angular_js/gestures.js"></script>
-<script src="static/js/jquery-1.10.2.js"></script>
-<script src="app/fusion/scripts/modalService.js"></script>
-<script src="static/js/jquery.mask.min.js" type="text/javascript"></script>
-<script src="static/js/jquery-ui.js" type="text/javascript"></script>
-<script src="app/fusion/external/ebz/sandbox/att-abs-tpls.js" type="text/javascript"></script>
-<script src="static/fusion/js/att_angular_gridster/ui-gridster-tpls.js"></script>
-<script src="static/fusion/js/att_angular_gridster/angular-gridster.js"></script>
-<script src= "app/fusion/external/ebz/angular_js/checklist-model.js"></script>
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
-<script src="app/fusion/external/angular-ui/ui-bootstrap-tpls-1.1.2.min.js"></script>
-<script src="app/fusion/scripts/services/userInfoService.js"></script>
-<script src="app/fusion/scripts/services/leftMenuService.js"></script> -->
-
-
 <jsp:include page="/WEB-INF/fusion/jsp/ebz/loginSnippet.html" ></jsp:include> 
 
 
@@ -101,8 +81,7 @@
 			                <div parentmenu-tabs mega-menu="true" menu-items="megaMenuDataObject" style="height:55px;">
 								<div style="float:left">
 									<li class="megamenu__item" style="line-height:55px;" onclick="returnToPortal()">
-										<img src="app/fusion/external/ebz/images/att_logo.png" class="ATTLogo"   ></span>
-										<strong	style="font-weight: 400 !important; font-family: "Omnes-ECOMP-W02", Arial !important; font-size: 18px;" id='returnPortal' >ECOMP Portal</strong>
+										<div ng-include src="'app/fusion/scripts/DS2-view-models/header-logo.html'"></div>             
 									</li>										
 									<div menu-tabs mega-menu="true" tab-name="item.text" menu-item="item" active-menu="activeClickMenu.x" 
 									ng-repeat="item in megaMenuDataObject" style="font-size: 18px;" ng-mousedown="loadFavorites()" >

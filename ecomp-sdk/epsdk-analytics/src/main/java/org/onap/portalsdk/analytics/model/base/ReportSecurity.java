@@ -328,8 +328,8 @@ public class ReportSecurity extends org.onap.portalsdk.analytics.RaptorObject {
 			if (nvl(reportID).equals("-1"))
 				return;
 	
-			if (true) //todo: replace with proper check isPublic
-				return;
+			/*if (true) //todo: replace with proper check isPublic
+				return;*/
 	
 			if (userID.equals(ownerID))
 				return;

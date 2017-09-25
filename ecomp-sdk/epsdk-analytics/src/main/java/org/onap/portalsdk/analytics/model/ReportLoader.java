@@ -927,8 +927,10 @@ public class ReportLoader extends org.onap.portalsdk.analytics.RaptorObject {
 			throw new ReportSQLException (ex.getMessage(), ex.getCause());
 		} finally {
 			   try {	
-					stmt.close();
-					connection.close();
+				    if(stmt!=null)
+				    	stmt.close();
+				    if(connection!=null)
+				    	connection.close();
 					DbUtils.clearConnection(connection);
 				   } catch (SQLException ex) {
 						throw new ReportSQLException (ex.getMessage(), ex.getCause());

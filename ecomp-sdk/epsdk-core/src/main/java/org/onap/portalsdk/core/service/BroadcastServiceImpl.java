@@ -219,11 +219,13 @@ public class BroadcastServiceImpl extends FusionService implements BroadcastServ
 		if (siteCd == null) {
 			return messagesExist;
 		} else {
-			for (int i = 0; i < messages.size(); i++) {
-				BroadcastMessage message = (BroadcastMessage) messages.get(i);
+			if(messages!=null){
+				for (int i = 0; i < messages.size(); i++) {
+					BroadcastMessage message = (BroadcastMessage) messages.get(i);
 
-				if ((message.getSiteCd() == null) || message.getSiteCd().equals(siteCd)) {
-					return true;
+					if ((message.getSiteCd() == null) || message.getSiteCd().equals(siteCd)) {
+						return true;
+					}
 				}
 			}
 			return false;

@@ -85,7 +85,8 @@ public class WorkflowScheduleExecutor {
 				while ((cp = bufferedReader.read()) != -1)
 					sb.append((char) cp);
 				bufferedReader.close();
-				in.close();
+				if(in != null)
+					in.close();
 			}
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "get_fromURL failed", e);

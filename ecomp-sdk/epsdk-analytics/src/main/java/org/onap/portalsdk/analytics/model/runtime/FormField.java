@@ -675,8 +675,10 @@ public class FormField extends org.onap.portalsdk.analytics.RaptorObject impleme
 		                    break;
 		                    
 		                }
-		                fieldDefValue = nvl(idNamevalue.getId());
-	                    fieldDefDisplay = nvl(idNamevalue.getName());	                
+		                if(idNamevalue!=null){
+		                	fieldDefValue = nvl(idNamevalue.getId());
+		                    fieldDefDisplay = nvl(idNamevalue.getName());	  
+		                }		                             
 	                }  else {
 	                try {
 	                			// -2 indicates to run the whole sql for matching value
@@ -700,7 +702,7 @@ public class FormField extends org.onap.portalsdk.analytics.RaptorObject impleme
 	        					fieldDefDisplay = nvl(fieldDefValue);
 	        				}
 	        				
-	        	            if(oldSQL != null && !oldSQL.equals("")) {
+	        	            if(oldSQL != null && !oldSQL.equals("") && lookup!=null) {
 	        	            	((IdNameSql)lookup).setSQL(oldSQL);
 	        	            }
 

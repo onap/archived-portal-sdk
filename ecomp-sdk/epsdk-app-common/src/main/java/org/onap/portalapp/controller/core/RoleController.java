@@ -42,6 +42,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -176,13 +177,13 @@ public class RoleController extends RestrictedBaseController {
 						domainRole.addChildRole((Role) childRole);
 					}
 				}
-				if (role.getRoleFunctions() != null && role.getRoleFunctions().size() > 0) {
-					for (Object roleFunction : roleFunctions) {
-						domainRole.addRoleFunction((RoleFunction) roleFunction);
-					}
+			}
+			if (role.getRoleFunctions() != null && role.getRoleFunctions().size() > 0) {
+				domainRole.setRoleFunctions(new TreeSet());
+				for (Object roleFunction : roleFunctions) {
+					domainRole.addRoleFunction((RoleFunction) roleFunction);
 				}
 			}
-
 			roleService.saveRole(user.getOrgUserId(), domainRole);
 
 			String responseString = mapper.writeValueAsString(domainRole);

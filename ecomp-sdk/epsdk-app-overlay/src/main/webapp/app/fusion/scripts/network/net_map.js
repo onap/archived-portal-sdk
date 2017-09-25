@@ -243,7 +243,7 @@ plotHeader = function(attributes,cssType){
 plotElement = function(element) {
    
 	if(element.left){
-	  if(!element.id.startsWith("com.att.trinity.ue")){
+	  if(!element.id.startsWith("ue")){
 	  left = element.left ;
 	  var thisColor = element.bgColor;
 	  var thisElement = new joint.shapes.basic.newRect({
@@ -325,7 +325,7 @@ plotElementIcon = function(element) {
 	  
 	  left = element.left ;
 	  uetop = element.top;
-	  if(element.id.startsWith("com.att.trinity.ue")) {
+	  if(element.id.startsWith("ue")) {
 		 uetop = element.top - 30;
 	  } else {
 		  uetop = element.top ;
@@ -368,7 +368,7 @@ plotElementIcon = function(element) {
 		  });
 	      
 	  }
-	  if(element.id.startsWith("com.att.trinity.ue")){
+	  if(element.id.startsWith("ue")){
 	      thisElement.attr({
 		       rect: {fill: 'white', style:{'pointer-events':'none'}},
 		       image: { style:{'pointer-events':'none'}}

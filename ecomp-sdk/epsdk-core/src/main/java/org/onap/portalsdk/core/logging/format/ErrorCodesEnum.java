@@ -71,7 +71,5 @@ public enum ErrorCodesEnum implements EELFResolvableErrorEnum {
 	 * Static initializer to ensure the resource bundles for this class are
 	 * loaded... Here this application loads messages from three bundles
 	 */
-	// static {
-	// EELFResourceManager.loadMessageBundle("com/att/fusion/core/logging/format/ApplicationCodes");
-	// }
+
 }

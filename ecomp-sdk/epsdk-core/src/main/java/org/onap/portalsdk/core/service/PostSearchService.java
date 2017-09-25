@@ -50,6 +50,6 @@ public interface PostSearchService {
 	 * @param postSearch
 	 * @return the number of users successfully imported
 	 */
-	int process(HttpServletRequest request, PostSearchBean postSearch);
+	int process(HttpServletRequest request, PostSearchBean postSearch) throws Exception;
 
 }

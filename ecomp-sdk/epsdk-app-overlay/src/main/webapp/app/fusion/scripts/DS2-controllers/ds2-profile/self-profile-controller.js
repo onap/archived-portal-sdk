@@ -25,8 +25,7 @@ appDS2.controller('selfProfileController', function($scope, $http, $modal, $rout
 		$scope.pageType=2;
 	}
 	
-	$scope.sbcid=$scope.profile.sbcid;
-	$scope.managerAttuid=$scope.profile.managerAttuid;
+	
 	
 	/***********************************************************functions***********************************************/
 	$scope.getProfileDetail = function(profileIdParam){
@@ -42,8 +41,7 @@ appDS2.controller('selfProfileController', function($scope, $http, $modal, $rout
 			$scope.ociTimeZones=JSON.parse($scope.data.timeZones);
 			$scope.ociCountries=JSON.parse($scope.data.countries);
 			stateList=JSON.parse($scope.data.stateList);
-			$scope.sbcid=$scope.profile.sbcid;
-			$scope.managerAttuid=$scope.profile.managerAttuid;
+			
 			
 			if($scope.ociavailableRoles)
 				$.each($scope.ociavailableRoles, function(i, a){ 
@@ -100,9 +98,7 @@ appDS2.controller('selfProfileController', function($scope, $http, $modal, $rout
 			$scope.ociTimeZones=JSON.parse($scope.data.timeZones);
 			$scope.ociCountries=JSON.parse($scope.data.countries);
 			stateList=JSON.parse($scope.data.stateList);
-			$scope.sbcid=$scope.profile.sbcid;
-			$scope.managerAttuid=$scope.profile.managerAttuid;
-
+		
 			if($scope.ociavailableRoles)
 				$.each($scope.ociavailableRoles, function(i, a){ 
 					var availableRole = a;

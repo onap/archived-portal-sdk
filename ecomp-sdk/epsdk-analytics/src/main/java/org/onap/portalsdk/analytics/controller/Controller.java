@@ -72,8 +72,6 @@ public class Controller extends org.onap.portalsdk.analytics.RaptorObject {
 		} catch (RaptorException e) {
 			logger.debug(EELFLoggerDelegate.debugLogger, ("[Controller.processRequest]Invalid raptor action [" + actionKey
 						+ "]. RaptorException: " + e.getMessage()));
-//			if (actionKey.equals("system_upgrade")) // System override
-//				return att.raptor.util.upgrade.SystemUpgrade.upgradeDB(request);
 
 			return (new ErrorHandler()).processFatalError(request, new RaptorRuntimeException(
 					"[Controller.processRequest]Invalid raptor action [" + actionKey

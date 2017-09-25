@@ -15,16 +15,6 @@
     background-color:white;
 }
 
-.scrolling-table #att-scroll-table-content{
-    height:200px;
-    position: absolute !important;
-    width:700px;
-    padding-left: 0px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-right:5px;
-}
-
 .workflow-popup-body{
 	position: relative;
     padding: 30px;

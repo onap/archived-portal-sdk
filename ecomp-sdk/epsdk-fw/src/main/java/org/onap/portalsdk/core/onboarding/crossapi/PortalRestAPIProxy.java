@@ -248,7 +248,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					logger.error("doPost: pushUser: caught exception", ex);
 				}
 			} else
-			// Example: /user/fi241c <-- edit user fi241c
+			// Example: /user/abc <-- edit user abc 
 			if (requestUri.contains(PortalApiConstants.API_PREFIX + "/user/") && !(requestUri.endsWith("/roles"))) {
 				String loginId = requestUri.substring(requestUri.lastIndexOf('/') + 1);
 				try {
@@ -419,7 +419,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					logger.error("doGet: getAvailableRoles: caught exception", ex);
 				}
 			} else
-			// Example: /user/fi241c <-- get user fi241c
+			// Example: /user/abc <-- get user abc
 			if (requestUri.contains(PortalApiConstants.API_PREFIX + "/user/") && !requestUri.endsWith("/roles")) {
 				String loginId = requestUri.substring(requestUri.lastIndexOf('/') + 1);
 				try {
@@ -433,7 +433,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					logger.error("doGet: getUser: caught exception", ex);
 				}
 			}
-			// Example: /user/fi241c/roles <-- get roles for user fi241c
+			// Example: /user/abc/roles <-- get roles for user abc
 			else if (requestUri.contains(PortalApiConstants.API_PREFIX + "/user/") && requestUri.endsWith("/roles")) {
 				String loginId = requestUri.substring(requestUri.indexOf("/user/") + ("/user").length() + 1,
 						requestUri.lastIndexOf('/'));

@@ -57,8 +57,9 @@ public class AntBuild {
 	}
 
 	public static void readManifest() {
+		JarFile jar = null;
 		try {
-			JarFile jar = new JarFile("./raptor_fusion.jar");
+			jar = new JarFile("./raptor_fusion.jar");
 			Manifest manifest = jar.getManifest();
 
 			Attributes attribs = manifest.getMainAttributes();
@@ -80,6 +81,14 @@ public class AntBuild {
 		} catch (IOException e) {
 			System.err.println("Cannot read jar-file manifest: "
 					+ e.getMessage());
+		} finally {
+			if (jar != null) {
+				try {
+					jar.close();
+				} catch (IOException e) {
+	                throw new RuntimeException("Failed to close jar '");
+				}
+			}
 		}
 	}
 }
