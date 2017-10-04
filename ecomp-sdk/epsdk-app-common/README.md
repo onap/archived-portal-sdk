@@ -30,6 +30,7 @@ Version 1.4.0
 - PORTAL-72 Address Sonar Scan code issues
 - PORTAL-90 Use approved ONAP license text
 - Portal-86 Remove application specific usages from tests and other files
+- PORTAL-78 Fix SingleSignon by force session creation prior to redirection to portal
 
 
 Version 1.3.0, 28 August 2017

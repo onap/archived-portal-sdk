@@ -87,10 +87,10 @@ public class ElementMapService {
 		// Used to build image file relative URLs
 		final String iconRelPath = SystemProperties.getProperty("element_map_icon_path");
 
-		Map<String, Domain> resultAICDomain = layout.getDomainRowCol();
+		Map<String, Domain> resultDomain = layout.getDomainRowCol();
 		Map<String, List<Domain>> domainMap = new HashMap<>();
 		List<Domain> domainList = new ArrayList<>();
-		for (Domain d : resultAICDomain.values()) {
+		for (Domain d : resultDomain.values()) {
 			d.setWidth(10 * d.computeSize().getWidth());
 			d.setHeight(10 * d.computeSize().getHeight());
 			d.setLeft(10 * d.getP().getX());

@@ -55,16 +55,23 @@ import org.onap.portalsdk.core.onboarding.client.AppContextManager;
 import org.onap.portalsdk.core.onboarding.crossapi.IPortalRestAPIService;
 import org.onap.portalsdk.core.onboarding.exception.PortalAPIException;
 import org.onap.portalsdk.core.onboarding.listener.PortalTimeoutHandler;
+import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
+import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
+import org.onap.portalsdk.core.service.RestApiRequestBuilder;
 import org.onap.portalsdk.core.service.RoleService;
 import org.onap.portalsdk.core.service.UserProfileService;
+import org.onap.portalsdk.core.service.UserService;
 import org.onap.portalsdk.core.service.WebServiceCallService;
 import org.onap.portalsdk.core.util.JSONUtil;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.web.support.UserUtils;
 import org.slf4j.MDC;
 import org.springframework.context.ApplicationContext;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 /**
  * Implements the REST API interface to answer requests made by Portal app about
@@ -84,7 +91,14 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 	private IAdminAuthExtension adminAuthExtensionServiceImpl;
 
 	private LoginStrategy loginStrategy;
+	private UserService userService;
+	private RestApiRequestBuilder restApiRequestBuilder;
 
+	private static final String isAccessCentralized = PortalApiProperties
+			.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED);
+	
+	private static final String isCentralized = "remote";
+	
 	public OnBoardingApiServiceImpl() {
 		// Defend against null-pointer exception during server startup
 		// that was caused by a spurious Spring annotation on this class.
@@ -96,6 +110,10 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 		loginStrategy = appContext.getBean(LoginStrategy.class);
 		// initialize the base class definition for Admin Auth Extension
 		adminAuthExtensionServiceImpl = appContext.getBean(IAdminAuthExtension.class);
+		userService = appContext.getBean(UserService.class);
+		if(isCentralized.equals(isAccessCentralized)){
+		restApiRequestBuilder = appContext.getBean(RestApiRequestBuilder.class);
+		}
 	}
 
 	private void setCurrentAttributes(User user, EcompUser userJson) {
@@ -200,7 +218,15 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 		try {
 			if (logger.isDebugEnabled())
 				logger.debug(EELFLoggerDelegate.debugLogger, "## REST API ## loginId: {}", loginId);
-			User user = userProfileService.getUserByLoginId(loginId);
+			
+			User user = null;
+			if(isCentralized.equals(isAccessCentralized)){
+			   String responseString = restApiRequestBuilder.getViaREST("/user/" + loginId, true, loginId);
+			   user = userService.userMapper(responseString);
+			}
+			else{
+			   user = userProfileService.getUserByLoginId(loginId);
+			}
 			if (user == null) {
 				logger.info(EELFLoggerDelegate.debugLogger, "User + " + loginId + " doesn't exist");
 				return null;
@@ -224,16 +250,36 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 
 	@Override
 	public List<EcompUser> getUsers() throws PortalAPIException {
+		String users_List = "";
 		try {
-			List<User> users = userProfileService.findAllActive();
-			List<EcompUser> ecompUsers = new ArrayList<EcompUser>();
-			for (User user : users)
-				ecompUsers.add(UserUtils.convertToEcompUser(user));
-			return ecompUsers;
+			if (isCentralized.equals(isAccessCentralized)) {
+				List<EcompUser> UsersList = new ArrayList<>();
+				List<EcompUser> finalUsersList = new ArrayList<>();
+					users_List = restApiRequestBuilder.getViaREST("/users", true, null);
+					ObjectMapper mapper = new ObjectMapper();
+					UsersList = mapper.readValue(users_List,
+							TypeFactory.defaultInstance().constructCollectionType(List.class, EcompUser.class));
+					for (EcompUser userString : UsersList) {
+						EcompUser ecompUser = mapper.convertValue(userString, EcompUser.class);
+						finalUsersList.add(ecompUser);
+					}
+					return UsersList;
+				}
+			 else {
+				List<User> users = userProfileService.findAllActive();
+				List<EcompUser> ecompUsers = new ArrayList<EcompUser>();
+				for (User user : users)
+					ecompUsers.add(UserUtils.convertToEcompUser(user));
+				return ecompUsers;
+			}
 		} catch (Exception e) {
 			String response = "OnboardingApiService.getUsers failed";
 			logger.error(EELFLoggerDelegate.errorLogger, response, e);
-			throw new PortalAPIException(response, e);
+			if (users_List.equals("")) {
+				throw new PortalAPIException("Application is Inactive");
+			} else {
+				throw new PortalAPIException(response, e);
+			}
 		}
 	}
 
@@ -301,6 +347,20 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 			logger.debug(EELFLoggerDelegate.debugLogger, "## REST API ## loginId: {}", loginId);
 		List<EcompRole> ecompRoles = new ArrayList<EcompRole>();
 		try {
+			
+			if(isCentralized.equals(isAccessCentralized)){
+				User user = null;
+					String responseString = restApiRequestBuilder.getViaREST("/user/" + loginId, true, loginId);
+					user = userService.userMapper(responseString);
+					SortedSet<Role> currentRoles = null;
+					if (user != null) {
+						currentRoles = user.getRoles();
+						if (currentRoles != null)
+							for (Role role : currentRoles)
+								ecompRoles.add(UserUtils.convertToEcompRole(role));
+					}
+			}
+			else{
 			User user = userProfileService.getUserByLoginId(loginId);
 			SortedSet<Role> currentRoles = null;
 			if (user != null) {
@@ -309,6 +369,7 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 					for (Role role : currentRoles)
 						ecompRoles.add(UserUtils.convertToEcompRole(role));
 			}
+		}	
 			return ecompRoles;
 		} catch (Exception e) {
 			String response = "OnboardingApiService.getUserRoles failed";

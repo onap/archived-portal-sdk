@@ -201,22 +201,12 @@ public class Domain {
 				if (containerRowCol != null && containerRowCol.containsKey(String.valueOf(i) + String.valueOf(j))) {
 					Container c = containerRowCol.get(String.valueOf(i) + String.valueOf(j));
 					Position p = new Position();
-					if (this.getName().equals("VNI")) {
-						p.x = j * (interContWd - 2) + xsum + domainToLayoutWd;
-					} else
-						p.x = j * interContWd + xsum + domainToLayoutWd;
+					p.x = j * interContWd + xsum + domainToLayoutWd;
 					double ysum = 0;
 					for (int k = 0; k < i; k++) {
 						if (containerRowCol.containsKey(String.valueOf(k) + String.valueOf(j)))
 							ysum += containerRowCol.get(String.valueOf(k) + String.valueOf(j)).computeSize()
 									.getHeight();
-
-						else if (j > 0 && containerRowCol.containsKey(String.valueOf(k) + String.valueOf(j - 1))
-								&& !containerRowCol.get(String.valueOf(i) + String.valueOf(j)).getName()
-										.equals("AIC - Alpharetta")) {
-							ysum += containerRowCol.get(String.valueOf(k) + String.valueOf(j - 1)).computeSize()
-									.getHeight();
-						}
 					}
 					p.y = domainToLayoutH + ysum + this.computeSize().getHeight() + domainToContH + i * interContH;
 					c.setP(p);

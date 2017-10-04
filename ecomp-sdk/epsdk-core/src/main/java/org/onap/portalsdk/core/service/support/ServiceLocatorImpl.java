@@ -96,17 +96,4 @@ public class ServiceLocatorImpl implements ServiceLocator {
 		return dirContext;
 	}
 
-	// Get an LDAP directory context - LDAPv3-style
-	/*
-	 * public InitialLdapContext getLdapContext() { //throws NamingException { if
-	 * (ldapContext == null) { Properties properties = new Properties(); // @todo -
-	 * need to parameterize context factoy class and url
-	 * properties.put(Context.INITIAL_CONTEXT_FACTORY,
-	 * AttLdap.DIR_INITIAL_CONTEXT_FACTORY); properties.put(Context.PROVIDER_URL,
-	 * AttLdap.DIR_PROVIDER_URL); properties.put(Context.SECURITY_PRINCIPAL,
-	 * AttLdap.DIR_SECURITY_PRINCIPAL); Control[] ctrl = null; try { ldapContext =
-	 * new InitialLdapContext(properties, ctrl); } catch (NamingException ne) { //
-	 * MJ FIX log exception? } } return ldapContext; }
-	 */
-
 }

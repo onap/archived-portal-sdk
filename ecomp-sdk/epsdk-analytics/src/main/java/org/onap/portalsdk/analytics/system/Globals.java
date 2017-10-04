@@ -583,7 +583,7 @@ public class Globals extends org.onap.portalsdk.analytics.RaptorObject {
 		printFooterInDownload = nvls(
 		        raptorProperties.getProperty("print_footer_in_download"), "no")
 		        .toUpperCase().startsWith("Y");
-		footerFirstLine = nvls(raptorProperties.getProperty("footer_first_line"), "AT&T Proprietary");
+		footerFirstLine = nvls(raptorProperties.getProperty("footer_first_line"), "Raptor report");
 		footerSecondLine = nvls(raptorProperties.getProperty("footer_second_line"), "Use Pursuant to Company Instructions");
 		reportsInPoPUpWindow = nvls(
 		        raptorProperties.getProperty("report_in_popup_window"), "no")

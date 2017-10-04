@@ -3,6 +3,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<!-- OParent provides audits, distribution management, etc. -->
+	<parent>
+		<groupId>org.onap.oparent</groupId>
+		<artifactId>oparent</artifactId>
+		<version>0.1.1</version>
+		<relativePath />
+	</parent>
+
 	<!-- Portal SDK Maven parent project -->
 	<groupId>org.onap.portal.sdk</groupId>
 	<artifactId>epsdk-project</artifactId>
@@ -10,16 +18,6 @@
 	<packaging>pom</packaging>
 	<name>portal-sdk</name>
 	<url>https://wiki.onap.org/display/DW/Portal</url>
-
-	<!-- OParent provides license audit, code audit, distribution management, 
-		etc.
-	But jenkins build fails, so comment out for now.
-	<parent>
-		<groupId>org.onap.oparent</groupId>
-		<artifactId>oparent</artifactId>
-		<version>0.1.0</version>
-	</parent>
-	-->
 
 	<modules>
 		<module>epsdk-fw</module>
@@ -36,34 +34,49 @@
 		<springframework.version>4.2.0.RELEASE</springframework.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<skiptests>true</skiptests>
-		<nexusproxy>https://nexus.onap.org</nexusproxy>
-		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
-		<stagingNexusPath>content/repositories/staging/</stagingNexusPath>
-		<releaseNexusPath>content/repositories/releases/</releaseNexusPath>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>releases</id>
-			<name>ONAP - Release Repository</name>
-			<url>${nexusproxy}/${releaseNexusPath}</url>
-		</repository>
-		<repository>
-			<id>staging</id>
-			<name>ONAP - Staging Repository</name>
-			<url>${nexusproxy}/${stagingNexusPath}</url>
-		</repository>
-		<repository>
-			<id>snapshots</id>
-			<name>ONAP - Snapshot Repository</name>
-			<url>${nexusproxy}/${snapshotNexusPath}</url>
-		</repository>
-		<repository>
-			<id>public</id>
-			<name>ONAP public Repository</name>
-			<url>${nexusproxy}/content/groups/public</url>
-		</repository>
-	</repositories>
+        <!-- Specify the repositories here to avoid coordination of ~/.m2/settings.xml 
+                files among all developers. Also use values (not properties) so oparent can 
+                be resolved. -->
+        <repositories>
+                <repository>
+                        <id>onap-releases</id>
+                        <name>ONAP - Release Repository</name>
+                        <url>https://nexus.onap.org/content/repositories/releases</url>
+                </repository>
+                <repository>
+                        <id>onap-staging</id>
+                        <name>ONAP - Staging Repository</name>
+                        <url>https://nexus.onap.org/content/repositories/staging</url>
+                </repository>
+                <repository>
+                        <id>onap-snapshots</id>
+                        <name>ONAP - Snapshot Repository</name>
+                        <url>https://nexus.onap.org/content/repositories/snapshots</url>
+                </repository>
+                <repository>
+                        <id>onap-public</id>
+                        <url>https://nexus.onap.org/content/groups/public</url>
+                </repository>
+        </repositories>
+
+        <!-- Specify the repositories here to avoid coordination of ~/.m2/settings.xml 
+                files among all developers. -->
+        <pluginRepositories>
+                <pluginRepository>
+                        <id>onap-plugin-release</id>
+                        <url>https://nexus.onap.org/content/repositories/releases/</url>
+                </pluginRepository>
+                <pluginRepository>
+                        <id>onap-plugin-staging</id>
+                        <url>https://nexus.onap.org/content/repositories/staging/</url>
+                </pluginRepository>
+                <pluginRepository>
+                        <id>onap-plugin-snapshots</id>
+                        <url>https://nexus.onap.org/content/repositories/snapshots/</url>
+                </pluginRepository>
+        </pluginRepositories>
 
 	<profiles>
 		<!-- disable doclint, a new feature in Java 8, when generating javadoc -->
@@ -199,7 +212,8 @@
 	</build>
 
 	<distributionManagement>
-		<!-- The id below must match .m2/settings.xml/servers/server/id -->
+		<!-- Override the OParent sections which use id "ecomp-releases" etc.
+		     The ids below must match .m2/settings.xml/servers/server/id -->
 		<repository>
 			<id>releases</id>
 			<name>OpenECOMP - Release Repository</name>
@@ -213,7 +227,7 @@
 		<!-- Javadocs -->
 		<site>
 			<id>ecomp-site</id>
-			<url>dav:${nexusproxy}${sitePath}</url>
+			<url>dav:https://nexus.onap.org/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</url>
 		</site>
 	</distributionManagement>
 

@@ -631,8 +631,6 @@ public class Layout {
 			else
 				newX = domainstoUpd.get(i).getP().getX() + 38;
 
-			if (d.getName().equals("Datacenter with AIC"))
-				newX += 5;
 			d.setDomainToLayoutWd(newX);
 
 			d.computeConatinerPositions();

@@ -57,7 +57,6 @@ import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.exception.SessionExpiredException;
-import org.onap.portalsdk.core.lm.FusionLicenseManager;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.menu.MenuBuilder;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
@@ -99,24 +98,7 @@ public class UserUtils {
 		String displayName = "";
 		if (SystemProperties.getProperty(SystemProperties.APP_DISPLAY_NAME) != null)
 			displayName = SystemProperties.getProperty(SystemProperties.APP_DISPLAY_NAME);
-		switch (licenseVarificationFlag) {
-		case FusionLicenseManager.DEVELOPER_LICENSE:
-			session.setAttribute(SystemProperties.getProperty(SystemProperties.APP_DISPLAY_NAME),
-					displayName + " [Development Version]");
-			break;
-		case FusionLicenseManager.EXPIRED_LICENSE:
-			session.setAttribute(SystemProperties.getProperty(SystemProperties.APP_DISPLAY_NAME),
-					displayName + " [LICENSE EXPIRED]");
-			break;
-		case FusionLicenseManager.VALID_LICENSE:
-			session.setAttribute(SystemProperties.getProperty(SystemProperties.APP_DISPLAY_NAME), displayName);
-			break;
-		default:
-			session.setAttribute(SystemProperties.getProperty(SystemProperties.APP_DISPLAY_NAME),
-					displayName + " [INVALID LICENSE]");
-			break;
-		}
-
+		session.setAttribute(SystemProperties.getProperty(SystemProperties.APP_DISPLAY_NAME), displayName);
 		session.setAttribute(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_ATTRIBUTE_NAME),
 				MenuBuilder.filterMenu(applicationMenuData, request));
 		session.setAttribute(SystemProperties.getProperty(SystemProperties.BUSINESS_DIRECT_MENU_ATTRIBUTE_NAME),

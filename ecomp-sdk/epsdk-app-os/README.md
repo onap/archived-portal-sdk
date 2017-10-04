@@ -19,7 +19,7 @@ Version 1.4.0, <?day> <?month> 2017
 - PORTAL-72 Address Sonar Scan code issues
 - PORTAL-79 remove unwanted SDK left menu under Report-sample dashboard
 - PORTAL-90 Use approved ONAP license text
-- Portal-86 Remove application specific usages from tests and other files
+- Portal-86 Remove application specific usages from tests and other files (rework)
 
 * Put new entries here *
 

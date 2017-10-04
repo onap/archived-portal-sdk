@@ -202,6 +202,11 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 			final String redirectUrl = portalUrl + "?uebAppKey=" + uebAppKey + "&redirectUrl=" + encodedReturnToAppUrl;
 			logger.debug(EELFLoggerDelegate.debugLogger, "singleSignOnLogin: portal-bound redirect URL is {}",
 					redirectUrl);
+			
+			// this line may not be necessary but jsessionid coockie is not getting created in all cases;
+			// so force the cookie creation
+			request.getSession(true);
+			
 			return new ModelAndView("redirect:" + redirectUrl);
 		}
 	}

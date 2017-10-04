@@ -104,6 +104,11 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 	 * Client-supplied class that implements our interface.
 	 */
 	private static IPortalRestAPIService portalRestApiServiceImpl;
+	private static final String isAccessCentralized = PortalApiProperties
+			.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED);
+	private static final String errorMessage = "Access Management is not allowed for Centralized applications." ;
+	private static final String isCentralized = "remote";
+
 
 	public PortalRestAPIProxy() {
 		// Ensure that any additional fields sent by the Portal
@@ -237,11 +242,17 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			// Example: /user <-- create user
 			if (requestUri.endsWith(PortalApiConstants.API_PREFIX + "/user")) {
 				try {
-					EcompUser user = mapper.readValue(requestBody, EcompUser.class);
-					pushUser(user);
-					logger.debug("doPost: pushUser: success");
-					responseJson = buildJsonResponse(true, null);
-					response.setStatus(HttpServletResponse.SC_OK);
+					if (isCentralized.equals(isAccessCentralized)) {
+						responseJson = buildJsonResponse(true, errorMessage);
+						response.setStatus(HttpServletResponse.SC_OK);
+					} else {
+						EcompUser user = mapper.readValue(requestBody, EcompUser.class);
+						pushUser(user);
+						if (logger.isDebugEnabled())
+							logger.debug("doPost: pushUser: success");
+						responseJson = buildJsonResponse(true, null);
+						response.setStatus(HttpServletResponse.SC_OK);
+					}
 				} catch (Exception ex) {
 					responseJson = buildJsonResponse(ex);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -252,11 +263,17 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			if (requestUri.contains(PortalApiConstants.API_PREFIX + "/user/") && !(requestUri.endsWith("/roles"))) {
 				String loginId = requestUri.substring(requestUri.lastIndexOf('/') + 1);
 				try {
-					EcompUser user = mapper.readValue(requestBody, EcompUser.class);
-					editUser(loginId, user);
-					logger.debug("doPost: editUser: success");
-					responseJson = buildJsonResponse(true, null);
-					response.setStatus(HttpServletResponse.SC_OK);
+					if (isCentralized.equals(isAccessCentralized)) {
+						responseJson = buildJsonResponse(true, errorMessage);
+						response.setStatus(HttpServletResponse.SC_OK);
+					} else {
+						EcompUser user = mapper.readValue(requestBody, EcompUser.class);
+						editUser(loginId, user);
+						if (logger.isDebugEnabled())
+							logger.debug("doPost: editUser: success");
+						responseJson = buildJsonResponse(true, null);
+						response.setStatus(HttpServletResponse.SC_OK);
+					}
 				} catch (Exception ex) {
 					responseJson = buildJsonResponse(ex);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -268,13 +285,19 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 				String loginId = requestUri.substring(requestUri.indexOf("/user/") + ("/user").length() + 1,
 						requestUri.lastIndexOf('/'));
 				try {
-					TypeReference<List<EcompRole>> typeRef = new TypeReference<List<EcompRole>>() {
-					};
-					List<EcompRole> roles = mapper.readValue(requestBody, typeRef);
-					pushUserRole(loginId, roles);
-					logger.debug("doPost: pushUserRole: success");
-					responseJson = buildJsonResponse(true, null);
-					response.setStatus(HttpServletResponse.SC_OK);
+					if (isCentralized.equals(isAccessCentralized)) {
+						responseJson = buildJsonResponse(true, errorMessage);
+						response.setStatus(HttpServletResponse.SC_OK);
+					} else {
+						TypeReference<List<EcompRole>> typeRef = new TypeReference<List<EcompRole>>() {
+						};
+						List<EcompRole> roles = mapper.readValue(requestBody, typeRef);
+						pushUserRole(loginId, roles);
+						if (logger.isDebugEnabled())
+							logger.debug("doPost: pushUserRole: success");
+						responseJson = buildJsonResponse(true, null);
+						response.setStatus(HttpServletResponse.SC_OK);
+					}
 				} catch (Exception ex) {
 					responseJson = buildJsonResponse(ex);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -381,11 +404,11 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			 */
 
 			if (requestUri.endsWith("/sessionTimeOuts")) {
-				responseJson = getSessionTimeOuts();
-				if (responseJson != null && responseJson.length() > 0) {
+				try  {
+					responseJson = getSessionTimeOuts();
 					logger.debug("doGet: got session timeouts");
 					response.setStatus(HttpServletResponse.SC_OK);
-				} else {
+				} catch(Exception ex) {
 					String msg = "Failed to get session time outs";
 					logger.error("doGet: " + msg);
 					responseJson = buildJsonResponse(false, msg);
@@ -400,7 +423,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					if (logger.isDebugEnabled())
 						logger.debug("doGet: getUsers: " + responseJson);
 				} catch (Exception ex) {
-					responseJson = buildJsonResponse(ex);
+					responseJson = buildShortJsonResponse(ex);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 					logger.error("doGet: getUsers: caught exception", ex);
 				}
@@ -609,6 +632,12 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 		PrintWriter pw = new PrintWriter(sw);
 		t.printStackTrace(pw);
 		return buildJsonResponse(false, sw.toString());
+	}
+	
+	private String buildShortJsonResponse(Throwable t)
+	{
+		String errorMessage = t.getMessage();
+		return buildJsonResponse(false, errorMessage);
 	}
 
 	@Override
