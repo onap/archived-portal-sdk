@@ -17,6 +17,9 @@ AngularJS version 1.5.0.
 
 ### ONAP Distributions
 
+Version 1.3.1, 15 October 2017
+- PORTAL-127 Remove GreenSock code from b2b library
+
 Version 1.3.0
 - Portal-17 removing eye.js and utils.js - rework
 - Portal-19 Renaming the Group Id in the POM file to org.onap.portal.sdk

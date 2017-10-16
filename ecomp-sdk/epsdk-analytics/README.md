@@ -11,12 +11,17 @@ features including charts, maps and reports ("Raptor").
 
 ### ONAP Distributions
 
+Version 1.3.1, 15 October 2017
+- No changes
+
 Version 1.3.0
-- [Portal-19] Renaming the Group Id in the POM file to org.onap.portal.sdk
-- [PORTAL-58] Removing restricted image files under raptor
-- [PORTAL-60] remove CalendarPopup.js that's user for raptor schedule tab
+- Portal-19 Renaming the Group Id in the POM file to org.onap.portal.sdk
+- PORTAL-58 Removing restricted image files under raptor
+- PORTAL-60 remove CalendarPopup.js that's user for raptor schedule tab
+
 Version 1.1.0
-- [Portal-7] Improvements added as part of the rebasing process
-- [PORTAL-17] Remove jfree related items 
+- Portal-7 Improvements added as part of the rebasing process
+- PORTAL-17 Remove jfree related items 
+
 Version 1.0.0
 - Initial release

@@ -24,11 +24,14 @@ AngularJS version 1.5.0.
 
 ### ONAP Distributions
 
+Version 1.3.1, 15 October 2017
+- No changes
+
 Version 1.3.0
-- [Portal-19] Renaming the Group Id in the POM file to org.onap.portal.sdk
+- Portal-19 Renaming the Group Id in the POM file to org.onap.portal.sdk
 
 Version 1.1.0
-- [Portal-7] Improvements added as part of the rebasing process
+- Portal-7 Improvements added as part of the rebasing process
  
 Version 1.0.0
 - Initial release
