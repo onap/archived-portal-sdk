@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.util.YamlUtils;
@@ -68,7 +69,7 @@ public class ElementLinkService {
 			relFilePath = SystemProperties.getProperty("customCallFlow_path");
 		else
 			relFilePath = SystemProperties.getProperty("element_map_file_path");
-		final String yamlDirPath = new File(args[0], relFilePath).getPath();
+		final String yamlDirPath = FilenameUtils.normalize(new File(args[0], relFilePath).getPath());
 
 		String callFlowBusinessYml = "";
 		String callFlowStep = "";

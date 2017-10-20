@@ -88,6 +88,8 @@ import org.onap.portalsdk.analytics.util.AppConstants;
 import org.onap.portalsdk.analytics.util.DataSet;
 import org.onap.portalsdk.analytics.util.Utils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.util.SecurityCodecUtil;
+import org.owasp.esapi.ESAPI;
 
 public class ReportLoader extends org.onap.portalsdk.analytics.RaptorObject {
 
@@ -488,19 +490,19 @@ public class ReportLoader extends org.onap.portalsdk.analytics.RaptorObject {
 		
 		try{
 			String sql1= Globals.getDeleteReportRecordLog();
-			sql1 = sql1.replace("[reportID]", reportID);
+			sql1 = sql1.replace("[reportID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),reportID));
 			String sql2= Globals.getDeleteReportRecordUsers();
-			sql2 = sql2.replace("[reportID]", reportID);
+			sql2 = sql2.replace("[reportID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),reportID));
 			String sql3= Globals.getDeleteReportRecordSchedule();
-			sql3 = sql3.replace("[reportID]", reportID);
+			sql3 = sql3.replace("[reportID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),reportID));
 			String sql4= Globals.getDeleteReportRecordAccess();
-			sql4 = sql4.replace("[reportID]", reportID);
+			sql4 = sql4.replace("[reportID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),reportID));
 			String sql5= Globals.getDeleteReportRecordEmail();
-			sql5 = sql5.replace("[reportID]", reportID);
+			sql5 = sql5.replace("[reportID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),reportID));
 			String sql6= Globals.getDeleteReportRecordFavorite();
-			sql6 = sql6.replace("[reportID]", reportID);
+			sql6 = sql6.replace("[reportID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),reportID));
 			String sql7= Globals.getDeleteReportRecordReport();
-			sql7 = sql7.replace("[reportID]", reportID);
+			sql7 = sql7.replace("[reportID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),reportID));
 			
 			DbUtils.executeUpdate(con, sql1);
 			DbUtils.executeUpdate(con, sql2);
@@ -580,9 +582,9 @@ public class ReportLoader extends org.onap.portalsdk.analytics.RaptorObject {
 			roleList.append("," + ((String) iter.next()));
 
 		String query = Globals.getLoadQuickLinks();
-		query = query.replace("[userID]", userID);
-		query = query.replace("[roleList.toString()]", roleList.toString());
-		query = query.replace("[nvls(menuId)]", nvls(menuId));
+		query = query.replace("[userID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),userID));
+		query = query.replace("[roleList.toString()]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),roleList.toString()));
+		query = query.replace("[nvls(menuId)]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),nvls(menuId)));
 		
 		DataSet ds = DbUtils
 				.executeQuery(query);

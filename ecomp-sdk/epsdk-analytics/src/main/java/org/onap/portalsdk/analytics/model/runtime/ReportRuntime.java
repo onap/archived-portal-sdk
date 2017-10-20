@@ -85,6 +85,8 @@ import org.onap.portalsdk.analytics.xmlobj.DataColumnType;
 import org.onap.portalsdk.analytics.xmlobj.FormFieldType;
 import org.onap.portalsdk.analytics.xmlobj.ObjectFactory;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.util.SecurityCodecUtil;
+import org.owasp.esapi.ESAPI;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -2455,7 +2457,7 @@ public class ReportRuntime extends ReportWrapper implements Cloneable, Serializa
             if (param.charAt(startIdx + 1) == '#') {
                 // Parameter is a form field value
                 String fieldId = param.substring(startIdx + 2, endIdx);
-                String fieldValue = request.getParameter(fieldId);
+                String fieldValue = ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(fieldId));
                 sql = Utils.replaceInString(sql, "[" + fieldId.toUpperCase()+"]", fieldValue );                
             }
         }

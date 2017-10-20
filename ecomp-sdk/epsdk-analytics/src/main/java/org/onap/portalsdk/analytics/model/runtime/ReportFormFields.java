@@ -57,6 +57,8 @@ import org.onap.portalsdk.analytics.util.Utils;
 import org.onap.portalsdk.analytics.xmlobj.ColFilterType;
 import org.onap.portalsdk.analytics.xmlobj.DataColumnType;
 import org.onap.portalsdk.analytics.xmlobj.FormFieldType;
+import org.onap.portalsdk.core.util.SecurityCodecUtil;
+import org.owasp.esapi.ESAPI;
 
 public class ReportFormFields extends Vector {
 	private int nextElemIdx = 0;
@@ -96,17 +98,17 @@ public class ReportFormFields extends Vector {
                 if(fieldSQL!=null) {
                     for (int i = 0; i < reqParameters.length; i++) {
                         if(!reqParameters[i].startsWith("ff") && (request.getParameter(reqParameters[i].toUpperCase())!=null && request.getParameter(reqParameters[i].toUpperCase()).length() > 0))
-                         fieldSQL = Utils.replaceInString(fieldSQL, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i].toUpperCase()) );
+                         fieldSQL = Utils.replaceInString(fieldSQL, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i].toUpperCase()) ));
                         else if (request.getParameter(reqParameters[i])!=null && request.getParameter(reqParameters[i]).length() > 0)
-                         fieldSQL = Utils.replaceInString(fieldSQL, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i]) );   
+                         fieldSQL = Utils.replaceInString(fieldSQL, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i]) ));   
                     }
 
 	                for (int i = 0; i < scheduleSessionParameters.length; i++) {
 	                	//s_logger.debug(" Session " + " scheduleSessionParameters[i] " + scheduleSessionParameters[i].toUpperCase() + " " + request.getParameter(scheduleSessionParameters[i]));
 	                	if(request.getParameter(scheduleSessionParameters[i])!=null && request.getParameter(scheduleSessionParameters[i]).trim().length()>0 )
-	                		fieldSQL = Utils.replaceInString(fieldSQL, "[" + scheduleSessionParameters[i].toUpperCase()+"]", request.getParameter(scheduleSessionParameters[i]) );
+	                		fieldSQL = Utils.replaceInString(fieldSQL, "[" + scheduleSessionParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(scheduleSessionParameters[i]) ));
 	                	if(request.getAttribute(scheduleSessionParameters[i])!=null && ((String)request.getAttribute(scheduleSessionParameters[i])).trim().length()>0 )
-	                		fieldSQL = Utils.replaceInString(fieldSQL, "[" + scheduleSessionParameters[i].toUpperCase()+"]", (String) request.getAttribute(scheduleSessionParameters[i]) );
+	                		fieldSQL = Utils.replaceInString(fieldSQL, "[" + scheduleSessionParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), (String) request.getAttribute(scheduleSessionParameters[i]) ));
 
 	                }
 
@@ -129,16 +131,16 @@ public class ReportFormFields extends Vector {
                 if(fieldDefaultSQL!=null) {
                     for (int i = 0; i < reqParameters.length; i++) {
                         if(!reqParameters[i].startsWith("ff") && (request.getParameter(reqParameters[i].toUpperCase())!=null && request.getParameter(reqParameters[i].toUpperCase()).length() > 0))
-                         fieldDefaultSQL = Utils.replaceInString(fieldDefaultSQL, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i].toUpperCase()) );
+                         fieldDefaultSQL = Utils.replaceInString(fieldDefaultSQL, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i].toUpperCase()) ));
                         else if (request.getParameter(reqParameters[i])!=null && request.getParameter(reqParameters[i]).length() > 0)
-                         fieldDefaultSQL = Utils.replaceInString(fieldDefaultSQL, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i]) );   
+                         fieldDefaultSQL = Utils.replaceInString(fieldDefaultSQL, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i]) ));   
                     }
 	                for (int i = 0; i < scheduleSessionParameters.length; i++) {
 	                	//s_logger.debug(" Session " + " scheduleSessionParameters[i] " + scheduleSessionParameters[i].toUpperCase() + " " + request.getParameter(scheduleSessionParameters[i]));
 	                	if(request.getParameter(scheduleSessionParameters[i])!=null && request.getParameter(scheduleSessionParameters[i]).trim().length()>0 )
-	                		fieldDefaultSQL = Utils.replaceInString(fieldDefaultSQL, "[" + scheduleSessionParameters[i].toUpperCase()+"]", request.getParameter(scheduleSessionParameters[i]) );
+	                		fieldDefaultSQL = Utils.replaceInString(fieldDefaultSQL, "[" + scheduleSessionParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(scheduleSessionParameters[i]) ));
 	                	if(request.getAttribute(scheduleSessionParameters[i])!=null && ((String)request.getAttribute(scheduleSessionParameters[i])).trim().length()>0 )
-	                		fieldDefaultSQL = Utils.replaceInString(fieldDefaultSQL, "[" + scheduleSessionParameters[i].toUpperCase()+"]", (String) request.getAttribute(scheduleSessionParameters[i]) );
+	                		fieldDefaultSQL = Utils.replaceInString(fieldDefaultSQL, "[" + scheduleSessionParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), (String) request.getAttribute(scheduleSessionParameters[i]) ));
 	                	
 	                }
                     
@@ -158,9 +160,9 @@ public class ReportFormFields extends Vector {
 				if(rangeStartDateSQL!=null) {
                     for (int i = 0; i < reqParameters.length; i++) {
                         if(!reqParameters[i].startsWith("ff") && (request.getParameter(reqParameters[i].toUpperCase())!=null && request.getParameter(reqParameters[i].toUpperCase()).length() > 0))
-                        	rangeStartDateSQL = Utils.replaceInString(rangeStartDateSQL, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i].toUpperCase()) );
+                        	rangeStartDateSQL = Utils.replaceInString(rangeStartDateSQL, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i].toUpperCase()) ));
                         else if (request.getParameter(reqParameters[i])!=null && request.getParameter(reqParameters[i]).length() > 0)
-                        	rangeStartDateSQL = Utils.replaceInString(rangeStartDateSQL, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i]) );   
+                        	rangeStartDateSQL = Utils.replaceInString(rangeStartDateSQL, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i]) ));   
                     }
                     for (int i = 0; i < sessionParameters.length; i++) {
                     	if (session.getAttribute(sessionParameters[i])!=null && ((String)session.getAttribute(sessionParameters[i])).length() > 0)
@@ -170,13 +172,13 @@ public class ReportFormFields extends Vector {
 				if(rangeEndDateSQL!=null) {
                     for (int i = 0; i < reqParameters.length; i++) {
                         if(!reqParameters[i].startsWith("ff")&& (request.getParameter(reqParameters[i].toUpperCase())!=null && request.getParameter(reqParameters[i].toUpperCase()).length() > 0))
-                        	rangeEndDateSQL = Utils.replaceInString(rangeEndDateSQL, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i].toUpperCase()) );
+                        	rangeEndDateSQL = Utils.replaceInString(rangeEndDateSQL, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i].toUpperCase()) ));
                         else if (request.getParameter(reqParameters[i])!=null && request.getParameter(reqParameters[i]).length() > 0)
                         	rangeEndDateSQL = Utils.replaceInString(rangeEndDateSQL, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i]) );   
                     }
                     for (int i = 0; i < sessionParameters.length; i++) {
                     	if (session.getAttribute(sessionParameters[i])!=null && ((String)session.getAttribute(sessionParameters[i])).length() > 0)
-                        rangeEndDateSQL = Utils.replaceInString(rangeEndDateSQL, "[" + sessionParameters[i].toUpperCase()+"]", (String)session.getAttribute(sessionParameters[i]) );   
+                        rangeEndDateSQL = Utils.replaceInString(rangeEndDateSQL, "[" + sessionParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), (String)session.getAttribute(sessionParameters[i]) ));   
                     }                         
                 }
 				String helpText = fft.getComment();

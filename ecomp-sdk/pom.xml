@@ -42,25 +42,25 @@
 
 	<!-- Specify the repositories here to avoid coordination of ~/.m2/settings.xml 
 		files among developers. Use values (not properties) so oparent can 
-		be resolved. -->
+		be resolved. The IDs should match Jenkins template values. -->
 	<repositories>
 		<repository>
-			<id>onap-releases</id>
+			<id>releases</id>
 			<name>ONAP - Release Repository</name>
 			<url>https://nexus.onap.org/content/repositories/releases</url>
 		</repository>
 		<repository>
-			<id>onap-staging</id>
+			<id>staging</id>
 			<name>ONAP - Staging Repository</name>
 			<url>https://nexus.onap.org/content/repositories/staging</url>
 		</repository>
 		<repository>
-			<id>onap-snapshots</id>
+			<id>snapshots</id>
 			<name>ONAP - Snapshot Repository</name>
 			<url>https://nexus.onap.org/content/repositories/snapshots</url>
 		</repository>
 		<repository>
-			<id>onap-public</id>
+			<id>public</id>
 			<url>https://nexus.onap.org/content/groups/public</url>
 		</repository>
 	</repositories>
@@ -217,13 +217,14 @@
 	</build>
 
 	<distributionManagement>
-		<!-- Override the OParent sections which use id "ecomp-releases" etc. The 
-			ids below must match .m2/settings.xml/servers/server/id -->
+		<!-- Override the OParent sections which use id "ecomp-releases" etc.
+		     The IDs MUST match Jenkins template values. -->
 		<repository>
 			<id>releases</id>
 			<name>OpenECOMP - Release Repository</name>
 			<url>${nexusproxy}/${releaseNexusPath}</url>
 		</repository>
+		<!-- no support for a "stagingRepository" -->
 		<snapshotRepository>
 			<id>snapshots</id>
 			<name>OpenECOMP - Snapshot Repository</name>

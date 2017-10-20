@@ -50,6 +50,8 @@ import org.onap.portalsdk.core.controller.RestrictedBaseController;
 import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
+import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.onap.portalsdk.core.service.RoleService;
 import org.onap.portalsdk.core.web.support.JsonMessage;
 import org.onap.portalsdk.core.web.support.UserUtils;
@@ -73,6 +75,11 @@ public class RoleListController extends RestrictedBaseController {
 	private RoleService service;
 
 	private String viewName;
+	
+	private static final String isAccessCentralized = PortalApiProperties
+			.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED);
+	private static final String isCentralized = "remote";
+
 
 	@RequestMapping(value = { "/role_list" }, method = RequestMethod.GET)
 	public ModelAndView getRoleList(HttpServletRequest request) {
@@ -151,8 +158,9 @@ public class RoleListController extends RestrictedBaseController {
 			Role role = mapper.readValue(root.get("role").toString(), Role.class);
 
 			Role domainRole = service.getRole(user.getOrgUserId(), role.getId());
-
+			if (!isCentralized.equals(isAccessCentralized)) {
 			service.deleteDependcyRoleRecord(user.getOrgUserId(), role.getId());
+			}
 			service.deleteRole(user.getOrgUserId(), domainRole);
 			logger.info(EELFLoggerDelegate.auditLogger, "Remove role " + domainRole.getId());
 

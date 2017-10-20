@@ -40,6 +40,7 @@ package org.onap.portalapp.controller.sample;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FilenameUtils;
 import org.onap.portalsdk.core.controller.RestrictedBaseController;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.service.ElementLinkService;
@@ -57,11 +58,11 @@ public class ElementModelController extends RestrictedBaseController {
 	@RequestMapping(value = { "/elementMapLayout" }, method = RequestMethod.GET, produces = "text/plain")
 	public String layout(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		String collapseDomains = request.getParameter("collapsedDomains");
-		String expandDomains = request.getParameter("expandedDomains");
+		String collapseDomains =  FilenameUtils.normalize(request.getParameter("collapsedDomains"));
+		String expandDomains =  FilenameUtils.normalize(request.getParameter("expandedDomains"));
 
-		String contentFileName = request.getParameter("contentFileName");
-		String layoutFileName = request.getParameter("layoutFileName");
+		String contentFileName =  FilenameUtils.normalize(request.getParameter("contentFileName"));
+		String layoutFileName =  FilenameUtils.normalize(request.getParameter("layoutFileName"));
 
 		final String realPath = request.getServletContext().getRealPath("/");
 		logger.debug(EELFLoggerDelegate.debugLogger, "layout: servlet context real path: {}", realPath);
@@ -76,8 +77,8 @@ public class ElementModelController extends RestrictedBaseController {
 	@RequestMapping(value = { "/elementMapLink" }, method = RequestMethod.GET, produces = "text/plain")
 	public String callflow(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		String callFlowName = request.getParameter("callFlowName");
-		String callFlowStep = request.getParameter("callFlowStep");
+		String callFlowName = FilenameUtils.normalize(request.getParameter("callFlowName"));
+		String callFlowStep = FilenameUtils.normalize(request.getParameter("callFlowStep"));
 
 		final String realPath = request.getServletContext().getRealPath("/");
 		logger.debug(EELFLoggerDelegate.debugLogger, "callflow: servlet context real path: {}", realPath);

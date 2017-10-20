@@ -47,6 +47,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.onap.portalsdk.analytics.error.RaptorException;
 import org.onap.portalsdk.analytics.util.AppConstants;
 import org.onap.portalsdk.analytics.util.HtmlStripper;
+import org.onap.portalsdk.core.util.SecurityCodecUtil;
+import org.owasp.esapi.ESAPI;
 
 public class AppUtils /* implements IAppUtils */{
 	private static String baseURL = null;
@@ -69,7 +71,7 @@ public class AppUtils /* implements IAppUtils */{
 	public static String getRequestValue(HttpServletRequest request, String valueID) {
 		String value = (String) request.getAttribute(valueID);
 		if (value == null)
-			value = request.getParameter(valueID);
+			value = ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(valueID));
 		return value;
 	} // getRequestValue
 

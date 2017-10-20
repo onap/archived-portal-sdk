@@ -74,6 +74,8 @@ import org.onap.portalsdk.analytics.util.DataSet;
 import org.onap.portalsdk.analytics.util.Utils;
 import org.onap.portalsdk.analytics.xmlobj.FormFieldType;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.util.SecurityCodecUtil;
+import org.owasp.esapi.ESAPI;
 
 public class ReportSchedule extends RaptorObject {
 	
@@ -652,9 +654,9 @@ public class ReportSchedule extends RaptorObject {
 
 					if (paramValue!=null && paramValue.length() > 0) {
                         if(paramValue.toLowerCase().trim().startsWith("select ")) {
-                            paramValue = Utils.replaceInString(paramValue, "[LOGGED_USERID]", userId);
-                            paramValue = Utils.replaceInString(paramValue, "[USERID]", userId);
-                            paramValue = Utils.replaceInString(paramValue, "[USER_ID]", userId);
+                            paramValue = Utils.replaceInString(paramValue, "[LOGGED_USERID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),userId));
+                            paramValue = Utils.replaceInString(paramValue, "[USERID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),userId));
+                            paramValue = Utils.replaceInString(paramValue, "[USER_ID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),userId));
                             
                             paramValue = Utils.replaceInString(paramValue, "''", "'");
                             ds = ConnectionUtils.getDataSet(paramValue, dbInfo);

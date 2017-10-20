@@ -58,6 +58,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.service.DataAccessService;
+import org.owasp.esapi.ESAPI;
 import org.springframework.web.servlet.ModelAndView;;
 
 
@@ -175,7 +176,7 @@ public class FileServletController  {
 			response.setContentLength((int) outStream.length);
 			response.setContentType("application/octet-stream");
 			response.setHeader("Content-disposition", "attachment; filename=\""
-					+ name + "\"");
+					+  ESAPI.encoder().canonicalize(name) + "\"");
 			copyStream(response, outStream);
 		} catch (Exception ex) {
 			if (os == null)

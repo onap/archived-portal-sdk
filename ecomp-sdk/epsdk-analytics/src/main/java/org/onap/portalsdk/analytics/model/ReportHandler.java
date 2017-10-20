@@ -108,6 +108,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -2791,8 +2792,8 @@ public class ReportHandler extends org.onap.portalsdk.analytics.RaptorObject {
 			logger.debug(EELFLoggerDelegate.debugLogger, ("Xls File name " +
 					  AppUtils.getTempFolderPath()
 					 + xlsFName));
-			FileOutputStream xlsOut = new FileOutputStream(AppUtils.getTempFolderPath()
-					+ xlsFName);
+			FileOutputStream xlsOut = new FileOutputStream(FilenameUtils.normalize(AppUtils.getTempFolderPath()
+					+ xlsFName));
 			// BufferedWriter xlsOut = new BufferedWriter(new
 			// FileWriter(AppUtils
 			// .getTempFolderPath()
@@ -2904,8 +2905,8 @@ public class ReportHandler extends org.onap.portalsdk.analytics.RaptorObject {
 				for(Iterator iter = setReportRuntime.iterator(); iter.hasNext(); ) {
 					count++;
 					try {
-						xlsIn = new FileInputStream (AppUtils.getTempFolderPath()
-								+ xlsFName);
+						xlsIn = new FileInputStream (FilenameUtils.normalize(AppUtils.getTempFolderPath()
+								+ xlsFName));
 					}
 					catch (FileNotFoundException e) {
 						System.out.println ("File not found in the specified path.");
@@ -2914,11 +2915,11 @@ public class ReportHandler extends org.onap.portalsdk.analytics.RaptorObject {
 		            if(xlsIn != null) {
 		                fileSystem = new POIFSFileSystem (xlsIn);
 		                wb = new HSSFWorkbook(fileSystem);
-		      			xlsOut = new FileOutputStream(AppUtils.getTempFolderPath()
-		      					+ xlsFName);
+		                xlsOut = new FileOutputStream(FilenameUtils.normalize(AppUtils.getTempFolderPath()
+		      					+ xlsFName));
 		              } else {
-		      			xlsOut = new FileOutputStream(AppUtils.getTempFolderPath()
-		      					+ xlsFName);
+		            	  xlsOut = new FileOutputStream(FilenameUtils.normalize(AppUtils.getTempFolderPath()
+			      					+ xlsFName));
 		              	wb = new HSSFWorkbook();
 		              }
 					

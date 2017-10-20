@@ -49,6 +49,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
+import org.owasp.esapi.ESAPI;
+
 
 /**
  * Simple REST client for GET, POST and DELETE operations against the Portal
@@ -209,7 +211,7 @@ public class RestWebServiceClient {
 
 		// add request header
 		con.setRequestProperty("uebkey", appUebKey);
-		con.setRequestProperty("LoginId", loginId);
+		con.setRequestProperty("LoginId", ESAPI.encoder().canonicalize(loginId));
 		con.setRequestProperty("user-agent", appName);
 		con.setRequestProperty("X-ECOMP-RequestID", requestId);
 		con.setRequestProperty("username", appUserName);

@@ -346,6 +346,7 @@ public class UserUtils {
 		userJson.setOrgId(user.getOrgId());
 		userJson.setPhone(user.getPhone());
 		userJson.setOrgUserId(user.getOrgUserId());
+		userJson.setActive(user.getActive());
 		Set<EcompRole> ecompRoles = new TreeSet<>();
 		for (Role role : user.getRoles()) {
 			ecompRoles.add(convertToEcompRole(role));

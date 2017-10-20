@@ -105,7 +105,9 @@ import org.onap.portalsdk.analytics.xmlobj.PredefinedValueList;
 import org.onap.portalsdk.core.controller.RestrictedBaseController;
 import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.util.SecurityCodecUtil;
 import org.onap.portalsdk.core.web.support.UserUtils;
+import org.owasp.esapi.ESAPI;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -1415,10 +1417,10 @@ public class RaptorControllerAsync extends RestrictedBaseController {
 					for (int i = 0; i < reqParameters.length; i++) {
 						if (!reqParameters[i].startsWith("ff"))
 							sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase() + "]",
-									request.getParameter(reqParameters[i].toUpperCase()));
+									ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),request.getParameter(reqParameters[i].toUpperCase())));
 						else
-							sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase() + "]",
-									request.getParameter(reqParameters[i]));
+														sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase() + "]",
+									ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),request.getParameter(reqParameters[i])));
 					}
 				}
 				if (session != null) {

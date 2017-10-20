@@ -37,45 +37,40 @@
  */
 package org.onap.portalsdk.core.util;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Map;
+import org.apache.commons.lang.StringUtils;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.owasp.esapi.codecs.Codec;
+import org.owasp.esapi.codecs.MySQLCodec;
+import org.owasp.esapi.codecs.MySQLCodec.Mode;
+import org.owasp.esapi.codecs.OracleCodec;
 
-import org.apache.commons.io.FilenameUtils;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.representer.Representer;
+public class SecurityCodecUtil {
 
-public class YamlUtils {
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SecurityCodecUtil.class);
 
-	private YamlUtils() {
-		// Class has only static methods
+	private static final String MYSQL_DB = "mysql";
+	private static final String ORACLE_DB = "oracle";
+	private static final String MARIA_DB = "mariadb";
+	private static Codec instance = null;
+
+	public static Codec getCodec() {
+		try {
+			if (null == instance) {
+				if (StringUtils.containsIgnoreCase(SystemProperties.getProperty(SystemProperties.DB_DRIVER), MYSQL_DB)
+						|| StringUtils.containsIgnoreCase(SystemProperties.getProperty(SystemProperties.DB_DRIVER),
+								MARIA_DB)) {
+					instance = new MySQLCodec(Mode.STANDARD);
+
+				} else if (StringUtils.containsIgnoreCase(SystemProperties.getProperty(SystemProperties.DB_DRIVER),
+						ORACLE_DB)) {
+					instance = new OracleCodec();
+				}
+			}
+
+		} catch (Exception ex) {
+			logger.error(EELFLoggerDelegate.errorLogger, "getCodec() failed", ex);
+		}
+		return instance;
+
 	}
-
-	private static Yaml yaml;
-
-	static {
-		Representer representer = new Representer();
-		yaml = new Yaml(representer);
-	}
-
-	public static void writeYamlFile(String filePath, String fileName, Map<String, Object> model) throws IOException {
-		FileWriter writer = new FileWriter(filePath + File.separator + fileName);
-		yaml.dump(model, writer);
-		writer.close();
-	}
-
-	public static String returnYaml(Map<String, Object> model) throws IOException {
-		return yaml.dump(model);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static Map<String, Object> readYamlFile(String filePath, String fileName) throws IOException {
-		FileReader reader = new FileReader(FilenameUtils.normalize(filePath + File.separator + fileName));
-		Map<String, Object> callFlowBs = (Map<String, Object>) yaml.load(reader);
-		reader.close();
-		return callFlowBs;
-	}
-
 }

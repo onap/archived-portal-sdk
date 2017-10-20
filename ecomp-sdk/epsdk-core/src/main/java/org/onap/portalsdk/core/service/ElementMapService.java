@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.onap.portalsdk.core.domain.support.Container;
 import org.onap.portalsdk.core.domain.support.Domain;
@@ -205,7 +206,7 @@ public class ElementMapService {
 	 */
 	public String buildElementMapYaml(String args[]) throws IOException {
 
-		final String yamlDirPath = new File(args[2], filePath).getPath();
+		final String yamlDirPath = FilenameUtils.normalize(new File(args[2], filePath).getPath());
 		if (args != null && args.length > 4) {
 			if (args[3] != null)
 				networkToscaYml = args[3] + ".yml";

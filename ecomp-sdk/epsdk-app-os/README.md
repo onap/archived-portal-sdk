@@ -21,7 +21,7 @@ Version 1.4.0, <?day> <?month> 2017
 - PORTAL-90 Use approved ONAP license text
 - Portal-86 Remove application specific usages from tests and other files (rework)
 - Portal-104 Replaced the sql connector to maria db
-
+- Portal-127 Remove GreenSock license code from b2b library
 * Put new entries here *
 
 Version 1.3.0, 28 August 2017

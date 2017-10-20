@@ -88,6 +88,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FilenameUtils;
 import org.onap.portalsdk.analytics.error.RaptorException;
 import org.onap.portalsdk.analytics.error.RaptorRuntimeException;
 import org.onap.portalsdk.analytics.error.RaptorSchedularException;
@@ -127,6 +128,8 @@ import org.onap.portalsdk.analytics.view.ReportData;
 import org.onap.portalsdk.analytics.xmlobj.DataColumnType;
 import org.onap.portalsdk.analytics.xmlobj.FormFieldType;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.util.SecurityCodecUtil;
+import org.owasp.esapi.ESAPI;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -486,20 +489,13 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 					request.getSession().removeAttribute(AppConstants.EMBEDDED_REPORTDATA_MAP);
 				}
 				//String pdfAttachmentKey = AppUtils.getRequestValue(request, "pdfAttachmentKey");
-				String report_email_sent_log_id = AppUtils.getRequestValue(request, "log_id");
+				String report_email_sent_log_id = ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),AppUtils.getRequestValue(request, "log_id"));
 				logger.debug(EELFLoggerDelegate.debugLogger, ("Email PDF" + pdfAttachmentKey+" "+ report_email_sent_log_id));
 
 				//email pdf attachment specific
 				if(nvl(pdfAttachmentKey).length()>0 && report_email_sent_log_id !=null) 
 					isEmailAttachment = true;
 					if(isEmailAttachment) {
-					/*	String query = 	"Select user_id, rep_id from CR_REPORT_EMAIL_SENT_LOG" +
-										" where rownum = 1" +
-										" and gen_key='"+pdfAttachmentKey.trim()+"'" + 
-										" and log_id ="+report_email_sent_log_id.trim() +
-										" and (sysdate - sent_date) < 1 ";*/
-						
-										
 						String query = Globals.getDownloadAllEmailSent();
 						query = query.replace("[pdfAttachmentKey.trim()]", pdfAttachmentKey.trim());
 						query = query.replace("[report_email_sent_log_id.trim()]", report_email_sent_log_id.trim());
@@ -1031,7 +1027,8 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 	public String getQuickLinksJSON(HttpServletRequest request, String nextPage) {
 		String jsonInString = null;
 		try {
-			ArrayList<QuickLink> quickLinks = ReportLoader.getQuickLinksJSON(request, request.getParameter("quick_links_menu_id"),true);
+			
+			ArrayList<QuickLink> quickLinks = ReportLoader.getQuickLinksJSON(request, ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),request.getParameter("quick_links_menu_id")),true);
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -1368,7 +1365,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 
 	public String reportDelete(HttpServletRequest request, String nextPage) {
 		try {
-			String reportID = AppUtils.getRequestValue(request, AppConstants.RI_REPORT_ID);
+			String reportID = ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),AppUtils.getRequestValue(request, AppConstants.RI_REPORT_ID));
 			try {
 				int i = Integer.parseInt(reportID);
 			} catch(NumberFormatException ex) {
@@ -1757,9 +1754,9 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
             if(request != null ) {
                 for (int i = 0; i < reqParameters.length; i++) {
                     if(!reqParameters[i].startsWith("ff"))
-                    	sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i].toUpperCase()) );
+                    	sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]",  ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),request.getParameter(reqParameters[i].toUpperCase()) ));
                     else
-                    	sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i]) );   
+                    	sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]",  ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),request.getParameter(reqParameters[i]) ));   
                 }
              }
             if(session != null ) {
@@ -1886,7 +1883,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
             }
         }
         logger.debug(EELFLoggerDelegate.debugLogger, ("SQL2:\n"+ rr.getCachedSQL()));
-        String fileName = rr.getReportID()+"_"+userId+"_"+timestamp;
+        String fileName = FilenameUtils.normalize(rr.getReportID()+"_"+userId+"_"+timestamp);
         boolean flag = false;
         logger.debug(EELFLoggerDelegate.debugLogger, (""+Utils.isDownloadFileExists(rr.getReportID()+"_"+userId+"_"+dateStr)));
        // if(Utils.isDownloadFileExists(rr.getReportID()+"_"+userId+"_"+dateStr)) {
@@ -1903,8 +1900,8 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
             request.setAttribute("message", messageBuffer.toString());  
         }
         else if(!flag) {
-        String whole_fileName = (Globals.getShellScriptDir() +AppConstants.SHELL_QUERY_DIR+ fileName+AppConstants.FT_SQL);
-        String whole_columnsfileName = (Globals.getShellScriptDir() +AppConstants.SHELL_QUERY_DIR+ fileName+AppConstants.FT_COLUMNS);        
+        String whole_fileName = FilenameUtils.normalize (Globals.getShellScriptDir() +AppConstants.SHELL_QUERY_DIR+ fileName+AppConstants.FT_SQL);
+        String whole_columnsfileName = FilenameUtils.normalize (Globals.getShellScriptDir() +AppConstants.SHELL_QUERY_DIR+ fileName+AppConstants.FT_COLUMNS);        
         
         logger.debug(EELFLoggerDelegate.debugLogger, ("FILENAME "+whole_fileName));
 

@@ -70,6 +70,7 @@ import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FilenameUtils;
 import org.onap.portalsdk.analytics.controller.ErrorHandler;
 import org.onap.portalsdk.analytics.error.RaptorException;
 import org.onap.portalsdk.analytics.model.search.ReportSearchResult;
@@ -83,6 +84,8 @@ import org.onap.portalsdk.analytics.system.Globals;
 import org.onap.portalsdk.analytics.util.AppConstants;
 import org.onap.portalsdk.analytics.util.DataSet;
 import org.onap.portalsdk.analytics.util.HtmlStripper;
+import org.onap.portalsdk.core.util.SecurityCodecUtil;
+import org.owasp.esapi.ESAPI;
 
 public class SearchHandler extends org.onap.portalsdk.analytics.RaptorObject {
     private static final String HTML_FORM = "forma";
@@ -128,9 +131,9 @@ public class SearchHandler extends org.onap.portalsdk.analytics.RaptorObject {
 			String csvFName = AppUtils.generateFileName(request,
 					(sr.getPageNo() < 0) ? AppConstants.FT_CSV_ALL : AppConstants.FT_CSV);
 
-			BufferedWriter csvOut = new BufferedWriter(new FileWriter(AppUtils
+			BufferedWriter csvOut = new BufferedWriter(new FileWriter(FilenameUtils.normalize(AppUtils
 					.getTempFolderPath()
-					+ csvFName));
+					+ csvFName)));
 			createCSVFileContent(csvOut, sr);
 			csvOut.close();
 
@@ -292,7 +295,7 @@ public class SearchHandler extends org.onap.portalsdk.analytics.RaptorObject {
 		} else {
 			rep_name_sql = " AND UPPER(cr.title) LIKE UPPER('%%') ";
 		}
-		sql = sql.replace("[fReportName]", rep_name_sql);
+		sql = sql.replace("[fReportName]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),rep_name_sql));
 
 		if (menuId.length() > 0){
 			/*sql += "AND INSTR('|'||cr.menu_id||'|', '|'||'" + menuId + "'||'|') > 0 "

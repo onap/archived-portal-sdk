@@ -109,6 +109,8 @@ import org.onap.portalsdk.analytics.xmlobj.Reports;
 import org.onap.portalsdk.analytics.xmlobj.SemaphoreList;
 import org.onap.portalsdk.analytics.xmlobj.SemaphoreType;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.util.SecurityCodecUtil;
+import org.owasp.esapi.ESAPI;
 
 /**<HR/>
  * This class is part of <B><I>RAPTOR (Rapid Application Programming Tool for OLAP Reporting)</I></B><BR/> 
@@ -2965,15 +2967,15 @@ public class ReportWrapper extends org.onap.portalsdk.analytics.RaptorObject {
                 for (int i = 0; i < reqParameters.length; i++) {
                     if(!reqParameters[i].startsWith("ff")) {
                     	if (nvl(request.getParameter(reqParameters[i].toUpperCase())).length() > 0)
-                    		sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i].toUpperCase()) );
+                    		sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i].toUpperCase()) ));
                     }
                     else
-                      sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i]) );   
+                      sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i]) ));   
                 }
                 
                 for (int i = 0; i < scheduleSessionParameters.length; i++) {
                 	if(nvl(request.getParameter(scheduleSessionParameters[i])).trim().length()>0 )
-                		sql = Utils.replaceInString(sql, "[" + scheduleSessionParameters[i].toUpperCase()+"]", request.getParameter(scheduleSessionParameters[i]) );
+                		sql = Utils.replaceInString(sql, "[" + scheduleSessionParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(scheduleSessionParameters[i]) ));
 				}
              }
             if(session != null ) {
@@ -2998,7 +3000,7 @@ public class ReportWrapper extends org.onap.portalsdk.analytics.RaptorObject {
         //debugLogger.debug("SQLSQLBASED no formfields " + sql);
         if(request != null ) {
            for (int i = 0; i < reqParameters.length; i++) {
-             sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i]) );
+             sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i]) ));
            }
         }
         if(session != null ) {
@@ -3009,9 +3011,9 @@ public class ReportWrapper extends org.onap.portalsdk.analytics.RaptorObject {
          }      
 		}
 		// if it is not multiple select and ParamValue is empty this is the place it can be replaced.
-		sql = Utils.replaceInString(sql, "[LOGGED_USERID]", userId);
-		sql = Utils.replaceInString(sql, "[USERID]", userId);
-		sql = Utils.replaceInString(sql, "[USER_ID]", userId);
+		sql = Utils.replaceInString(sql, "[LOGGED_USERID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), userId));
+		sql = Utils.replaceInString(sql, "[USERID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), userId));
+		sql = Utils.replaceInString(sql, "[USER_ID]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), userId));
         //debugLogger.debug("SQLSQLBASED no formfields after"  + sql);
         //debugLogger.debug("Replacing String 2 "+ sql);
         //debugLogger.debug("Replaced String " + sql);

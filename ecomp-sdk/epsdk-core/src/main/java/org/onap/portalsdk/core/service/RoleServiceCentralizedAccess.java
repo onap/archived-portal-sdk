@@ -134,8 +134,8 @@ public class RoleServiceCentralizedAccess implements RoleService {
 
 	@Override
 	public void deleteRole(String loginId, Role domainRole) throws IOException {
-		String roleName = domainRole.getName().replaceAll(" ", "%20");
-		restApiRequestBuilder.deleteViaRest("/deleteRole/" + roleName, true, null, loginId);
+		Long roleId = domainRole.getId();
+		restApiRequestBuilder.deleteViaRest("v2/deleteRole/" + roleId, true, null, loginId);
 	}
 
 	@Override

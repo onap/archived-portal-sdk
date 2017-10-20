@@ -1,0 +1,193 @@
+/*-
+ * ============LICENSE_START==========================================
+ * ONAP Portal
+ * ===================================================================
+ * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * ===================================================================
+ *
+ * Unless otherwise specified, all software contained herein is licensed
+ * under the Apache License, Version 2.0 (the "License");
+ * you may not use this software except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Unless otherwise specified, all documentation contained herein is licensed
+ * under the Creative Commons License, Attribution 4.0 Intl. (the "License");
+ * you may not use this documentation except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *             https://creativecommons.org/licenses/by/4.0/
+ *
+ * Unless required by applicable law or agreed to in writing, documentation
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * ============LICENSE_END============================================
+ *
+ * ECOMP is a trademark and service mark of AT&T Intellectual Property.
+ */
+package org.onap.portalapp.util;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.util.SystemProperties;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.codecs.Codec;
+import org.owasp.esapi.codecs.MySQLCodec;
+import org.owasp.esapi.codecs.OracleCodec;
+import org.owasp.esapi.codecs.MySQLCodec.Mode;
+
+public class SecurityXssValidator {
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SecurityXssValidator.class);
+	
+	private static final String MYSQL_DB = "mysql";
+	private static final String ORACLE_DB = "oracle";
+	private static final String MARIA_DB ="mariadb";
+	
+	
+	static SecurityXssValidator validator = null;
+	private static Codec instance;
+	private static final Lock lock = new ReentrantLock();
+	
+	public static SecurityXssValidator getInstance() {
+		
+		if(validator == null) {
+			lock.lock();
+			try {
+				if(validator == null)
+					validator =  new SecurityXssValidator();
+			} finally {
+				lock.unlock();
+			}
+		}
+		
+		return validator;
+	}
+	
+	private SecurityXssValidator() {
+		// Avoid anything between script tags
+				XSS_INPUT_PATTERNS.add(Pattern.compile("<script>(.*?)</script>", Pattern.CASE_INSENSITIVE));
+
+				// avoid iframes
+				XSS_INPUT_PATTERNS.add(Pattern.compile("<iframe(.*?)>(.*?)</iframe>", Pattern.CASE_INSENSITIVE));
+
+				// Avoid anything in a src='...' type of expression
+				XSS_INPUT_PATTERNS.add(Pattern.compile("src[\r\n]*=[\r\n]*\\\'(.*?)\\\'",
+						Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+
+				XSS_INPUT_PATTERNS.add(Pattern.compile("src[\r\n]*=[\r\n]*\\\"(.*?)\\\"",
+						Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+
+				XSS_INPUT_PATTERNS.add(Pattern.compile("src[\r\n]*=[\r\n]*([^>]+)",
+						Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+
+				// Remove any lonesome </script> tag
+				XSS_INPUT_PATTERNS.add(Pattern.compile("</script>", Pattern.CASE_INSENSITIVE));
+
+				// Remove any lonesome <script ...> tag
+				XSS_INPUT_PATTERNS
+						.add(Pattern.compile("<script(.*?)>", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+
+				// Avoid eval(...) expressions
+				XSS_INPUT_PATTERNS
+						.add(Pattern.compile("eval\\((.*?)\\)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+
+				// Avoid expression(...) expressions
+				XSS_INPUT_PATTERNS.add(Pattern.compile("expression\\((.*?)\\)",
+						Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+
+				// Avoid javascript:... expressions
+				XSS_INPUT_PATTERNS.add(Pattern.compile("javascript:", Pattern.CASE_INSENSITIVE));
+
+				// Avoid vbscript:... expressions
+				XSS_INPUT_PATTERNS.add(Pattern.compile("vbscript:", Pattern.CASE_INSENSITIVE));
+
+				// Avoid onload= expressions
+				XSS_INPUT_PATTERNS
+						.add(Pattern.compile("onload(.*?)=", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+	}
+	
+	private  List<Pattern> XSS_INPUT_PATTERNS = new ArrayList<Pattern>();
+	
+
+	/**
+	 * * This method takes a string and strips out any potential script
+	 * injections.
+	 * 
+	 * @param value
+	 * @return String - the new "sanitized" string.
+	 */
+	public String stripXSS(String value) {
+
+		try {
+
+			if (StringUtils.isNotBlank(value)) {
+
+				value = StringEscapeUtils.escapeHtml4(value);
+
+				value = ESAPI.encoder().canonicalize(value);
+
+				// Avoid null characters
+				value = value.replaceAll("\0", "");
+
+				for (Pattern xssInputPattern : XSS_INPUT_PATTERNS) {
+					value = xssInputPattern.matcher(value).replaceAll("");
+				}
+			}
+
+		} catch (Exception e) {
+			logger.error(EELFLoggerDelegate.errorLogger, "stripXSS() failed", e);
+		}
+
+		return value;
+	}
+	
+	public  Codec getCodec() {
+		try {
+				if (null == instance) {
+					if (StringUtils.containsIgnoreCase(SystemProperties.getProperty(SystemProperties.DB_DRIVER),
+							MYSQL_DB)|| StringUtils.containsIgnoreCase(SystemProperties.getProperty(SystemProperties.DB_DRIVER),
+									MARIA_DB)) {
+						instance = new MySQLCodec(Mode.STANDARD);
+
+					} else if (StringUtils.containsIgnoreCase(SystemProperties.getProperty(SystemProperties.DB_DRIVER),
+							ORACLE_DB)) {
+						instance = new OracleCodec();
+					}
+				}
+			
+
+		} catch (Exception ex) {
+			System.out.println("Could not strip XSS from value = " + " | ex = " + ex.getMessage());
+		}
+		return instance;
+
+	}
+
+
+	public List<Pattern> getXSS_INPUT_PATTERNS() {
+		return XSS_INPUT_PATTERNS;
+	}
+
+
+	public void setXSS_INPUT_PATTERNS(List<Pattern> xSS_INPUT_PATTERNS) {
+		XSS_INPUT_PATTERNS = xSS_INPUT_PATTERNS;
+	}
+
+}

@@ -52,6 +52,8 @@ import org.onap.portalsdk.analytics.util.AppConstants;
 import org.onap.portalsdk.analytics.util.DataSet;
 import org.onap.portalsdk.analytics.util.Utils;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.util.SecurityCodecUtil;
+import org.owasp.esapi.ESAPI;
 
 public class ReportParamValuesForPDFExcel extends Hashtable {
 	
@@ -154,10 +156,10 @@ public class ReportParamValuesForPDFExcel extends Hashtable {
 									
 		 							if(sql!=null && sql.trim().length()>0){
 		 								 if(name.equals(ff.getFieldName())){
-		 									sql = Utils.replaceInString(sql, "[VALUE]", value);
+		 									sql = Utils.replaceInString(sql, "[VALUE]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),value));
 		 								 }
 		                               if(name.equals(ff1.getFieldName())){
-		                            	   sql = Utils.replaceInString(sql, "["+ff1.getFieldDisplayName()+"]", value);
+		                            	   sql = Utils.replaceInString(sql, "["+ff1.getFieldDisplayName()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),value));
 	
 		                               } else continue;
 									}
@@ -175,10 +177,10 @@ public class ReportParamValuesForPDFExcel extends Hashtable {
 											
 				 							if(sql!=null && sql.trim().length()>0){
 				 								 if(name.equals(ff.getFieldName())){
-				 									sql = Utils.replaceInString(sql, "[VALUE]", value);
+				 									sql = Utils.replaceInString(sql, "[VALUE]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),value));
 				 								 }
 				                               if(name.equals(ff1.getFieldName())){
-				                            	   sql = Utils.replaceInString(sql, "["+ff1.getFieldDisplayName()+"]", value);
+				                            	   sql = Utils.replaceInString(sql, "["+ff1.getFieldDisplayName()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),value));
 			
 				                               } else continue;
 											}
@@ -194,7 +196,7 @@ public class ReportParamValuesForPDFExcel extends Hashtable {
 						 if(name.length()<=0) name = ff.getFieldName();
 						 value = rr.getParamValue(name);
 						 //debugLogger.debug("Name "+ name+ " value:" + value);
-						 String paramValue = getParamValueForSQL(name, value);
+						 String paramValue = ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), getParamValueForSQL(name, value));
 						 //debugLogger.debug("PDFEXCEL " + name+ " " + ff.getFieldName()+ " " +  value + " " + sql +" "+ paramValue);
 						 if(name!=null && name.equals(ff.getFieldName()))
 							sql = Utils.replaceInString(sql, "[VALUE]", paramValue);
@@ -206,7 +208,7 @@ public class ReportParamValuesForPDFExcel extends Hashtable {
 							FormField ff2 = null;
 							for (Iterator iter1 = rff.iterator(); iter1.hasNext();) {
 								ff2 = (FormField)iter1.next();
-								sql = Utils.replaceInString(sql, "[" + ff2.getFieldDisplayName() +"]", getParamValue(ff2.getFieldName()));
+								sql = Utils.replaceInString(sql, "[" + ff2.getFieldDisplayName() +"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(),getParamValue(ff2.getFieldName())));
 							}
 							//debugLogger.debug("SQL Modified after replacing formfield" + sql);
 							try {
@@ -223,21 +225,21 @@ public class ReportParamValuesForPDFExcel extends Hashtable {
                                 //debugLogger.debug("B4 request " + sql);      								
 						        if(request != null ) {
 					                for (int i = 0; i < scheduleSessionParameters.length; i++) {
-					                	sql = Utils.replaceInString(sql, "[" + scheduleSessionParameters[i].toUpperCase()+"]", request.getParameter(scheduleSessionParameters[i]) );
+					                	sql = Utils.replaceInString(sql, "[" + scheduleSessionParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(scheduleSessionParameters[i]) ));
 					                }
 					                for (int i = 0; i < reqParameters.length; i++) {
 					                    if(!reqParameters[i].startsWith("ff")) {
 					                    	if (request.getParameter(reqParameters[i])!=null) {
 					                    		sql = Utils.replaceInString(sql, "[" + reqParameters[i]+"]", request.getParameter(reqParameters[i]) );
-					                    		sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i]) );
+					                    		sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i]) ));
 					                    	}
 					                    	else {
 					                    		sql = Utils.replaceInString(sql, "[" + reqParameters[i]+"]", request.getParameter(reqParameters[i].toUpperCase()) );
-					                    		sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i].toUpperCase()) );
+					                    		sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i].toUpperCase()) ));
 					                    	}
 					                    }
 					                    else
-					                      sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", request.getParameter(reqParameters[i]) );   
+					                      sql = Utils.replaceInString(sql, "[" + reqParameters[i].toUpperCase()+"]", ESAPI.encoder().encodeForSQL( SecurityCodecUtil.getCodec(), request.getParameter(reqParameters[i]) ));   
 					                }
 					             }
                                 //debugLogger.debug("After request " + sql);      								
