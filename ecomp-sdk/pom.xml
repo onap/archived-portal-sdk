@@ -171,7 +171,7 @@
 		<!-- Javadocs -->
 		<site>
 			<id>ecomp-site</id>
-			<url>dav:${nexusproxy}/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</url>
+			<url>dav:${nexusproxy}${sitePath}</url>
 		</site>
 	</distributionManagement>
 
