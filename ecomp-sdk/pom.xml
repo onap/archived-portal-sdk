@@ -77,6 +77,24 @@
 	</profiles>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+				<!-- maven-site-plugin config is provided by OParent -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.6</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-webdav-jackrabbit</artifactId>
+							<version>2.10</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 
 			<!-- Compile to Java 1.8 class output format -->
@@ -171,7 +189,7 @@
 		<!-- Javadocs -->
 		<site>
 			<id>ecomp-site</id>
-			<url>dav:${nexusproxy}${sitePath}</url>
+			<url>dav:${nexusproxy}/content/sites/site/${project.groupId}/${project.artifactId}/${project.version}</url>
 		</site>
 	</distributionManagement>
 
