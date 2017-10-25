@@ -15,7 +15,7 @@
 	</session-config>
 	<filter>
     <filter-name>SecurityXssFilter</filter-name>
-    <filter-class>org.onap.portalapp.filtersss.SecurityXssFilter</filter-class>
+    <filter-class>org.onap.portalapp.filter.SecurityXssFilter</filter-class>
    </filter> 
     <filter-mapping>
     <filter-name>SecurityXssFilter</filter-name>

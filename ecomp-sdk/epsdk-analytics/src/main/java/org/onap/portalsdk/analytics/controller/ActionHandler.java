@@ -1949,12 +1949,12 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
         logger.debug(EELFLoggerDelegate.debugLogger, ("Command Executed "));
         //Connection connection = DbUtils.getConnection();
         Enumeration enum1 = rr.getParamKeys();
-        String value = "", key = "";
+        String value = "";
         String paramStr = "";
         StringBuffer paramBuffer = new StringBuffer();
         if(enum1!=null) {
             for (; enum1.hasMoreElements();) {
-                 key = (String) enum1.nextElement();
+            	String key = (String) enum1.nextElement();
                  value = rr.getParamValue(key);
                  paramBuffer.append(key+":"+value+" ");
             }

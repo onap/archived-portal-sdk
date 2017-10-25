@@ -61,6 +61,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.onap.portalsdk.analytics.error.RaptorException;
 import org.onap.portalsdk.analytics.model.ReportHandler;
@@ -1932,29 +1933,28 @@ public class ChartD3Helper {
 					wholeScript.append("<script> \n");
 
 					wholeScript.append("historicalBarChart = [ \n");
-					 double TOTAL = 0;
-					 double VALUE = 0;
+					 double total = 0;
+					 double value = 0;
 					 int flagNull = 0;
-					 String KEY = "";
 					 String COLOR = "";
 					 TreeSet<String> colorList = new TreeSet<String>();
 					 for (int i = 0; i < ds.getRowCount(); i++) {
-						 VALUE = 0;
+						 value = 0;
 						 try {
-						  VALUE = Double.parseDouble(ds.getString(i, 2));
-						  TOTAL = TOTAL+VALUE;
+							 value = Double.parseDouble(ds.getString(i, 2));
+						  total = total+value;
 						 } catch (NumberFormatException ex) {
 							 flagNull = 1;
 						 }
-						 KEY = ds.getString(i, 0);
+						 String key = ds.getString(i, 0);
 						 try {
 							 if(ds.getString(i, "chart_color")!=null) {
-								 colorList.add(KEY+"|"+ds.getString(i,  "chart_color"));					 
+								 colorList.add(key+"|"+ds.getString(i,  "chart_color"));					 
 							 }
 						 } catch (ArrayIndexOutOfBoundsException ex) {
 							 //System.out.println("No Chart Color");
 						 }
-						 wholeScript.append("{ \""+ "key" +"\":\""+ KEY+"\", \""+ "y" +"\":"+VALUE+"}, \n");
+						 wholeScript.append("{ \""+ "key" +"\":\""+ key+"\", \""+ "y" +"\":"+value+"}, \n");
 						 
 					 }
 					 StringBuffer color = new StringBuffer("");

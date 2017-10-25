@@ -167,6 +167,7 @@ import org.onap.portalsdk.analytics.xmlobj.Reports;
 import org.onap.portalsdk.analytics.xmlobj.SemaphoreList;
 import org.onap.portalsdk.analytics.xmlobj.SemaphoreType;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.owasp.esapi.ESAPI;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.Paragraph;
@@ -3712,7 +3713,7 @@ public class ReportHandler extends org.onap.portalsdk.analytics.RaptorObject {
 	                	//strBuf.append("Run-time Parameters\n");
 	                }
 	                	csvOut.print("\"" + value.getId() +":" + "\",");
-	                	valueName = nvl(value.getName());
+	                	valueName = ESAPI.encoder().canonicalize(nvl(value.getName()));
 	                	if(valueName.indexOf("~")!= -1 && valueName.startsWith("(")) {
 	                		csvOut.print("\"'" + valueName.replaceAll("~",",")+ "'\",");
 	                	} else {
