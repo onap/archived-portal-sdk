@@ -72,11 +72,8 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 	@Autowired
 	private UserService userService;
 
-	@SuppressWarnings("unused")
-	private MenuBuilder menuBuilder;
-
 	@Override
-	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename, Map additionalParams) throws IOException {
+	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename, @SuppressWarnings("rawtypes") Map additionalParams) throws IOException {
 		return findUser(bean, menuPropertiesFilename, additionalParams, true);
 	}
 
@@ -122,12 +119,12 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 					logger.error(EELFLoggerDelegate.errorLogger, "findUser failed", ex);
 				}
 
-				User appuser = getUser(userCopy);
+				User appuser = findUserWithoutPwd(user.getLoginId());
 
 				appuser.setLastLoginDate(new Date());
 
 				// update the last logged in date for the user
-				getDataAccessService().saveDomainObject(appuser, additionalParams);
+				dataAccessService.saveDomainObject(appuser, additionalParams);
 
 				// update the audit log of the user
 				// Check for the client device type and set log attributes
@@ -154,6 +151,7 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 
 	private boolean userHasActiveRoles(User user) {
 		boolean hasActiveRole = false;
+		@SuppressWarnings("rawtypes")
 		Iterator roles = user.getRoles().iterator();
 		while (roles.hasNext()) {
 			Role role = (Role) roles.next();
@@ -165,60 +163,43 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 		return hasActiveRole;
 	}
 
-	public User findUser(LoginBean bean) throws IOException {
+	private User findUser(LoginBean bean) throws IOException {
 		String repsonse = restApiRequestBuilder.getViaREST("/user/" + bean.getUserid(), true, bean.getUserid());
 		User user = userService.userMapper(repsonse);
 		user.setId(getUserIdByOrgUserId(user.getOrgUserId()));
 		return user;
 	}
 
-	public Long getUserIdByOrgUserId(String orgUserId) {
+	private Long getUserIdByOrgUserId(String orgUserId) {
 		Map<String, String> params = new HashMap<>();
 		params.put("orgUserId", orgUserId);
 		@SuppressWarnings("rawtypes")
-		List list = getDataAccessService().executeNamedQuery("getUserIdByorgUserId", params, null);
+		List list = dataAccessService.executeNamedQuery("getUserIdByorgUserId", params, null);
 		Long userId = null;
 		if (list != null && !list.isEmpty())
 			userId = (Long) list.get(0);
 		return userId;
 	}
 
-	public User findUser(String loginId, String password) {
-		StringBuilder criteria = new StringBuilder();
-		criteria.append(" where login_id = '").append(loginId).append("'").append(" and login_pwd = '").append(password)
-				.append("'");
-		List list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
+	@SuppressWarnings("rawtypes")
+	private User findUser(String loginId, String password) {
+		Map<String,String> params = new HashMap<>();
+		params.put("login_id", loginId);
+		params.put("login_pwd", password);
+		List list = dataAccessService.executeNamedQuery("getUserByLoginIdLoginPwd", params, new HashMap());
 		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private User findUserWithoutPwd(String loginId) {
-		StringBuilder criteria = new StringBuilder();
-		criteria.append(" where login_id = '").append(loginId).append("'");
-		List list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
+		Map<String,String> params = new HashMap<>();
+		params.put("login_id", loginId);		
+		List list = dataAccessService.executeNamedQuery("getUserByLoginId", params, new HashMap());
 		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}
 
-	public DataAccessService getDataAccessService() {
-		return dataAccessService;
-	}
-
-	public void setDataAccessService(DataAccessService dataAccessService) {
-		this.dataAccessService = dataAccessService;
-	}
-
-	public MenuBuilder getMenuBuilder() {
+	private MenuBuilder getMenuBuilder() {
 		return new MenuBuilder();
-	}
-
-	public void setMenuBuilder(MenuBuilder menuBuilder) {
-		this.menuBuilder = menuBuilder;
-	}
-
-	public User getUser(User user) {
-		StringBuilder criteria = new StringBuilder();
-		criteria.append(" where login_id = '").append(user.getLoginId()).append("'");
-		List list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
-		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}
 
 }

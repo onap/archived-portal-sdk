@@ -38,6 +38,7 @@
 package org.onap.portalsdk.core.service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -60,9 +61,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoginServiceImpl extends FusionService implements LoginService {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(LoginServiceImpl.class);
-
-	@SuppressWarnings("unused")
-	private MenuBuilder menuBuilder;
 
 	@Autowired
 	private DataAccessService dataAccessService;
@@ -89,7 +87,6 @@ public class LoginServiceImpl extends FusionService implements LoginService {
 		}
 
 		if (user != null) {
-
 			// raise an error if the application is locked and the user does not have system
 			// administrator privileges
 			if (AppUtils.isApplicationLocked()
@@ -120,7 +117,7 @@ public class LoginServiceImpl extends FusionService implements LoginService {
 
 				// update the last logged in date for the user
 				user.setLastLoginDate(new Date());
-				getDataAccessService().saveDomainObject(user, additionalParams);
+				dataAccessService.saveDomainObject(user, additionalParams);
 
 				// update the audit log of the user
 				// Check for the client device type and set log attributes appropriately
@@ -159,44 +156,32 @@ public class LoginServiceImpl extends FusionService implements LoginService {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public User findUser(String loginId, String password) {
-		StringBuilder criteria = new StringBuilder();
-		criteria.append(" where login_id = '").append(loginId).append("'").append(" and login_pwd = '").append(password)
-				.append("'");
-		List list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
+	private User findUser(String loginId, String password) {
+		Map<String, String> params = new HashMap<>();
+		params.put("login_id", loginId);
+		params.put("login_pwd", password);
+		List list = dataAccessService.executeNamedQuery("getUserByLoginIdLoginPwd", params, new HashMap());
 		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}
 
 	@SuppressWarnings("rawtypes")
 	private User findUserWithoutPwd(String loginId) {
-		StringBuilder criteria = new StringBuilder();
-		criteria.append(" where login_id = '").append(loginId).append("'");
-		List list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
+		Map<String, String> params = new HashMap<>();
+		params.put("login_id", loginId);
+		List list = dataAccessService.executeNamedQuery("getUserByLoginId", params, new HashMap());
 		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public User findUser(LoginBean bean) {
-		StringBuilder criteria = new StringBuilder();
-		criteria.append(" where org_user_id = '").append(bean.getUserid()).append("'");
-		List list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
+	private User findUser(LoginBean bean) {
+		Map<String, String> params = new HashMap<>();
+		params.put("org_user_id", bean.getUserid());
+		List list = dataAccessService.executeNamedQuery("getUserByOrgUserId", params, new HashMap());
 		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}
 
-	public MenuBuilder getMenuBuilder() {
+	private MenuBuilder getMenuBuilder() {
 		return new MenuBuilder();
-	}
-
-	public void setMenuBuilder(MenuBuilder menuBuilder) {
-		this.menuBuilder = menuBuilder;
-	}
-
-	public DataAccessService getDataAccessService() {
-		return dataAccessService;
-	}
-
-	public void setDataAccessService(DataAccessService dataAccessService) {
-		this.dataAccessService = dataAccessService;
 	}
 
 }
