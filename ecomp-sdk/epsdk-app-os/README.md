@@ -13,6 +13,9 @@ https://www.eclipse.org/m2e-wtp/
 
 ## Release Notes
 
+Version 1.3.2, 1 November 2017
+- No changes
+
 Version 1.3.1, 15 October 2017
 - PORTAL-104 Changed the sql connector to Mariadb
 - PORTAL-127 Remove GreenSock code from b2b library in SDK

@@ -352,14 +352,14 @@
     <query name="getAllUsers">
       select id, firstName, lastName from User where active = true order by lastName, firstName
     </query>
-	
+
     <query name="getRoleNameById">
       select name from Role where id = :role_id
     </query>
 
     <query name="getAllRoles">
       select id, name from Role order by name
-    </query>	
+    </query>
     
     <query name="getReportSecurityUsers">
       select repId, orderNo, roleId, userId, readOnlyYn from ReportUserRole where repId = :report_id and userId is not null
@@ -368,11 +368,6 @@
     <query name="getReportSecurityRoles">
       select repId, orderNo, roleId, userId, readOnlyYn from ReportUserRole where repId = :report_id and roleId is not null
     </query>
-
-<!--     <query name="insertReportSecurityUsers">
-		insert into ReportUserRole (repId, roleId, userId, readOnlyYn) values (:report_id, :role_id, :user_id, :read_only_yn)
-    </query> -->
-    
 
     <query name="deleteReportSecurityUsers">
       delete from ReportUserRole where repId = :report_id and userId =:user_id
@@ -389,5 +384,17 @@
      <query name="getUserIdByorgUserId">
       select id from User where orgUserId = :orgUserId
     </query>
+
+     <query name="getUserByOrgUserId">
+       FROM User WHERE orgUserId = :org_user_id
+     </query>
+
+     <query name="getUserByLoginId">
+       FROM User WHERE loginId = :login_id
+     </query>
+
+     <query name="getUserByLoginIdLoginPwd">
+       FROM User WHERE loginId = :login_id and loginPwd = :login_pwd
+     </query>
 
 </hibernate-mapping>

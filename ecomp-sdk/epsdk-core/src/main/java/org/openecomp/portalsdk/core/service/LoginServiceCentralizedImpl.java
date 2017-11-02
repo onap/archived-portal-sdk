@@ -24,46 +24,38 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LoginServiceCentralizedImpl extends FusionService implements LoginService {
 
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(LoginServiceCentralizedImpl.class);
-
-	@Autowired
-	AppService appService;
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(LoginServiceCentralizedImpl.class);
 
 	@Autowired
 	private DataAccessService dataAccessService;
-	
-	@Autowired
-	RestApiRequestBuilder restApiRequestBuilder;
-	
-	@Autowired
-	UserService userService;
 
-	@SuppressWarnings("unused")
-	private MenuBuilder menuBuilder;
+	@Autowired
+	private RestApiRequestBuilder restApiRequestBuilder;
+
+	@Autowired
+	private UserService userService;
 
 	@Override
-	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename, HashMap additionalParams)
-			throws Exception {
+	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename, @SuppressWarnings("rawtypes") HashMap additionalParams) throws Exception {
 		return findUser(bean, menuPropertiesFilename, additionalParams, true);
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
 	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename, HashMap additionalParams,
 			boolean matchPassword) throws Exception {
-		User user = null;
-		User userCopy = null;
 
-		if (bean.getUserid() != null && bean.getUserid() != null) {
-			user = (User) findUser(bean);
+		User user;
+		if (bean.getUserid() != null) {
+			user = findUser(bean);
 		} else {
 			if (matchPassword)
-				user = (User) findUser(bean.getLoginId(), bean.getLoginPwd());
+				user = findUser(bean.getLoginId(), bean.getLoginPwd());
 			else
-				user = (User) findUserWithoutPwd(bean.getLoginId());
+				user = findUserWithoutPwd(bean.getLoginId());
 		}
 
 		if (user != null) {
-
 			if (AppUtils.isApplicationLocked()
 					&& !UserUtils.hasRole(user, SystemProperties.getProperty(SystemProperties.SYS_ADMIN_ROLE_ID))) {
 				bean.setLoginErrorMessage(SystemProperties.MESSAGE_KEY_LOGIN_ERROR_APPLICATION_LOCKED);
@@ -82,15 +74,20 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 
 				// this will be a snapshot of the user's information as
 				// retrieved from the database
-				userCopy = (User) user.clone();
+				User userCopy = null;
+				try {
+					userCopy = (User) user.clone();
+				} catch (CloneNotSupportedException ex) {
+					// Never happens
+					logger.error(EELFLoggerDelegate.errorLogger, "findUser failed", ex);
+				}
 
-				User appuser = getUser(userCopy);
+				User appuser = findUserWithoutPwd(user.getLoginId());
 
 				appuser.setLastLoginDate(new Date());
 
 				// update the last logged in date for the user
-				// user.setLastLoginDate(new Date());
-				getDataAccessService().saveDomainObject(appuser, additionalParams);
+				dataAccessService.saveDomainObject(appuser, additionalParams);
 
 				// update the audit log of the user
 				// Check for the client device type and set log attributes
@@ -117,6 +114,7 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 
 	private boolean userHasActiveRoles(User user) {
 		boolean hasActiveRole = false;
+		@SuppressWarnings("rawtypes")
 		Iterator roles = user.getRoles().iterator();
 		while (roles.hasNext()) {
 			Role role = (Role) roles.next();
@@ -128,72 +126,43 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 		return hasActiveRole;
 	}
 
-	@SuppressWarnings("null")
-	public User findUser(LoginBean bean) throws Exception {
-		User user = null;
+	private User findUser(LoginBean bean) throws Exception {
 		String repsonse = restApiRequestBuilder.getViaREST("/user/" + bean.getUserid(), true, bean.getUserid());
-		user = userService.userMapper(repsonse);
+		User user = userService.userMapper(repsonse);
 		user.setId(getUserIdByOrgUserId(user.getOrgUserId()));
 		return user;
 	}
-	
-	public Long getUserIdByOrgUserId(String orgUserId) {
-		Map<String, String> params = new HashMap<String, String>();
+
+	private Long getUserIdByOrgUserId(String orgUserId) {
+		Map<String, String> params = new HashMap<>();
 		params.put("orgUserId", orgUserId);
 		@SuppressWarnings("rawtypes")
-		List list = getDataAccessService().executeNamedQuery("getUserIdByorgUserId", params, null);
+		List list = dataAccessService.executeNamedQuery("getUserIdByorgUserId", params, null);
 		Long userId = null;
 		if (list != null && !list.isEmpty())
 			userId = (Long) list.get(0);
 		return userId;
 	}
-	
 
-	public User findUser(String loginId, String password) {
-
-		List list = null;
-
-		StringBuffer criteria = new StringBuffer();
-		criteria.append(" where login_id = '").append(loginId).append("'").append(" and login_pwd = '").append(password)
-				.append("'");
-
-		list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
-		return (list == null || list.size() == 0) ? null : (User) list.get(0);
+	@SuppressWarnings("rawtypes")
+	private User findUser(String loginId, String password) {
+		Map<String,String> params = new HashMap<>();
+		params.put("login_id", loginId);
+		params.put("login_pwd", password);
+		List list = dataAccessService.executeNamedQuery("getUserByLoginIdLoginPwd", params, new HashMap());
+		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private User findUserWithoutPwd(String loginId) {
-		List list = null;
-		StringBuffer criteria = new StringBuffer();
-		criteria.append(" where login_id = '").append(loginId).append("'");
-		list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
-		return (list == null || list.size() == 0) ? null : (User) list.get(0);
+		Map<String,String> params = new HashMap<>();
+		params.put("login_id", loginId);		
+		List list = dataAccessService.executeNamedQuery("getUserByLoginId", params, new HashMap());
+		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}
 
-	public DataAccessService getDataAccessService() {
-		return dataAccessService;
-	}
-
-	public void setDataAccessService(DataAccessService dataAccessService) {
-		this.dataAccessService = dataAccessService;
-	}
-
-	public MenuBuilder getMenuBuilder() {
+	private MenuBuilder getMenuBuilder() {
 		return new MenuBuilder();
-	}
-
-	public void setMenuBuilder(MenuBuilder menuBuilder) {
-		this.menuBuilder = menuBuilder;
-	}
-
-	public User getUser(User user) {
-		List list = null;
-
-		StringBuffer criteria = new StringBuffer();
-		criteria.append(" where login_id = '").append(user.getLoginId()).append("'");
-
-		list = getDataAccessService().getList(User.class, criteria.toString(), null, null);
-		return (list == null || list.size() == 0) ? null : (User) list.get(0);
-
 	}
 
 }

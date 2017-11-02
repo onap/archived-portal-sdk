@@ -11,6 +11,9 @@ schedulers, workflows and R Cloud integration.
 
 ### ONAP Distributions
 
+Version 1.3.2, 1 November 2017
+- No changes
+
 Version 1.3.1, 15 October 2017
 - No changes
 

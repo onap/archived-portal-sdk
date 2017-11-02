@@ -17,6 +17,9 @@ AngularJS version 1.5.0.
 
 ### ONAP Distributions
 
+Version 1.3.2, 1 November 2017
+- PORTAL-137 Enhance authentication
+
 Version 1.3.1, 15 October 2017
 - PORTAL-127 Remove GreenSock code from b2b library
 
