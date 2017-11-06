@@ -44,8 +44,10 @@ import org.onap.portalsdk.core.domain.Profile;
 import org.onap.portalsdk.core.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.onap.portalsdk.core.logging.aspect.MetricsLog;
 
 @Transactional
+@MetricsLog
 public class ProfileServiceImpl implements ProfileService {
 
 	@Autowired

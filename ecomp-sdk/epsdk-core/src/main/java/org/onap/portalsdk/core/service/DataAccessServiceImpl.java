@@ -157,6 +157,11 @@ public class DataAccessServiceImpl extends FusionService implements DataAccessSe
 	/**
 	 * generic get list method
 	 * 
+         * @deprecated
+         * This method may be vulnerable to SQL Injection attacks depending on the usage and is being deprecated. Please use
+         * getList(Class<?> domainClass, ProjectionList projectionsList, List<Criterion> restrictionsList,
+			List<Order> orderByList) method instead
+	 * 
 	 * @param domainClass
 	 * @param filterClause
 	 * @param fromIndex
@@ -164,6 +169,7 @@ public class DataAccessServiceImpl extends FusionService implements DataAccessSe
 	 * @param orderBy
 	 * @return
 	 */
+	@Deprecated
 	private List getListCommon(Class domainClass, String filterClause, Integer fromIndex, Integer toIndex,
 			String orderBy) {
 		String className = domainClass.getName();
@@ -186,17 +192,38 @@ public class DataAccessServiceImpl extends FusionService implements DataAccessSe
 		return list;
 	}
 
+	/**
+          * @deprecated
+          * This method may be vulnerable to SQL Injection attacks depending on the usage and is being deprecated. Please use
+          * getList(Class<?> domainClass, ProjectionList projectionsList, List<Criterion> restrictionsList,
+			List<Order> orderByList) method instead
+        */
 	@Override
+	@Deprecated
 	public List getList(Class domainClass, Map additionalParams) {
 		return getListCommon(domainClass, null, null, null, null);
 	}
 
+	 /**
+     * @deprecated
+     * This method may be vulnerable to SQL Injection attacks depending on the usage and is being deprecated. Please use
+     * getList(Class<?> domainClass, ProjectionList projectionsList, List<Criterion> restrictionsList,
+			List<Order> orderByList) method instead
+     */
 	@Override
+	@Deprecated
 	public List getList(Class domainClass, String filter, String orderBy, Map additionalParams) {
 		return getListCommon(domainClass, filter, null, null, orderBy);
 	}
-
+	
+	/**
+     * @deprecated
+     * This method may be vulnerable to SQL Injection attacks depending on the usage and is being deprecated. Please use
+     * getList(Class<?> domainClass, ProjectionList projectionsList, List<Criterion> restrictionsList,
+			List<Order> orderByList) method instead
+     */
 	@Override
+	@Deprecated
 	public List getList(Class domainClass, String filter, int fromIndex, int toIndex, String orderBy,
 			Map additionalParams) {
 		return getListCommon(domainClass, filter, new Integer(fromIndex), new Integer(toIndex), orderBy);
@@ -401,8 +428,10 @@ public class DataAccessServiceImpl extends FusionService implements DataAccessSe
 
 	@Override
 	public int executeNamedUpdateQuery(String queryName, Map params, Map additionalParams) {
-		logger.error(EELFLoggerDelegate.errorLogger, "Not implemented");
-		throw new UnsupportedOperationException();
+		Session session = sessionFactory.getCurrentSession();
+	    Query query = session.getNamedQuery(queryName);    
+	    bindQueryParameters(query,params);
+	    return query.executeUpdate();
 	}
 
 	@Override

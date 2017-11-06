@@ -43,6 +43,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.onap.portalsdk.core.util.SystemProperties.SecurityEventTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.onap.portalsdk.core.logging.aspect.MetricsLog;
 
 @Aspect
 @org.springframework.context.annotation.Configuration
@@ -108,4 +109,18 @@ public class EELFLoggerAspect {
 
 		return result;
 	}
+	
+	//Metrics Logging
+		@Pointcut("execution(* *(..))")
+	    public void performMetricsLogging() {}
+		
+		@Around("performMetricsLogging() && @within(MetricsLog)")
+		public Object metricsLoggingAroundClass(ProceedingJoinPoint joinPoint, MetricsLog MetricsLog) throws Throwable {
+			return this.logAroundMethod(joinPoint, null);
+		}
+		
+		@Around("performMetricsLogging() && @annotation(MetricsLog)")
+		public Object metricsLoggingAroundMethod(ProceedingJoinPoint joinPoint, MetricsLog MetricsLog) throws Throwable {
+			return this.logAroundMethod(joinPoint, null);
+		}
 }

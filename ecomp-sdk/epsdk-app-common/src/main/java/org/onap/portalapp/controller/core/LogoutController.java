@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+import org.onap.portalsdk.core.logging.aspect.MetricsLog;
 
 @Controller
 @RequestMapping("/")
@@ -106,6 +107,7 @@ public class LogoutController extends UnRestrictedBaseController {
 		return modelView;
 	}
 
+	@MetricsLog
 	public void chatRoomLogout(HttpServletRequest request) {
 		request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		setUser(UserUtils.getUserSession(request));

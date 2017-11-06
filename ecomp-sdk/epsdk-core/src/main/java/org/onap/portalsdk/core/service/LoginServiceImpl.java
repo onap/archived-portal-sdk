@@ -56,8 +56,10 @@ import org.onap.portalsdk.core.web.support.AppUtils;
 import org.onap.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.onap.portalsdk.core.logging.aspect.MetricsLog;
 
 @Transactional
+@MetricsLog
 public class LoginServiceImpl extends FusionService implements LoginService {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(LoginServiceImpl.class);

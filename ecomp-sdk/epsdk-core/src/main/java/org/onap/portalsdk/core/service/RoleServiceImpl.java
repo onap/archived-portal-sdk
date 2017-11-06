@@ -52,8 +52,10 @@ import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.onap.portalsdk.core.logging.aspect.MetricsLog;
 
 @Transactional
+@MetricsLog
 public class RoleServiceImpl implements RoleService {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(RoleServiceImpl.class);

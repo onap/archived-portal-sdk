@@ -58,6 +58,7 @@ import org.onap.portalsdk.core.util.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.onap.portalsdk.core.logging.aspect.MetricsLog;
 
 @Service("ldapService")
 @Transactional
@@ -144,6 +145,7 @@ public class LdapServiceImpl extends FusionService implements LdapService {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@MetricsLog
 	private ArrayList processResults(NamingEnumeration e) throws NamingException {
 		ArrayList results = new ArrayList();
 		int count = 0;
@@ -163,6 +165,7 @@ public class LdapServiceImpl extends FusionService implements LdapService {
 	}
 
 	@SuppressWarnings("rawtypes")
+	@MetricsLog
 	private DomainVo processAttributes(Attributes resultAttributes) {
 		User user = new User();
 		try {

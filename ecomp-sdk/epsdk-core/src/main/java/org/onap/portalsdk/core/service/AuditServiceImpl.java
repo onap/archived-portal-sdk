@@ -43,9 +43,11 @@ import org.onap.portalsdk.core.domain.AuditLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.onap.portalsdk.core.logging.aspect.MetricsLog;
 
 @Service("auditService")
 @Transactional
+@MetricsLog
 public class AuditServiceImpl implements AuditService {
 
 	@Autowired

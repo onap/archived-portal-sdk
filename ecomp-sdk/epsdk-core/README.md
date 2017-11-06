@@ -13,6 +13,9 @@ ECOMP SDK web application.
 
 ### ONAP Distributions
 
+Version 2.1.0
+- PORTAL-19 Rename Java package base to org.onap
+
 Version 1.4.0
 - PORTAL-19 Rename Java package base to org.onap
 - PORTAL-42 Use OParent as parent POM

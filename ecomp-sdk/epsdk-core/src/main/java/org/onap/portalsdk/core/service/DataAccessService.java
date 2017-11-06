@@ -60,10 +60,31 @@ public interface DataAccessService {
 	void saveDomainObject(DomainVo domainObject, Map additionalParams);
 
 	// generic get list method(s)
+	/**
+          * @deprecated
+          * This method may be vulnerable to SQL Injection attacks depending on the usage and is being deprecated. Please use
+          * getList(Class<?> domainClass, ProjectionList projectionsList, List<Criterion> restrictionsList,
+			List<Order> orderByList) method instead
+        */
+	@Deprecated
 	List getList(Class domainClass, Map additionalParams);
 
+	/**
+          * @deprecated
+          * This method may be vulnerable to SQL Injection attacks depending on the usage and is being deprecated. Please use
+          * getList(Class<?> domainClass, ProjectionList projectionsList, List<Criterion> restrictionsList,
+			List<Order> orderByList) method instead
+        */
+	@Deprecated
 	List getList(Class domainClass, String filter, String orderBy, Map additionalParams);
 
+	/**
+          * @deprecated
+          * This method may be vulnerable to SQL Injection attacks depending on the usage and is being deprecated. Please use
+          * getList(Class<?> domainClass, ProjectionList projectionsList, List<Criterion> restrictionsList,
+			List<Order> orderByList) method instead
+        */
+	@Deprecated
 	List getList(Class domainClass, String filter, int fromIndex, int toIndex, String orderBy,
 			Map additionalParams);
 
