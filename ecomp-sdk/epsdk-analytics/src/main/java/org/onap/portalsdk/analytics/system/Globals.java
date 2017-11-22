@@ -335,7 +335,7 @@ public class Globals extends org.onap.portalsdk.analytics.RaptorObject {
 		}
 		    	
 		catch (IOException e) {
-		   e.printStackTrace();
+		   logger.error(EELFLoggerDelegate.errorLogger,e.getMessage(), e);
 		}
 
 		try {

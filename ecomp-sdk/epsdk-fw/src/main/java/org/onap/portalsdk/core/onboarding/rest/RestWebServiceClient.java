@@ -51,7 +51,6 @@ import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.owasp.esapi.ESAPI;
 
-
 /**
  * Simple REST client for GET, POST and DELETE operations against the Portal
  * application.
@@ -211,7 +210,9 @@ public class RestWebServiceClient {
 
 		// add request header
 		con.setRequestProperty("uebkey", appUebKey);
-		con.setRequestProperty("LoginId", ESAPI.encoder().canonicalize(loginId));
+		if (loginId != null) {
+			con.setRequestProperty("LoginId", ESAPI.encoder().canonicalize(loginId));
+		}
 		con.setRequestProperty("user-agent", appName);
 		con.setRequestProperty("X-ECOMP-RequestID", requestId);
 		con.setRequestProperty("username", appUserName);
@@ -527,31 +528,10 @@ public class RestWebServiceClient {
 			int bytes;
 			while ((bytes = in.read(buf)) > 0)
 				sb.append(new String(buf, 0, bytes));
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logger.error("readAndCloseStream", ex);
 		}
 		return sb.toString();
 	}
 
-	/**
-	 * Basic unit test for the client to call Portal app on localhost.
-	 * 
-	 * @param args
-	 *            Ignored
-	 * @throws IOException
-	 *             On failure
-	 */
-	public static void main(String[] args) throws IOException {
-		RestWebServiceClient client = RestWebServiceClient.getInstance();
-		final String getUrl = "http://www.ecomp.openecomp.org:8080/ecompportal/auxapi/analytics";
-		String get = client.get(getUrl, "userId", "appName", null, "appUebKey", "appUserName", "appPassword", null);
-		System.out.println("Get result:\n" + get);
-		final String postUrl = "http://www.ecomp.openecomp.org:8080/ecompportal/auxapi/storeAnalytics";
-		final String content = " { " + " \"action\"  : \"test1\", " + " \"page\"     : \"test2\", "
-				+ " \"function\" : \"test3\", " + " \"userid\"   : \"ab1234\" " + "}";
-		String post = client.post(postUrl, "userId", "appName", null, "appUebKey", "appUserName", "appPassword",
-				"application/json", content, true);
-		System.out.println("Post result:\n" + post);
-	}
 }

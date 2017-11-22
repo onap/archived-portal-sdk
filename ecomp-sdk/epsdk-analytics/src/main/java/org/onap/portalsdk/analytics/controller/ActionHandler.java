@@ -858,13 +858,13 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 			try {
 				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(reportJSONRuntime);
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				logger.error(EELFLoggerDelegate.errorLogger,"reportRun", ex);
 				
 			}
             return jsonInString;
 		} catch (RaptorException e) {
 			try {
-				e.printStackTrace();
+				logger.error(EELFLoggerDelegate.errorLogger,"reportRun", e);
 				
 				if(rr!=null) { // when user tries report they don't have access this should not throw exception that's why this if is added.
 					if(isEmailAttachment)
@@ -885,7 +885,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 				try {
 					jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					logger.error(EELFLoggerDelegate.errorLogger,"reportRun", ex);
 					
 				}
 	            return jsonInString;
@@ -904,13 +904,13 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 				try {
 					jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
 				} catch (Exception ex1) {
-					ex1.printStackTrace();
+					logger.error(EELFLoggerDelegate.errorLogger,ex.getMessage(), ex);
 				}
 	            return jsonInString;
 			}
 			//nextPage = (new ErrorHandler()).processFatalError(request, e);
 		} catch (Exception t) {
-			t.printStackTrace();
+			logger.error(EELFLoggerDelegate.errorLogger,t.getMessage(), t);
 			ErrorJSONRuntime errorJSONRuntime = new ErrorJSONRuntime();
 			errorJSONRuntime.setErrormessage(t.toString());
 			errorJSONRuntime.setStacktrace(getStackTrace(t));
@@ -923,7 +923,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 			try {
 				jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(errorJSONRuntime);
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				logger.error(EELFLoggerDelegate.errorLogger,ex.getMessage(), ex);
 				
 			}
             return jsonInString;
@@ -1035,7 +1035,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 			jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(quickLinks);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EELFLoggerDelegate.errorLogger,e.getMessage(), e);
 		}
 		return jsonInString;
 	}
@@ -1071,7 +1071,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 					nextPage = (new ErrorHandler()).processFatalError(request, new RaptorSchedularException(message));
 				}
 				
-			} catch(Exception ex) { ex.printStackTrace();}
+			} catch(Exception ex) { logger.error(EELFLoggerDelegate.errorLogger,ex.getMessage(), ex);}
 		return nextPage;
 	}
 	
@@ -1102,7 +1102,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 					return nextPage;
 				}
 				
-			} catch (Exception ex) { ex.printStackTrace();}	
+			} catch (Exception ex) { logger.error(EELFLoggerDelegate.errorLogger,ex.getMessage(), ex);}	
 			if(reportSchedule == null) reportSchedule = new ReportSchedule(reportID, scheduleID, AppUtils.getUserID(request), request);
 			String formFields = "";
 			formFields = reportSchedule.getFormFields();
@@ -1139,17 +1139,17 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 				(new ErrorHandler()).processError(request, ve);
 			} catch (RaptorException e) {
 				nextPage = (new ErrorHandler()).processFatalError(request, e);
-	            e.printStackTrace();
+				logger.error(EELFLoggerDelegate.errorLogger,e.getMessage(), e);
 	            try {
 	            	DbUtils.rollbackTransaction(connection);
-	            } catch (Exception e1) {e1.printStackTrace();}
+	            } catch (Exception e1) {logger.error(EELFLoggerDelegate.errorLogger,e1.getMessage(), e1);}
 			} catch (Exception t) {
-				t.printStackTrace();
+				logger.error(EELFLoggerDelegate.errorLogger,t.getMessage(), t);
 			}
 			finally {
 				try {
 					DbUtils.clearConnection(connection);
-				} catch (Exception e1) {e1.printStackTrace();}
+				} catch (Exception e1) {logger.error(EELFLoggerDelegate.errorLogger,e1.getMessage(), e1);}
             }			
 			request.setAttribute("schedule_only", "Y");
 	        //request.getSession().removeAttribute(AppConstants.SI_REPORT_SCHEDULE);
@@ -1236,17 +1236,17 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 					(new ErrorHandler()).processError(request, ve);
 				} catch (RaptorException e) {
 					nextPage = (new ErrorHandler()).processFatalError(request, e);
-		            e.printStackTrace();
+					logger.error(EELFLoggerDelegate.errorLogger,e.getMessage(), e);
 		            try {
 		            	DbUtils.rollbackTransaction(connection);
-		            } catch (Exception e1) {e1.printStackTrace();}
+		            } catch (Exception e1) {logger.error(EELFLoggerDelegate.errorLogger,e1.getMessage(), e1);}
 				} catch (Exception t) {
-					t.printStackTrace();
+					logger.error(EELFLoggerDelegate.errorLogger,t.getMessage(), t);
 				}
 				finally {
 					try {
 						DbUtils.clearConnection(connection);
-					} catch (Exception e1) {e1.printStackTrace();}
+					} catch (Exception e1) {logger.error(EELFLoggerDelegate.errorLogger,e1.getMessage(), e1);}
 				}
 			}
 			request.setAttribute(AppConstants.RI_REPORT_ID, myScheduleRepID);
@@ -1282,7 +1282,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 		} catch (RaptorException e) {
 			nextPage = (new ErrorHandler()).processFatalError(request, e);
 		} catch (Exception t) {
-			t.printStackTrace();
+			logger.error(EELFLoggerDelegate.errorLogger,t.getMessage(), t);
 		}
 
 		return nextPage;
@@ -1491,7 +1491,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 			if(dataSizeForPopUp >= 0)
 				request.getSession().setAttribute(AppConstants.SI_DATA_SIZE_FOR_TEXTFIELD_POPUP, ""+dataSizeForPopUp);
 		} catch (RaptorException e) {
-			e.printStackTrace();
+			logger.error(EELFLoggerDelegate.errorLogger,e.getMessage(), e);
 			nextPage = (new ErrorHandler()).processFatalError(request, e);
 		}
 		return nextPage;
@@ -1920,7 +1920,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
             xmlOut.println(allColumnsBuffer.toString());
             xmlOut.flush();
             xmlOut.close();
-            } catch (IOException e) {e.printStackTrace();}
+            } catch (IOException e) {logger.error(EELFLoggerDelegate.errorLogger,e.getMessage(), e);}
             try {
             PrintWriter xmlOut = new PrintWriter(new BufferedWriter(new FileWriter(new File(whole_fileName))));
             logger.debug(EELFLoggerDelegate.debugLogger, ("**************************"));
@@ -1933,7 +1933,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
             //xmlOut.println(rr.getWholeSQL());
             xmlOut.flush();
             xmlOut.close();
-            } catch (IOException e) {e.printStackTrace();}
+            } catch (IOException e) {logger.error(EELFLoggerDelegate.errorLogger,e.getMessage(), e);}
         
         StringBuffer command = new StringBuffer(Globals.getShellScriptDir() + AppConstants.SHELL_SCRIPTS_DIR);
         if(nvl(emailId).length()>0) {
@@ -2419,7 +2419,7 @@ public class ActionHandler extends org.onap.portalsdk.analytics.RaptorObject {
 					try {
 						jsonInString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(reportJSONRuntime);
 					} catch (Exception ex) {
-						ex.printStackTrace();
+						logger.error(EELFLoggerDelegate.errorLogger,ex.getMessage(), ex);
 						
 					}
 		            return jsonInString;

@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.onap.portalsdk.core.controller.RestrictedBaseController;
 import org.onap.portalsdk.core.domain.BroadcastMessage;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.service.BroadcastService;
 import org.onap.portalsdk.core.web.support.JsonMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Controller
 @RequestMapping("/")
 public class BroadcastListController extends RestrictedBaseController {
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(BroadcastListController.class);
 
 	@Autowired
 	private BroadcastService broadcastService;
@@ -86,7 +88,7 @@ public class BroadcastListController extends RestrictedBaseController {
 			JSONObject j = new JSONObject(msg);
 			response.getWriter().write(j.toString());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EELFLoggerDelegate.errorLogger, "getBroadcast() failed", e);
 		}
 
 	}
@@ -120,6 +122,7 @@ public class BroadcastListController extends RestrictedBaseController {
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
 			out.write(e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "remove() failed", e);
 			return null;
 		}
 
@@ -154,6 +157,7 @@ public class BroadcastListController extends RestrictedBaseController {
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
 			out.write(e.getMessage());
+			logger.error(EELFLoggerDelegate.errorLogger, "toggleActive() failed", e);
 			return null;
 		}
 

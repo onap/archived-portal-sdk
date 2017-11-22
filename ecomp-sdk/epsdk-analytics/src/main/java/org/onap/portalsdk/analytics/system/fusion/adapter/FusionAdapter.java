@@ -42,12 +42,16 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import org.onap.portalsdk.analytics.model.runtime.FormField;
 import org.onap.portalsdk.core.FusionObject;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class FusionAdapter implements FusionObject {
+	
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(FusionAdapter.class);
 
     public static final String LOCAL_SESSION_FACTORY_KEY = "local";
 
@@ -76,7 +80,7 @@ public class FusionAdapter implements FusionObject {
     	try {
     	   connection = getDataSource().getConnection();
     	} catch(Exception ex) {
-    		ex.printStackTrace();
+    		logger.error(EELFLoggerDelegate.errorLogger,ex.getMessage(), ex);
     	}
        return connection;
     }
@@ -88,7 +92,7 @@ public class FusionAdapter implements FusionObject {
 		try {
 			connection = getDataSourceMap().get(schemaId).getConnection();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EELFLoggerDelegate.errorLogger,e.getMessage(), e);
 		}
 	
 		return connection;
@@ -101,7 +105,7 @@ public class FusionAdapter implements FusionObject {
           conn.close();
         }
         catch (Exception e) {
-          e.printStackTrace();
+          logger.error(EELFLoggerDelegate.errorLogger,e.getMessage(), e);
         }
     }
 

@@ -73,7 +73,8 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 	private UserService userService;
 
 	@Override
-	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename, @SuppressWarnings("rawtypes") Map additionalParams) throws IOException {
+	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename,
+			@SuppressWarnings("rawtypes") Map additionalParams) throws IOException {
 		return findUser(bean, menuPropertiesFilename, additionalParams, true);
 	}
 
@@ -121,11 +122,14 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 
 				User appuser = findUserWithoutPwd(user.getLoginId());
 
-				appuser.setLastLoginDate(new Date());
+				if (appuser == null && userHasRoleFunctions(user)) {
+					createUserIfNecessary(user);
+				} else {
+					appuser.setLastLoginDate(new Date());
 
-				// update the last logged in date for the user
-				dataAccessService.saveDomainObject(appuser, additionalParams);
-
+					// update the last logged in date for the user
+					dataAccessService.saveDomainObject(appuser, additionalParams);
+				}
 				// update the audit log of the user
 				// Check for the client device type and set log attributes
 				// appropriately
@@ -149,6 +153,34 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 		return bean;
 	}
 
+	private void createUserIfNecessary(User user) {
+		logger.debug(EELFLoggerDelegate.debugLogger, "createUser: " + user.getOrgUserId());
+		User user1 = new User();
+		user1.setEmail(user.getEmail());
+		user1.setEmail(user.getEmail());
+		user1.setFirstName(user.getFirstName());
+		user1.setHrid(user.getHrid());
+		user1.setJobTitle(user.getJobTitle());
+		user1.setLastName(user.getLastName());
+		user1.setLoginId(user.getLoginId());
+		user1.setOrgManagerUserId(user.getOrgManagerUserId());
+		user1.setMiddleInitial(user.getMiddleInitial());
+		user1.setOrgCode(user.getOrgCode());
+		user1.setOrgId(user.getOrgId());
+		user1.setPhone(user.getPhone());
+		user1.setOrgUserId(user.getOrgUserId());
+		user1.setActive(user.getActive());
+		user1.setLastLoginDate(new Date());
+
+		try {
+			dataAccessService.saveDomainObject(user1, null);
+			logger.debug(EELFLoggerDelegate.debugLogger, "createdUser Successfully: " + user.getOrgUserId());
+		} catch (Exception ex) {
+			logger.error(EELFLoggerDelegate.errorLogger, "createUserIfNecessary failed", ex);
+		}
+
+	}
+
 	private boolean userHasActiveRoles(User user) {
 		boolean hasActiveRole = false;
 		@SuppressWarnings("rawtypes")
@@ -161,6 +193,20 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 			}
 		}
 		return hasActiveRole;
+	}
+
+	private boolean userHasRoleFunctions(User user) {
+		boolean hasRoleFunctions = false;
+		@SuppressWarnings("rawtypes")
+		Iterator roles = user.getRoles().iterator();
+		while (roles.hasNext()) {
+			Role role = (Role) roles.next();
+			if (role.getActive() && role.getRoleFunctions() != null && !role.getRoleFunctions().isEmpty()) {
+				hasRoleFunctions = true;
+				break;
+			}
+		}
+		return hasRoleFunctions;
 	}
 
 	private User findUser(LoginBean bean) throws IOException {
@@ -183,7 +229,7 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 
 	@SuppressWarnings("rawtypes")
 	private User findUser(String loginId, String password) {
-		Map<String,String> params = new HashMap<>();
+		Map<String, String> params = new HashMap<>();
 		params.put("login_id", loginId);
 		params.put("login_pwd", password);
 		List list = dataAccessService.executeNamedQuery("getUserByLoginIdLoginPwd", params, new HashMap());
@@ -192,8 +238,8 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 
 	@SuppressWarnings("rawtypes")
 	private User findUserWithoutPwd(String loginId) {
-		Map<String,String> params = new HashMap<>();
-		params.put("login_id", loginId);		
+		Map<String, String> params = new HashMap<>();
+		params.put("login_id", loginId);
 		List list = dataAccessService.executeNamedQuery("getUserByLoginId", params, new HashMap());
 		return (list == null || list.isEmpty()) ? null : (User) list.get(0);
 	}

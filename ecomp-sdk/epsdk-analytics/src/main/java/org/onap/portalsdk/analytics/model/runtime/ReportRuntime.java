@@ -500,7 +500,7 @@ public class ReportRuntime extends ReportWrapper implements Cloneable, Serializa
 		       for (int i = 0; i < scheduleSessionParam.length; i++) {
 		    	   //debugLogger.debug(" scheduleSessionParam[i] " + scheduleSessionParam[i] + " " + request.getParameter(scheduleSessionParam[i]) );
 		           if(request.getParameter(scheduleSessionParam[i])!=null)
-		        	   paramList.add(new IdNameValue(scheduleSessionParam[i].toUpperCase(), request.getParameter(scheduleSessionParam[i])));
+		        	   paramList.add(new IdNameValue(ESAPI.encoder().canonicalize(scheduleSessionParam[i].toUpperCase()), ESAPI.encoder().canonicalize(request.getParameter(scheduleSessionParam[i]))));
 		       }
 	        }
 	        
@@ -531,7 +531,7 @@ public class ReportRuntime extends ReportWrapper implements Cloneable, Serializa
 						String scheduleSessionDispParam = scheduleSessionParam[i];
 						if(nvl(scheduleSessionDispParam).length()>0) {
 							String scheduleSessionDispParamArr[] = scheduleSessionDispParam.split(";");
-							paramList.add(new IdNameValue(scheduleSessionDispParamArr[1], nvl(request.getParameter(scheduleSessionDispParamArr[0]),"")));
+							paramList.add(new IdNameValue(ESAPI.encoder().canonicalize(scheduleSessionDispParamArr[1]), ESAPI.encoder().canonicalize(nvl(request.getParameter(scheduleSessionDispParamArr[0]),""))));
 						}
 					}
 		        }

@@ -44,6 +44,7 @@ import java.net.MalformedURLException;
 
 import org.onap.portalsdk.analytics.system.AppUtils;
 import org.onap.portalsdk.analytics.system.Globals;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Cell;
@@ -63,6 +64,9 @@ import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 
 class PageEvent extends PdfPageEventHelper {
+	
+	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(PageEvent.class);
+	
 	private PdfBean pb;
 	private int pageNo = 0;
 	private int omit_page_count = 0;
@@ -228,17 +232,11 @@ class PageEvent extends PdfPageEventHelper {
 		Image img = null;
 		try {
 			img = Image.getInstance(pb.getFullWebContextPath() + AppUtils.getImgFolderURL() + File.separator + imgSrc);
-		} catch (BadElementException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (BadElementException  |  MalformedURLException e) {
+			logger.error(EELFLoggerDelegate.errorLogger,"addLogo() failed ", e);
 			img = null;
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			img = null;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block			
-			e.printStackTrace();
+		}  catch (IOException e) {
+			logger.error(EELFLoggerDelegate.errorLogger,e.getMessage(), e);
 			
 		}
 		if(img == null){

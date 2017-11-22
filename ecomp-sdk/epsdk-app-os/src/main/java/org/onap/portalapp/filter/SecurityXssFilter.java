@@ -39,92 +39,70 @@
 package org.onap.portalapp.filter;
 
 import java.io.IOException;
-import javax.servlet.Filter;
+import java.io.UnsupportedEncodingException;
+
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.onap.portalapp.util.SecurityXssValidator;
-import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
+import org.springframework.web.util.WebUtils;
 
-public class SecurityXssFilter implements Filter {
+public class SecurityXssFilter extends OncePerRequestFilter {
 
-	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SecurityXssFilter.class);
+	private static final String BAD_REQUEST = "BAD_REQUEST";
 
-	private SecurityXssValidator validator  = SecurityXssValidator.getInstance();
-	
-	class SecurityRequestWrapper extends HttpServletRequestWrapper {
+	private SecurityXssValidator validator = SecurityXssValidator.getInstance();
 
-		public SecurityRequestWrapper(HttpServletRequest servletRequest) {
-			super(servletRequest);
-		}
-
-		@Override
-		public String[] getParameterValues(String parameter) {
-			String[] values = super.getParameterValues(parameter);
-
-			if (values == null) {
-				return null;
+	private static String getRequestData(final HttpServletRequest request) throws UnsupportedEncodingException {
+		String payload = null;
+		ContentCachingRequestWrapper wrapper = WebUtils.getNativeRequest(request, ContentCachingRequestWrapper.class);
+		if (wrapper != null) {
+			byte[] buf = wrapper.getContentAsByteArray();
+			if (buf.length > 0) {
+				payload = new String(buf, 0, buf.length, wrapper.getCharacterEncoding());
 			}
-
-			int count = values.length;
-			String[] encodedValues = new String[count];
-			for (int i = 0; i < count; i++) {
-				encodedValues[i] = stripXss(values[i]);
-				
-			}
-
-			return encodedValues;
 		}
-
-		private String stripXss(String value) {
-			
-			
-			return validator.stripXSS(value);
-		}
-
-		@Override
-		public String getParameter(String parameter) {
-			String value = super.getParameter(parameter);
-			if (StringUtils.isNotBlank(value)) {
-				value = stripXss(value);
-			}
-			return value;
-		}
-
-		@Override
-		public String getHeader(String name) {
-			String value = super.getHeader(name);
-			if (StringUtils.isNotBlank(value)) {
-				value = stripXss(value);
-			}
-			return value;
-		}
+		return payload;
 	}
-	
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
+
+	private static String getResponseData(final HttpServletResponse response) throws IOException {
+		String payload = null;
+		ContentCachingResponseWrapper wrapper = WebUtils.getNativeResponse(response,
+				ContentCachingResponseWrapper.class);
+		if (wrapper != null) {
+			byte[] buf = wrapper.getContentAsByteArray();
+			if (buf.length > 0) {
+				payload = new String(buf, 0, buf.length, wrapper.getCharacterEncoding());
+				wrapper.copyBodyToResponse();
+			}
+		}
+		return payload;
 	}
 
 	@Override
-	public void destroy() {
-	}
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
 
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
+		if (request.getMethod().equalsIgnoreCase("POST") || request.getMethod().equalsIgnoreCase("PUT")) {
 
-		try {
+			HttpServletRequest requestToCache = new ContentCachingRequestWrapper(request);
+			HttpServletResponse responseToCache = new ContentCachingResponseWrapper(response);
+			filterChain.doFilter(requestToCache, responseToCache);
+			String requestData = getRequestData(requestToCache);
+			String responseData = getResponseData(responseToCache);
+			if (StringUtils.isNotBlank(requestData) && validator.denyXSS(requestData)) {
+				throw new SecurityException(BAD_REQUEST);
+			}
 
-			chain.doFilter(new SecurityRequestWrapper((HttpServletRequest) request), response);
-		} catch (Exception e) {
-			logger.error(EELFLoggerDelegate.errorLogger, "doFilter() failed", e);
+		} else {
+			filterChain.doFilter(request, response);
 		}
-	}
 
+	}
 }

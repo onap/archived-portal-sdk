@@ -1,6 +1,7 @@
 <div id="page-content">
 	<div>
 		<h1 class="heading-page" id="Roles">Roles</h1>
+		<span class= "heading-small" ng-if="isAppCentralized=='true'"><b>Please go to portal to Manage Roles.</b></span>
 	</div>
 	<div ng-show="showLoader" class="span loader-container">
 		<i class="icon-primary-spinner" role="img"
@@ -8,34 +9,35 @@
 	</div>
 	<div ng-hide="showLoader">
 		<div>
-			 <button type="submit" onClick="window.location='admin#/role/0';" class="btn btn-alt btn-small">Add New Role</button>
+			 <button type="submit" ng-click="addRoleFuncPopUp(rowData);" class="btn btn-alt btn-small" ng-if="isAppCentralized=='false'">Add New Role</button>
 		</div>
-		<h2 class="heading-small">Click on a Role to view its details.</h2>
+		<h2 class="heading-small" ng-if="isAppCentralized=='false'">Click on a Role to view its details.</h2>
 			<table class="striped" ng-if="availableRoleFunctions" style="width: auto;">
 				<thead> 
 					<tr>
 						<th>Name</th>
 						<th>Priority</th>
-						<th>Edit</th>
-						<th>Active?</th>
-						<th>Delete?</th>
+						<th ng-if="isAppCentralized=='false'">Edit</th>
+						<th ng-if="isAppCentralized=='false'">Active?</th>
+						<th ng-if="isAppCentralized=='false'">Delete?</th>
 					</tr>
 				</thead>
 				<tbody type="body" ng-repeat="availableRole in  ociavailableRoles">
 					<tr>
 						<td>{{ availableRole.name }}</td>
 						<td>{{ availableRole.priority }}</td>
-						<td>
+						<div ng-if="isAppCentralized=='false'">
+						<td ng-if="isAppCentralized=='false'">
 							<a href="admin#/role/{{availableRole.id}}" class="icon-misc-pen"></a>
 						</td>
-						<td>
-					    	<div >
+						<td ng-if="isAppCentralized=='false'">
+					    	<div>
 					    		<label class="btn-switch-label" tabindex="0" role="option">
-									<input type="checkbox" b2b-switches ng-model="availableRole.active" ng-click="activateRoleConfirmPopUp(availableRole.active,availableRole);" >
+									<input type="checkbox" b2b-switches ng-model="availableRole.active" ng-click="activateRoleConfirmPopUp(availableRole.active,availableRole);">
 							    </label> 
 					    	</div>
 				    	</td>
-				    	<td width="10%">
+				    	<td width="10%" ng-if="isAppCentralized=='false'">
 				    		<div ng-click="delRoleConfirmPopUp(availableRole);"><a href="javascript:void(0)" class="icon-misc-trash"></a></div>
 				     	</td>
 					</tr>
