@@ -60,6 +60,7 @@ public class SecurityXssValidator {
 	private static final String MYSQL_DB = "mysql";
 	private static final String ORACLE_DB = "oracle";
 	private static final String MARIA_DB = "mariadb";
+	private static final int FLAGS = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
 
 	static SecurityXssValidator validator = null;
 	private static Codec instance;
@@ -82,46 +83,39 @@ public class SecurityXssValidator {
 
 	private SecurityXssValidator() {
 		// Avoid anything between script tags
-		XSS_INPUT_PATTERNS.add(Pattern.compile("<script>(.*?)</script>", Pattern.CASE_INSENSITIVE));
+		XSS_INPUT_PATTERNS.add(Pattern.compile("<script>(.*?)</script>", FLAGS));
 
 		// avoid iframes
-		XSS_INPUT_PATTERNS.add(Pattern.compile("<iframe(.*?)>(.*?)</iframe>", Pattern.CASE_INSENSITIVE));
+		XSS_INPUT_PATTERNS.add(Pattern.compile("<iframe(.*?)>(.*?)</iframe>", FLAGS));
 
 		// Avoid anything in a src='...' type of expression
-		XSS_INPUT_PATTERNS.add(Pattern.compile("src[\r\n]*=[\r\n]*\\\'(.*?)\\\'",
-				Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+		XSS_INPUT_PATTERNS.add(Pattern.compile("src[\r\n]*=[\r\n]*\\\'(.*?)\\\'", FLAGS));
 
-		XSS_INPUT_PATTERNS.add(Pattern.compile("src[\r\n]*=[\r\n]*\\\"(.*?)\\\"",
-				Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+		XSS_INPUT_PATTERNS.add(Pattern.compile("src[\r\n]*=[\r\n]*\\\"(.*?)\\\"", FLAGS));
 
-		XSS_INPUT_PATTERNS.add(Pattern.compile("src[\r\n]*=[\r\n]*([^>]+)",
-				Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+		XSS_INPUT_PATTERNS.add(Pattern.compile("src[\r\n]*=[\r\n]*([^>]+)", FLAGS));
 
 		// Remove any lonesome </script> tag
-		XSS_INPUT_PATTERNS.add(Pattern.compile("</script>", Pattern.CASE_INSENSITIVE));
+		XSS_INPUT_PATTERNS.add(Pattern.compile("</script>", FLAGS));
 
-		XSS_INPUT_PATTERNS.add(Pattern.compile(".*(<script>|</script>).*", Pattern.CASE_INSENSITIVE));
+		XSS_INPUT_PATTERNS.add(Pattern.compile(".*(<script>|</script>).*", FLAGS));
 
-		XSS_INPUT_PATTERNS.add(Pattern.compile(".*(<iframe>|</iframe>).*", Pattern.CASE_INSENSITIVE));
+		XSS_INPUT_PATTERNS.add(Pattern.compile(".*(<iframe>|</iframe>).*", FLAGS));
 
 		// Remove any lonesome <script ...> tag
-		XSS_INPUT_PATTERNS
-				.add(Pattern.compile("<script(.*?)>", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+		XSS_INPUT_PATTERNS.add(Pattern.compile("<script(.*?)>", FLAGS));
 
 		// Avoid eval(...) expressions
-		XSS_INPUT_PATTERNS
-				.add(Pattern.compile("eval\\((.*?)\\)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+		XSS_INPUT_PATTERNS.add(Pattern.compile("eval\\((.*?)\\)", FLAGS));
 
 		// Avoid expression(...) expressions
-		XSS_INPUT_PATTERNS.add(Pattern.compile("expression\\((.*?)\\)",
-				Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+		XSS_INPUT_PATTERNS.add(Pattern.compile("expression\\((.*?)\\)", FLAGS));
 
 		// Avoid javascript:... expressions
-		XSS_INPUT_PATTERNS.add(Pattern.compile(".*(javascript:|vbscript:).*", Pattern.CASE_INSENSITIVE));
+		XSS_INPUT_PATTERNS.add(Pattern.compile(".*(javascript:|vbscript:).*", FLAGS));
 
 		// Avoid onload= expressions
-		XSS_INPUT_PATTERNS.add(
-				Pattern.compile(".*(onload(.*?)=).*", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL));
+		XSS_INPUT_PATTERNS.add(Pattern.compile(".*(onload(.*?)=).*", FLAGS));
 	}
 
 	private List<Pattern> XSS_INPUT_PATTERNS = new ArrayList<Pattern>();

@@ -181,3 +181,14 @@ p,a{
 	overflow:auto; 
 	display:block
 }
+.error-container {
+    position: absolute;
+    width: 220px;
+    display: block;
+    height: 12px;
+    line-height: 12px;
+}
+.err-message {
+    color: #cf2a2a;
+    font-size: 10px;
+}

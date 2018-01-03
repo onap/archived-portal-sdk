@@ -38,5 +38,19 @@
 package org.onap.portalsdk.core.logging.format;
 
 public enum AlarmSeverityEnum {
-	CRITICAL, MAJOR, MINOR, INFORMATIONAL, NONE,
+	CRITICAL("1"),
+	MAJOR("2"), 
+	MINOR("3"), 
+	INFORMATIONAL("4"), 
+	NONE("0");
+
+	private final String severity;
+
+	AlarmSeverityEnum(String severity) {
+		this.severity = severity;
+	}
+
+	public String severity() {
+		return severity;
+	}
 }

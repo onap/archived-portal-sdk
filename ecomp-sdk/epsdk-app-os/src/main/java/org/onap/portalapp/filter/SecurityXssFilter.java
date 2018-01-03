@@ -38,71 +38,119 @@
  */
 package org.onap.portalapp.filter;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ReadListener;
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
 import org.onap.portalapp.util.SecurityXssValidator;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.ContentCachingRequestWrapper;
-import org.springframework.web.util.ContentCachingResponseWrapper;
-import org.springframework.web.util.WebUtils;
 
 public class SecurityXssFilter extends OncePerRequestFilter {
 
-	private static final String BAD_REQUEST = "BAD_REQUEST";
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SecurityXssFilter.class);
+
+	private static final String APPLICATION_JSON = "application/json";
+
+	private static final String ERROR_BAD_REQUEST = "{\"error\":\"BAD_REQUEST\"}";
 
 	private SecurityXssValidator validator = SecurityXssValidator.getInstance();
 
-	private static String getRequestData(final HttpServletRequest request) throws UnsupportedEncodingException {
-		String payload = null;
-		ContentCachingRequestWrapper wrapper = WebUtils.getNativeRequest(request, ContentCachingRequestWrapper.class);
-		if (wrapper != null) {
-			byte[] buf = wrapper.getContentAsByteArray();
-			if (buf.length > 0) {
-				payload = new String(buf, 0, buf.length, wrapper.getCharacterEncoding());
-			}
-		}
-		return payload;
-	}
+	public class RequestWrapper extends HttpServletRequestWrapper {
 
-	private static String getResponseData(final HttpServletResponse response) throws IOException {
-		String payload = null;
-		ContentCachingResponseWrapper wrapper = WebUtils.getNativeResponse(response,
-				ContentCachingResponseWrapper.class);
-		if (wrapper != null) {
-			byte[] buf = wrapper.getContentAsByteArray();
-			if (buf.length > 0) {
-				payload = new String(buf, 0, buf.length, wrapper.getCharacterEncoding());
-				wrapper.copyBodyToResponse();
-			}
+		private ByteArrayOutputStream cachedBytes;
+
+		public RequestWrapper(HttpServletRequest request) {
+			super(request);
 		}
-		return payload;
+
+		@Override
+		public ServletInputStream getInputStream() throws IOException {
+			if (cachedBytes == null)
+				cacheInputStream();
+
+			return new CachedServletInputStream();
+		}
+
+		@Override
+		public BufferedReader getReader() throws IOException {
+			return new BufferedReader(new InputStreamReader(getInputStream()));
+		}
+
+		private void cacheInputStream() throws IOException {
+			cachedBytes = new ByteArrayOutputStream();
+			IOUtils.copy(super.getInputStream(), cachedBytes);
+		}
+
+		public class CachedServletInputStream extends ServletInputStream {
+			private ByteArrayInputStream input;
+
+			public CachedServletInputStream() {
+				input = new ByteArrayInputStream(cachedBytes.toByteArray());
+			}
+
+			@Override
+			public int read() throws IOException {
+				return input.read();
+			}
+
+			public boolean isFinished() {
+				return false;
+			}
+
+			public boolean isReady() {
+				return false;
+			}
+
+			public void setReadListener(ReadListener readListener) {
+
+			}
+
+		}
 	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-
-		if (request.getMethod().equalsIgnoreCase("POST") || request.getMethod().equalsIgnoreCase("PUT")) {
-
-			HttpServletRequest requestToCache = new ContentCachingRequestWrapper(request);
-			HttpServletResponse responseToCache = new ContentCachingResponseWrapper(response);
-			filterChain.doFilter(requestToCache, responseToCache);
-			String requestData = getRequestData(requestToCache);
-			String responseData = getResponseData(responseToCache);
-			if (StringUtils.isNotBlank(requestData) && validator.denyXSS(requestData)) {
-				throw new SecurityException(BAD_REQUEST);
+		if (validateRequestType(request)) {
+			request = new RequestWrapper(request);
+			String requestData = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8.toString());
+			try {
+				if (StringUtils.isNotBlank(requestData) && validator.denyXSS(requestData)) {
+					response.setContentType(APPLICATION_JSON);
+					response.setStatus(HttpStatus.SC_BAD_REQUEST);
+					response.getWriter().write(ERROR_BAD_REQUEST);
+					throw new SecurityException(ERROR_BAD_REQUEST);
+				}
+			} catch (Exception e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "doFilterInternal() failed due to BAD_REQUEST", e);
+				response.getWriter().close();
+				return;
 			}
+			filterChain.doFilter(request, response);
 
 		} else {
 			filterChain.doFilter(request, response);
 		}
 
+	}
+
+	private boolean validateRequestType(HttpServletRequest request) {
+		return (request.getMethod().equalsIgnoreCase("POST") || request.getMethod().equalsIgnoreCase("PUT")
+				|| request.getMethod().equalsIgnoreCase("DELETE"));
 	}
 }

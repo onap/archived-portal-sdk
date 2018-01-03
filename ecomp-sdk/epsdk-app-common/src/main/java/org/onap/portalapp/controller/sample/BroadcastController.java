@@ -45,8 +45,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
+import org.onap.portalapp.util.SecurityXssValidator;
 import org.onap.portalsdk.core.controller.RestrictedBaseController;
 import org.onap.portalsdk.core.domain.BroadcastMessage;
+import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.service.BroadcastService;
 import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.web.support.AppUtils;
@@ -65,6 +67,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequestMapping("/")
 public class BroadcastController extends RestrictedBaseController {
 
+	private EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(BroadcastController.class);
+	
 	@Autowired
 	private BroadcastService broadcastService;
 
@@ -77,7 +81,7 @@ public class BroadcastController extends RestrictedBaseController {
 			model.put("broadcastMessage", mapper.writeValueAsString(broadcastService.getBroadcastMessage(request)));
 			model.put("broadcastSites", mapper.writeValueAsString(referenceData(request).get("broadcastSites")));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EELFLoggerDelegate.errorLogger, "broadcast() failed", e);
 		}
 		return new ModelAndView(getViewName(), model);
 	}
@@ -96,7 +100,7 @@ public class BroadcastController extends RestrictedBaseController {
 			response.getWriter().write(j.toString());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EELFLoggerDelegate.errorLogger, "getBroadcast() failed", e);
 		}
 
 	}
@@ -141,7 +145,8 @@ public class BroadcastController extends RestrictedBaseController {
 			response.setCharacterEncoding("UTF-8");
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred while saving the BroadcastMessage in the save () mapping-/broadcast/save   ");
+			logger.error(EELFLoggerDelegate.errorLogger, "save() failed", e);
 			return null;
 		}
 

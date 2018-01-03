@@ -141,7 +141,7 @@ public class RoleListController extends RestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "toggleRole failed", e);
 			response.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred while saving Role  in the toggleRole()");
 			return null;
 		}
 
@@ -180,7 +180,7 @@ public class RoleListController extends RestrictedBaseController {
 			response.setCharacterEncoding("UTF-8");
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred while removing Role  in the toggleRole()");
 			return null;
 		}
 

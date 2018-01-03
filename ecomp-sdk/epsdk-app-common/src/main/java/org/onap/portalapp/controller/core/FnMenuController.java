@@ -76,7 +76,7 @@ public class FnMenuController extends RestrictedBaseController {
 
 	@Autowired
 	FnMenuService service;
-	
+
 	@Autowired
 	FunctionalMenuListService functionalMenuListService;
 
@@ -91,7 +91,7 @@ public class FnMenuController extends RestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "getParentListFailed", e);
 			response.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred in the getParentList () ");
 		}
 	}
 
@@ -104,7 +104,7 @@ public class FnMenuController extends RestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "getFunctionCDList", e);
 			response.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred in the getFunctionCDList ()");
 		}
 
 	}
@@ -160,7 +160,6 @@ public class FnMenuController extends RestrictedBaseController {
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			JsonNode root = mapper.readTree(request.getReader());
 			Menu fnMenuItem = mapper.readValue(root.get("availableFnMenuItem").toString(), Menu.class);
-
 			service.saveFnMenu(fnMenuItem);
 			request.getSession()
 					.removeAttribute(SystemProperties.getProperty(SystemProperties.APPLICATION_MENU_ATTRIBUTE_NAME));
@@ -183,7 +182,7 @@ public class FnMenuController extends RestrictedBaseController {
 			response.setCharacterEncoding("UTF-8");
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred in the updateFnMenu () ");
 		}
 		return null;
 
@@ -198,9 +197,7 @@ public class FnMenuController extends RestrictedBaseController {
 			JsonNode root = mapper.readTree(request.getReader());
 			Menu fnMenuItem = mapper.readValue(root.get("fnMenuItem").toString(), Menu.class);
 			Menu fnMenuItemRow = service.getMenuItemRow(fnMenuItem.getId());
-
 			service.removeMenuItem(fnMenuItemRow);
-
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("application / json");
 			request.setCharacterEncoding("UTF-8");
@@ -215,7 +212,7 @@ public class FnMenuController extends RestrictedBaseController {
 			response.setCharacterEncoding("UTF-8");
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred in the removeFnMenu ()");
 		}
 		return null;
 

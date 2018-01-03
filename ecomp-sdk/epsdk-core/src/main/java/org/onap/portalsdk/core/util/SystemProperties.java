@@ -263,6 +263,8 @@ public class SystemProperties {
 	// Left Menu
 	public static final String LEFT_MENU_PARENT = "parentList";
 	public static final String LEFT_MENU_CHILDREND = "childItemList";
+	public static final String COOKIE_DOMAIN = "cookie_domain";
+
 
 	public enum RESULT_ENUM {
 		SUCCESS, FAILURE

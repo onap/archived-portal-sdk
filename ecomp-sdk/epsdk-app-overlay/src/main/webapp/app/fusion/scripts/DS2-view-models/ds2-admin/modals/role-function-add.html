@@ -12,18 +12,29 @@
 		style="height: 145px;">
 
 		<div class="field-group">
-			Name <input id="textinputID-2a" ddh-reset ng-model="roleFun['name']"
+			<span ID="required" style="color: Red;" visible="false"> *</span>Name <input id="textinputID-2a" ddh-reset ng-model="roleFun['name']"
 				placeholder="Name" class="span12" type="text">
 		</div>
+		<div class="error-container"
+			ng-show="!roleFun['name']||roleFun['name']==0">
+			<small id="name-required" class="err-message">Name is Required</small>
+		</div>
+		<br>
 		<div class="field-group">
-			Code <input id="textinputID-2a" ddh-reset ng-model="roleFun['code']"
+			<span ID="required" style="color: Red;" visible="false"> *</span>Code <input id="textinputID-2a" ddh-reset ng-model="roleFun['code']"
 				placeholder="Code" class="span12" type="text">
 
 		</div>
+		<div class="error-container"
+			ng-show="!roleFun['code']||roleFun['code']==0">
+			<small id="code-required" class="err-message">Code is Required</small>
+		</div>
+		
 	</div>
+	<br>
 	<div class="b2b-modal-footer ng-scope ng-isolate-scope in">
 		<div class="cta-button-group in">
-			<button class="btn btn-alt btn-medium" type="button"
+			<button class="btn btn-alt btn-medium" type="button" ng-disabled= "(!roleFun['name']||roleFun['name']==0)|| (!roleFun['code']||roleFun['code']==0)"
 				ng-click="save(roleFun);">Create</button>
 			<button class="btn btn-medium" type="button"
 				ng-click="$dismiss('cancel')">Cancel</button>

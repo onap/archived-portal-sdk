@@ -14,7 +14,8 @@ ECOMP SDK web application.
 ### ONAP Distributions
 
 Version 2.1.0
-- PORTAL-19 Rename Java package base to org.onap
+- PORTAL-19  Rename Java package base to org.onap
+- PORTAL-145 Harden code to address penetration attacks
 
 Version 1.4.0
 - PORTAL-19 Rename Java package base to org.onap

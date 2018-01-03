@@ -232,7 +232,7 @@ public class RoleController extends RestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "removeRole failed", e);
 			response.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred removeRole failed in the removeRoleFunction");
 			return null;
 		}
 
@@ -269,7 +269,7 @@ public class RoleController extends RestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "removeRoleFunction failed", e);
 			response.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred removeRoleFunction failed in the removeRoleFunction");
 			return null;
 		}
 
@@ -305,7 +305,7 @@ public class RoleController extends RestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "removeChildRole failed", e);
 			response.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred removeChildRole failed in the removeChildRole()");
 			return null;
 		}
 
@@ -342,7 +342,7 @@ public class RoleController extends RestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "addChildRole failed", e);
 			response.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred addChildRole failed in the addChildRole()");
 			return null;
 		}
 

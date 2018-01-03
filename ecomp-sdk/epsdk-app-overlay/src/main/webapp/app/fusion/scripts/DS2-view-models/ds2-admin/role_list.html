@@ -9,7 +9,7 @@
 	</div>
 	<div ng-hide="showLoader">
 		<div>
-			 <button type="submit" ng-click="addRoleFuncPopUp(rowData);" class="btn btn-alt btn-small" ng-if="isAppCentralized=='false'">Add New Role</button>
+			 <button type="submit"  onClick="window.location='admin#/role/0';" class="btn btn-alt btn-small" ng-if="isAppCentralized=='false'">Add New Role</button>
 		</div>
 		<h2 class="heading-small" ng-if="isAppCentralized=='false'">Click on a Role to view its details.</h2>
 			<table class="striped" ng-if="availableRoleFunctions" style="width: auto;">

@@ -229,7 +229,7 @@ public class ProfileController extends RestrictedBaseController {
 			response.setCharacterEncoding("UTF-8");			
 			try {
 				PrintWriter 	out = response.getWriter();
-				out.write(e.getMessage());
+				out.write("An error occurred in the saveProfile ()");
 			} catch (IOException e1) {
 				logger.error(EELFLoggerDelegate.errorLogger, "saveProfile: failed to write", e1);
 			}
@@ -279,7 +279,7 @@ public class ProfileController extends RestrictedBaseController {
 			logger.error(EELFLoggerDelegate.errorLogger, "removeRole failed", e);
 			response.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred in the removeRole ()");
 			return null;
 		}
 	}
@@ -322,7 +322,7 @@ public class ProfileController extends RestrictedBaseController {
 			response.setCharacterEncoding("UTF-8");
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred in the addNewRole ()");
 			return null;
 		}
 

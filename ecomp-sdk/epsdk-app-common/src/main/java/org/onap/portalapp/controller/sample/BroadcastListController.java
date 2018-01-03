@@ -121,7 +121,7 @@ public class BroadcastListController extends RestrictedBaseController {
 			response.setCharacterEncoding("UTF-8");
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred while removing the BroadcastMessage in the remove ()");
 			logger.error(EELFLoggerDelegate.errorLogger, "remove() failed", e);
 			return null;
 		}
@@ -156,7 +156,7 @@ public class BroadcastListController extends RestrictedBaseController {
 			response.setCharacterEncoding("UTF-8");
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write(e.getMessage());
+			out.write("An error occurred while saving the BroadcastMessage in the toggleActive () ");
 			logger.error(EELFLoggerDelegate.errorLogger, "toggleActive() failed", e);
 			return null;
 		}

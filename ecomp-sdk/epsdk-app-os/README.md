@@ -19,9 +19,11 @@ Version 1.4.0, <?day> <?month> 2017
 - PORTAL-72 Address Sonar Scan code issues
 - PORTAL-79 remove unwanted SDK left menu under Report-sample dashboard
 - PORTAL-90 Use approved ONAP license text
-- Portal-86 Remove application specific usages from tests and other files (rework)
-- Portal-104 Replaced the sql connector to maria db
-- Portal-127 Remove GreenSock license code from b2b library
+- PORTAL-86 Remove application specific usages from tests and other files (rework)
+- PORTAL-104 Replaced the sql connector to maria db
+- PORTAL-127 Remove GreenSock license code from b2b library
+- PORTAL-118 Missing Error page in Portal-SDK app when there is an exception happen in the backend.
+
 * Put new entries here *
 
 Version 1.3.0, 28 August 2017

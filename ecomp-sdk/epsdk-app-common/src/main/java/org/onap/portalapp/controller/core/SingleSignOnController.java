@@ -37,6 +37,8 @@
  */
 package org.onap.portalapp.controller.core;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -47,6 +49,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.onap.portalsdk.core.auth.LoginStrategy;
 import org.onap.portalsdk.core.command.LoginBean;
 import org.onap.portalsdk.core.controller.UnRestrictedBaseController;
@@ -159,6 +162,7 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 				// both user and session are non-null.
 				logger.info(EELFLoggerDelegate.debugLogger, "singleSignOnLogin: redirecting to the forwardURL {}",
 						forwardURL);
+				validateDomain(forwardURL);
 				return new ModelAndView("redirect:" + forwardURL);
 			}
 
@@ -180,6 +184,7 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 				// application can publish a base URL in system.properties
 				String appUrl = SystemProperties.getProperty(SystemProperties.APP_BASE_URL);
 				returnToAppUrl = appUrl + (appUrl.endsWith("/") ? "" : "/") + forwardURL;
+				validateDomain(returnToAppUrl);
 				logger.debug(EELFLoggerDelegate.debugLogger,
 						"singleSignOnLogin: using app base URL {} and redirectURL {}", appUrl, returnToAppUrl);
 			} else {
@@ -190,6 +195,7 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 				// should always find the specified token.
 				returnToAppUrl = request.getRequestURL().toString().replace("single_signon.htm",
 						forwardURL);
+				validateDomain(returnToAppUrl);
 				logger.debug(EELFLoggerDelegate.debugLogger, "singleSignOnLogin: computed redirectURL {}",
 						returnToAppUrl);
 			}
@@ -202,12 +208,22 @@ public class SingleSignOnController extends UnRestrictedBaseController {
 			final String redirectUrl = portalUrl + "?uebAppKey=" + uebAppKey + "&redirectUrl=" + encodedReturnToAppUrl;
 			logger.debug(EELFLoggerDelegate.debugLogger, "singleSignOnLogin: portal-bound redirect URL is {}",
 					redirectUrl);
-			
 			// this line may not be necessary but jsessionid coockie is not getting created in all cases;
 			// so force the cookie creation
 			request.getSession(true);
 			
 			return new ModelAndView("redirect:" + redirectUrl);
+		}
+	}
+
+	private void validateDomain(String forwardURL) throws MalformedURLException {
+		if (StringUtils.isNotBlank(forwardURL)) {
+			String hostName = new URL(forwardURL).getHost();
+			if (StringUtils.isNotBlank(hostName) && !hostName.endsWith(SystemProperties.getProperty(SystemProperties.COOKIE_DOMAIN))) {
+				logger.debug(EELFLoggerDelegate.debugLogger, "singleSignOnLogin: accessing Unauthorized url",
+						hostName);
+				throw new SecurityException("accessing Unauthorized url : " + hostName);
+			}
 		}
 	}
 

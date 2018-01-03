@@ -37,17 +37,21 @@
  */
 package org.onap.portalsdk.core.interceptor;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.onap.portalsdk.core.controller.FusionBaseController;
 import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.exception.SessionExpiredException;
 import org.onap.portalsdk.core.listener.CollaborateListBindingListener;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
+import org.onap.portalsdk.core.util.SystemProperties;
 import org.onap.portalsdk.core.web.support.AppUtils;
 import org.onap.portalsdk.core.web.support.UserUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -56,7 +60,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(SessionTimeoutInterceptor.class);
-	
+
 	/**
 	 * Checks all requests for valid session information. If not found, redirects to
 	 * a controller that will establish a valid session.
@@ -98,6 +102,7 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 						// "/context/single_signon.htm"
 						final String redirectUrl = request.getContextPath() + singleSignonPrefix
 								+ "redirectToPortal=Yes&" + forwardUrlParm;
+						validateDomain(redirectUrl);
 						logger.debug(EELFLoggerDelegate.debugLogger, "preHandle: session is expired, redirecting to {}",
 								redirectUrl);
 						response.sendRedirect(redirectUrl);
@@ -107,6 +112,7 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 						// Redirect to an absolute path in the webapp; e.g.,
 						// "/context/single_signon.htm"
 						final String redirectUrl = request.getContextPath() + singleSignonPrefix + forwardUrlParm;
+						validateDomain(redirectUrl);
 						logger.debug(EELFLoggerDelegate.debugLogger, "preHandle: took exception {}, redirecting to {}",
 								ex.getMessage(), redirectUrl);
 						response.sendRedirect(redirectUrl);
@@ -117,6 +123,17 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 		}
 
 		return super.preHandle(request, response, handler);
+	}
+
+	private void validateDomain(final String redirectUrl) throws MalformedURLException {
+		if (StringUtils.isNotBlank(redirectUrl)) {
+			String hostName = new URL(redirectUrl).getHost();
+			if (StringUtils.isNotBlank(hostName)
+					&& !hostName.endsWith(SystemProperties.getProperty(SystemProperties.COOKIE_DOMAIN))) {
+				logger.debug(EELFLoggerDelegate.debugLogger, "singleSignOnLogin: accessing Unauthorized url", hostName);
+				throw new SecurityException("accessing Unauthorized url : " + hostName);
+			}
+		}
 	}
 
 }
