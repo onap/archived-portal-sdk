@@ -61,6 +61,7 @@ import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
+import org.owasp.esapi.ESAPI;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -305,12 +306,12 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 				}
 			} else {
 				String msg = "doPost: no match for request " + requestUri;
-				logger.warn(msg);
+				logger.warn( ESAPI.encoder().encodeForHTML(msg));
 				responseJson = buildJsonResponse(false, msg);
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			}
 		} catch (Exception ex) {
-			logger.error("doPost: Failed to process request " + requestUri, ex);
+			logger.error("doPost: Failed to process request " + ESAPI.encoder().encodeForHTML(requestUri), ex);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			responseJson = buildJsonResponse(ex);
 		}

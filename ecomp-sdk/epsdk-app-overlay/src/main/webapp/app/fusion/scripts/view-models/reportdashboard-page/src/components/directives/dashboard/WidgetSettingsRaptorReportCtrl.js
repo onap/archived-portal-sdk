@@ -173,8 +173,9 @@ angular.module('ui.dashboard')
   			      		 	function(response) {
   			      		 		console.log(response.data);
   			      		 		$scope.showChart =  true;
-  			      		 		document.getElementById('chartiframe').contentWindow.document.write(response.data);
-  			      		 		document.getElementById('chartiframe').contentWindow.document.close();
+                                var chartiframe = document.getElementById('chartiframe');
+                                chartiframe.contentWindow.document.write(response.data);
+                                chartiframe.contentWindow.document.close();
   			      			});
   		      	} else {
   			      		 		$scope.showChart =  false;

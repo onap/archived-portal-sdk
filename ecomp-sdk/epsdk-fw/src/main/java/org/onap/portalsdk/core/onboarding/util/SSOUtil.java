@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.owasp.esapi.ESAPI;
 
 public class SSOUtil {
 
@@ -69,7 +70,7 @@ public class SSOUtil {
 		try {
 			encodedAppURL = URLEncoder.encode(appURL, "UTF-8");
 		} catch (UnsupportedEncodingException ex) {
-			logger.error("getECOMPSSORedirectURL: Failed to encode app URL " + appURL, ex);
+			logger.error("getECOMPSSORedirectURL: Failed to encode app URL " + ESAPI.encoder().encodeForHTML(appURL), ex);
 		}
 		String portalURL = PortalApiProperties.getProperty(PortalApiConstants.ECOMP_REDIRECT_URL);
 		if (portalURL == null || portalURL.length() == 0) {

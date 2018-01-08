@@ -102,7 +102,6 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 						// "/context/single_signon.htm"
 						final String redirectUrl = request.getContextPath() + singleSignonPrefix
 								+ "redirectToPortal=Yes&" + forwardUrlParm;
-						validateDomain(redirectUrl);
 						logger.debug(EELFLoggerDelegate.debugLogger, "preHandle: session is expired, redirecting to {}",
 								redirectUrl);
 						response.sendRedirect(redirectUrl);
@@ -112,7 +111,6 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 						// Redirect to an absolute path in the webapp; e.g.,
 						// "/context/single_signon.htm"
 						final String redirectUrl = request.getContextPath() + singleSignonPrefix + forwardUrlParm;
-						validateDomain(redirectUrl);
 						logger.debug(EELFLoggerDelegate.debugLogger, "preHandle: took exception {}, redirecting to {}",
 								ex.getMessage(), redirectUrl);
 						response.sendRedirect(redirectUrl);
@@ -125,7 +123,7 @@ public class SessionTimeoutInterceptor extends HandlerInterceptorAdapter {
 		return super.preHandle(request, response, handler);
 	}
 
-	private void validateDomain(final String redirectUrl) throws MalformedURLException {
+	public void validateDomain(final String redirectUrl) throws MalformedURLException {
 		if (StringUtils.isNotBlank(redirectUrl)) {
 			String hostName = new URL(redirectUrl).getHost();
 			if (StringUtils.isNotBlank(hostName)

@@ -103,7 +103,7 @@ public class WorkflowController extends RestrictedBaseController {
 			response.setCharacterEncoding("UTF-8");
 			request.setCharacterEncoding("UTF-8");
 			PrintWriter out = response.getWriter();
-			out.write("An error occurred while removing Role  in the toggleRole()");
+			out.write("An error occurred while saving the CronJob : saveCronJob()");
 		}
 
 	}
