@@ -35,39 +35,59 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-package org.onap.portalapp.service;
+package org.onap.portalapp.controller.core;
 
-import java.util.List;
+import static org.junit.Assert.*;
 
-import org.junit.Assert;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.Before;
 import org.junit.Test;
-import org.onap.portalapp.core.MockApplicationContextTestSuite;
-import org.onap.portalsdk.core.domain.Profile;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.onap.portalapp.framework.MockitoTestSuite;
 import org.onap.portalsdk.core.domain.User;
-import org.onap.portalsdk.core.service.ProfileService;
-import org.onap.portalsdk.core.service.UserProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.onap.portalsdk.core.web.support.UserUtils;
+import org.springframework.web.servlet.ModelAndView;
 
-public class ProfileServiceTest extends MockApplicationContextTestSuite {
+public class AngularAdminControllerTest {
 
-	@Autowired
-	ProfileService service;
+	@InjectMocks
+	AngularAdminController angularAdminController = new AngularAdminController();
 
-	@Autowired
-	UserProfileService userProfileService;
-
-	@Test
-	public void testFindAll() throws Exception {
-
-		List<Profile> profiles = service.findAll();
-		Assert.assertTrue(profiles.size() > 0);
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
 	}
-
+	
+	MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
+	
+	HttpServletRequest mockedRequest = mockitoTestSuite.getMockedRequest();
+	HttpServletResponse mockedResponse = mockitoTestSuite.getMockedResponse();
+	
+	NullPointerException nullPointerException = new NullPointerException();
+	
+	User user = new User();
+	
+	@Mock
+	UserUtils userUtils = new UserUtils();
+	
 	@Test
-	public void testFindAllActive() {
-
-		List<User> users = userProfileService.findAllActive();
-		List<User> activeUsers = userProfileService.findAllActive();
-		Assert.assertTrue(users.size() - activeUsers.size() >= 0);
+	public void viewTest() {
+		ModelAndView modelandView = new ModelAndView("user_profile_list");	
+		ModelAndView expectedModelandView =	angularAdminController.view();
+		assertEquals(expectedModelandView.getViewName(), modelandView.getViewName());
+	}
+	
+	@Test
+	public void adminViewTest() {	
+		ModelAndView expectedModelandView =	angularAdminController.adminView();
+		assertNull(expectedModelandView.getViewName());
 	}
 }
+

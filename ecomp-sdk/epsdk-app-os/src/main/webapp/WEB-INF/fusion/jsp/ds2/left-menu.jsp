@@ -298,8 +298,11 @@
     	$scope.getUserNameFromSession = function(){
     		UserInfoService.getFunctionalMenuStaticDetailSession()
     	  	.then(function (res) {
-  		  		$scope.userProfile.firstName = res.firstName;
-  		  		$scope.redirectUrl = res.portalUrl;
+    	  		$scope.userProfile.firstName = res.firstName;
+    			$scope.userProfile.lastName = res.lastName;
+    			$scope.userProfile.email = res.email;
+				$scope.userProfile.fullName	= res.userName;				
+				$scope.redirectUrl = res.portalUrl;	
     	  	});
         }
       	$scope.getTopMenuStaticInfo=function() {
@@ -389,7 +392,7 @@
     			console.log('getAppName failed', error);
     		});
 		
-	    $scope.getTopMenuStaticInfo();      
+	    $scope.getUserNameFromSession();      
     	$scope.getMenu=function() {
     		
    		 $http({

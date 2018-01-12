@@ -33,11 +33,24 @@
 		<encoding>UTF-8</encoding>
 		<springframework.version>4.2.0.RELEASE</springframework.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
-		<skiptests>true</skiptests>
+		<skiptests>false</skiptests>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
 		<stagingNexusPath>content/repositories/staging/</stagingNexusPath>
 		<releaseNexusPath>content/repositories/releases/</releaseNexusPath>
+		<jacoco.version>0.7.7.201606060606</jacoco.version>
+		<sonar.exclusions>**/scripts/**/*,**.js</sonar.exclusions>
+		<sonar.test.exclusions>**/test/**/*,**/tests/**/*</sonar.test.exclusions>
+		<sonar.language>java</sonar.language>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.skipDesign>true</sonar.skipDesign>
+		<sonar.surefire.reportsPath>${project.build.directory}/surefire-reports</sonar.surefire.reportsPath>
+		<sonar.jacoco.reportPath>${project.basedir}/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.itReportPath>${project.basedir}/target/it-jacoco.exec</sonar.jacoco.itReportPath>
+		<sonar.jacoco.reportMissing.force.zero>true</sonar.jacoco.reportMissing.force.zero>
+		<sonar.projectVersion>${project.version}</sonar.projectVersion>
+		<sonar.skipDesign>true</sonar.skipDesign>
+		<sonar.projectBaseDir>${project.basedir}</sonar.projectBaseDir>
 	</properties>
 
 	<!-- Specify the repositories here to avoid coordination of ~/.m2/settings.xml 
@@ -147,6 +160,66 @@
 						</dependency>
 					</dependencies>
 				</plugin>
+				<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<!-- version managed by oparent ${jacocoVersion}</version> -->
+				<executions>
+					<!-- disable jacoco executions from oparent -->
+					<execution>
+						<id>pre-unit-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>pre-integration-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>post-integration-test</id>
+						<phase>none</phase>
+					</execution>
+					<!-- Order matters -->
+					<execution>
+						<id>portal-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<destFile>${sonar.jacoco.reportPath}</destFile>
+						</configuration>
+					</execution>
+					<!-- offline instrumentation for PowerMock -->
+					<execution>
+						<id>portal-offline-instrument</id>
+						<goals>
+							<goal>instrument</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>portal-restore-instrumented-classes</id>
+						<phase>test</phase>
+						<goals>
+							<goal>restore-instrumented-classes</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>portal-post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<dataFile>${sonar.jacoco.reportPath}</dataFile>
+							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+				
 			</plugins>
 		</pluginManagement>
 

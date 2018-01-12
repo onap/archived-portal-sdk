@@ -19,7 +19,31 @@
 	<!-- properties are inherited from parent -->
 
 	<!-- repositories are inherited from parent -->
-	
+	<build>
+	<plugins>
+		<plugin>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<!-- version managed by oparent ${jacocoVersion}</version> -->
+			<executions>
+				<execution>
+					<id>portal-offline-instrument</id>
+					<phase>none</phase>
+					<goals>
+						<goal>instrument</goal>
+					</goals>
+				</execution>
+				<execution>
+					<id>portal-restore-instrumented-classes</id>
+					<phase>none</phase>
+					<goals>
+						<goal>restore-instrumented-classes</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
 	<dependencies>
 	
 		<!-- sdk-core -->
@@ -159,6 +183,13 @@
 					<artifactId>log4j</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<!-- Jacoco for offline instrumentation -->
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.agent</artifactId>
+			<version>${jacoco.version}</version>
+			<classifier>runtime</classifier>
 		</dependency>
 	</dependencies>
 

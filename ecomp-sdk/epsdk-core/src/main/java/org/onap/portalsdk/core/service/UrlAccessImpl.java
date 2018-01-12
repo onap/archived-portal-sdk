@@ -127,7 +127,7 @@ public class UrlAccessImpl implements UrlAccessService {
 				for (int i = 0; i < roleFunctionArray.length; i++) {
 					if (match) {
 						if (!roleFunctionArray[i].equals("*")) {
-							Pattern p = Pattern.compile(path[i], Pattern.CASE_INSENSITIVE);
+							Pattern p = Pattern.compile(Pattern.quote(path[i]), Pattern.CASE_INSENSITIVE);
 							Matcher m = p.matcher(roleFunctionArray[i]);
 							match = m.matches();
 

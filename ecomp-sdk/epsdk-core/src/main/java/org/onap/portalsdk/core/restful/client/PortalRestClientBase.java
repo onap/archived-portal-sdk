@@ -98,7 +98,7 @@ public class PortalRestClientBase {
 		if (uebKey == null || app == null || app.getUsername() == null || app.getAppPassword() == null)
 			throw new IllegalArgumentException(
 					"getRestWithCredentials: Missing one or more required properties and/or database entries");
-		String decryptedPassword = CipherUtil.decrypt(app.getAppPassword());
+		String decryptedPassword = CipherUtil.decryptPKC(app.getAppPassword());
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(uri);
 		httpGet.setHeader("uebkey", uebKey);
@@ -150,7 +150,7 @@ public class PortalRestClientBase {
 		if (uebKey == null || app == null || app.getUsername() == null || app.getAppPassword() == null)
 			throw new IllegalArgumentException(
 					"postRestWithCredentials: missing one or more required properties and/or database entries");
-		String decryptedPassword = CipherUtil.decrypt(app.getAppPassword());
+		String decryptedPassword = CipherUtil.decryptPKC(app.getAppPassword());
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(uri);
 		httpPost.setHeader("uebkey", uebKey);

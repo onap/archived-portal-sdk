@@ -348,6 +348,13 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- Jacoco for offline instrumentation -->
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.agent</artifactId>
+			<version>${jacoco.version}</version>
+			<classifier>runtime</classifier>
+		</dependency>
 	</dependencies>
 	
 </project>

@@ -24,6 +24,11 @@ AngularJS version 1.5.0.
 
 ### ONAP Distributions
 
+Version 2.1.0
+- PORTAL 161 Add the JUNIT plumbing for PortalSDK
+- PORTAL 160 Prevent unauthorized access to SamplePages, Report Pages, Role
+- PORTAL 159 Change the encryption algorithm to PKCS5PADDING
+
 Version 1.4.0
 - PORTAL-19 Rename Java package base to org.onap
 - PORTAL-42 Use OParent as parent POM

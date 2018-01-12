@@ -13,7 +13,13 @@ https://www.eclipse.org/m2e-wtp/
 
 ## Release Notes
 
-Version 1.4.0, <?day> <?month> 2017
+Version 2.1.0
+- PORTAL 161 Refer epsdk-app-common
+- PORTAL 160 Refer epsdk-app-common
+- PORTAL 159 Refer epsdk-app-common
+- PORTAL 136 Junits for SDK
+
+Version 1.4.0
 - PORTAL-19 Rename Java package base to org.onap
 - PORTAL-42 Use OParent as parent POM
 - PORTAL-72 Address Sonar Scan code issues

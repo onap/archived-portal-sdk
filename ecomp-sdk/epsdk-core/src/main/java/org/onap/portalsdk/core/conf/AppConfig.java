@@ -211,7 +211,7 @@ public class AppConfig extends WebMvcConfigurerAdapter implements Configurable, 
 			if (SystemProperties.containsProperty(SystemProperties.DB_ENCRYPT_FLAG)) {
 				String encryptFlag = SystemProperties.getProperty(SystemProperties.DB_ENCRYPT_FLAG);
 				if (encryptFlag != null && "true".equalsIgnoreCase(encryptFlag)) {
-					password = CipherUtil.decrypt(password);
+					password = CipherUtil.decryptPKC(password);
 				}
 			}
 			dataSource.setPassword(password);

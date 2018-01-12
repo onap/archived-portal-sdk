@@ -74,19 +74,17 @@ app.directive('qHeader', function () {
 	    	  	});
 	        }
       		$scope.getTopMenuStaticInfo=function() {
-        		var promise = UserInfoService.getFunctionalMenuStaticDetailShareContext();
+        		var promise = UserInfoService.getFunctionalMenuStaticDetailSession();
         		promise.then(
-    				function(res) {   					
-    					if(res==null || res==''){
-    						$log.error('failed to get static User information');     
-    						$scope.getUserNameFromSession();
-    					}else{
-    						// $log.info('Received static User information');    						
-    						var resData = res;
-    						// console.log(resData);
-    						$scope.inputUserInfo(resData);
-    						$scope.userName = $scope.firstName+ ' '+ $scope.lastName;
-    					}
+    				function(res) {   					   						
+    						$scope.contactUsUrl=res.contactUsLink;
+							$scope.userName = res.userName;
+							$scope.userId = res.userid;
+							$scope.userEmail = res.email;
+							$scope.userFirstName = res.firstName;
+							$scope.redirectUrl = res.portalUrl;
+							$scope.getAccessUrl = res.getAccessUrl;
+							$scope.isAppCentralized = res.isAppCentralized;	
     				},
     				function(err) {
 						$log.error('getFunctionalMenuStaticDetailShareContext failed', err);
@@ -114,7 +112,7 @@ app.directive('qHeader', function () {
 	        }
         	
         	$scope.getMenu=function() {
-        		$scope.getTopMenuStaticInfo();
+        		$scope.getUserNameFromSession();
 	        	$http({
 	      		        method: "GET",
 	      		        url: 'get_functional_menu',

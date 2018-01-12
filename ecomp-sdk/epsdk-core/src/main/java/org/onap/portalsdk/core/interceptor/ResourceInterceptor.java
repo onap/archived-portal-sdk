@@ -144,7 +144,7 @@ public class ResourceInterceptor extends HandlerInterceptorAdapter {
 		String ecompRestURL = PortalApiProperties.getProperty(PortalApiConstants.ECOMP_REST_URL);
 		String decreptedPwd = null;
 		try {
-			decreptedPwd = CipherUtil.decrypt(app.getAppPassword(),
+			decreptedPwd = CipherUtil.decryptPKC(app.getAppPassword(),
 					SystemProperties.getProperty(SystemProperties.Decryption_Key));
 		} catch (Exception e) {
 			logger.error(EELFLoggerDelegate.errorLogger, "handleSessionUpdates failed to decrypt password", e);

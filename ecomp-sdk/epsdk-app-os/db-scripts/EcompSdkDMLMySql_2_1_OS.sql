@@ -36,16 +36,4 @@ Insert into fn_app (APP_ID,APP_NAME,APP_IMAGE_URL,APP_DESCRIPTION,APP_NOTES,APP_
 -- fn_user_role
 Insert into fn_user_role (USER_ID,ROLE_ID,PRIORITY,APP_ID) values (1,1,null,1);
 
--- fn_restricted_url
-insert into fn_restricted_url values('admin','menu_admin');
-insert into fn_restricted_url values('get_role','menu_admin');
-insert into fn_restricted_url values('get_role_functions','menu_admin');
-insert into fn_restricted_url values('role_list/*','menu_admin');
-insert into fn_restricted_url values('role_function_list/*','menu_admin');
-insert into fn_restricted_url values('addRole','menu_admin');
-insert into fn_restricted_url values('addRoleFunction','menu_admin');
-insert into fn_restricted_url values('removeRole','menu_admin');
-insert into fn_restricted_url values('removeRoleFunction','menu_admin');
-insert into fn_restricted_url values('profile/*','menu_admin');
-
 commit;

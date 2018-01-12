@@ -69,7 +69,7 @@ public class WebServiceCallServiceImpl implements WebServiceCallService {
 		if (app != null) {
 			String encriptedPwdDB = app.getAppPassword();
 			String appUserName = app.getUsername();
-			String decreptedPwd = CipherUtil.decrypt(encriptedPwdDB,
+			String decreptedPwd = CipherUtil.decryptPKC(encriptedPwdDB,
 					secretKey == null ? SystemProperties.getProperty(SystemProperties.Decryption_Key) : secretKey);
 			if (decreptedPwd.equals(requestPassword) && appUserName.equals(requestAppName)) {
 				return true;

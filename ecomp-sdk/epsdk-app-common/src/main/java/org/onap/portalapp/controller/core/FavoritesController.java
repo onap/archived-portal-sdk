@@ -109,7 +109,7 @@ public class FavoritesController extends RestrictedBaseController {
 					appName = app.getName();
 					appUserName = app.getUsername();
 					try {
-						decryptedPwd = CipherUtil.decrypt(app.getAppPassword(),
+						decryptedPwd = CipherUtil.decryptPKC(app.getAppPassword(),
 								SystemProperties.getProperty(SystemProperties.Decryption_Key));
 					} catch (Exception e) {
 						logger.error(EELFLoggerDelegate.errorLogger,

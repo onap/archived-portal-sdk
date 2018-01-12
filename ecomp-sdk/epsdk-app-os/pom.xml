@@ -26,7 +26,8 @@
 		<!-- Skip assembling the zip; assemble via mvn -Dskipassembly=false .. -->
 		<skipassembly>true</skipassembly>
 		<!-- Tests usually require some setup that maven cannot do, so skip. -->
-		<skiptests>true</skiptests>
+		<skiptests>false</skiptests>
+		<jacoco.version>0.7.9</jacoco.version>
 		<!-- Version number gets stored only here -->
 		<tomcat.download.path>http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.37/bin</tomcat.download.path>
 		<tomcat.download.name>apache-tomcat-8.0.37</tomcat.download.name>
@@ -60,7 +61,68 @@
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
-
+			
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<!-- version managed by oparent ${jacocoVersion}</version> -->
+				<executions>
+					<!-- disable jacoco executions from oparent -->
+					<execution>
+						<id>pre-unit-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>post-unit-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>pre-integration-test</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>post-integration-test</id>
+						<phase>none</phase>
+					</execution>
+					<!-- Order matters -->
+					<execution>
+						<id>portal-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<destFile>${sonar.jacoco.reportPath}</destFile>
+						</configuration>
+					</execution>
+					<!-- offline instrumentation for PowerMock -->
+					<execution>
+						<id>portal-offline-instrument</id>
+						<goals>
+							<goal>instrument</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>portal-restore-instrumented-classes</id>
+						<phase>test</phase>
+						<goals>
+							<goal>restore-instrumented-classes</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>portal-post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<dataFile>${sonar.jacoco.reportPath}</dataFile>
+							<outputDirectory>${project.basedir}/target/site/jacoco</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			
 			<!-- add version number to manifest -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -292,6 +354,13 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${springframework.version}</version>
+		</dependency>
+		<!-- Jacoco for offline instrumentation -->
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.agent</artifactId>
+			<version>${jacoco.version}</version>
+			<classifier>runtime</classifier>
 		</dependency>
 	</dependencies>
 </project>

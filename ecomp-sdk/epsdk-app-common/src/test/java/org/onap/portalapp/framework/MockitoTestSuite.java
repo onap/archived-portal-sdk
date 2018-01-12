@@ -1,8 +1,8 @@
-/*
+/*-
  * ============LICENSE_START==========================================
- * ONAP Portal SDK
+ * ONAP Portal
  * ===================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -35,22 +35,55 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-package org.onap.portalapp.controller;
+package org.onap.portalapp.framework;
 
-import org.junit.Assert;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.junit.Test;
-import org.onap.portalapp.core.MockApplicationContextTestSuite;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
-public class NetMapTest extends MockApplicationContextTestSuite {
-	
-	@Test
-	public void testGetNetMap() throws Exception {
-		ResultActions ra =getMockMvc().perform(MockMvcRequestBuilders.get("/net_map"));
-		//Assert.assertEquals(UrlAccessRestrictedException.class,ra.andReturn().getResolvedException().getClass());
-		Assert.assertEquals("net_map_int",ra.andReturn().getModelAndView().getModel().get("frame_int"));
+@RunWith(MockitoJUnitRunner.class)
+public class MockitoTestSuite {
+
+
+	public MockHttpServletRequestWrapper mockedRequest = new MockHttpServletRequestWrapper(
+			Mockito.mock(HttpServletRequest.class));
+	public HttpServletResponse mockedResponse = Mockito.mock(HttpServletResponse.class);
+
+	public MockHttpServletRequestWrapper getMockedRequest() {
+		return mockedRequest;
 	}
-	
 
+	public HttpServletResponse getMockedResponse() {
+		return mockedResponse;
+	}
+
+	public class MockHttpServletRequestWrapper extends HttpServletRequestWrapper {
+
+		HttpSession session = Mockito.mock(HttpSession.class);
+
+		public MockHttpServletRequestWrapper(HttpServletRequest request) {
+			super(request);
+
+		}
+
+		@Override
+		public HttpSession getSession() {
+
+			return session;
+		}
+
+		@Override
+		public HttpSession getSession(boolean create) {
+
+			return session;
+		}
+
+	}
+   
 }

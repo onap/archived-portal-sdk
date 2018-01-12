@@ -35,23 +35,30 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-package org.onap.portalapp;
+package org.onap.portalapp.controller.core;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertNull;
+
+import org.junit.Before;
 import org.junit.Test;
-import org.onap.portalapp.core.MockApplicationContextTestSuite;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
+import org.springframework.web.servlet.ModelAndView;
 
-public class SanityTest extends MockApplicationContextTestSuite {	
-	
-	@Test
-	public void testGetAvailableRoles() throws Exception {
-		
-		ResultActions ra =getMockMvc().perform(MockMvcRequestBuilders.get("/api/roles"));
-		//Assert.assertEquals(UrlAccessRestrictedException.class,ra.andReturn().getResolvedException().getClass());
-		Assert.assertEquals("application/json",ra.andReturn().getResponse().getContentType());
+public class BootstrapSampleControllerTest {
+
+	@InjectMocks
+	BootstrapSampleController bootstrapSampleController = new BootstrapSampleController();
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
 	}
-	
+
+	@Test
+	public void welcomeTest() {
+		ModelAndView expectedResluts = bootstrapSampleController.welcome();
+		assertNull(expectedResluts.getViewName());
+	}
 
 }

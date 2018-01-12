@@ -103,7 +103,7 @@ public class LoginStrategyImpl extends LoginStrategy {
 			if (!SystemProperties.containsProperty(SystemProperties.Decryption_Key))
 				throw new IllegalStateException("Failed to find property " + SystemProperties.Decryption_Key);
 			final String decryptionKey = SystemProperties.getProperty(SystemProperties.Decryption_Key);
-			userId = CipherUtil.decrypt(cookieValue, decryptionKey);
+			userId = CipherUtil.decryptPKC(cookieValue, decryptionKey);
 			logger.debug(EELFLoggerDelegate.debugLogger, "getUserIdFromCookie: decrypted as {}", userId);
 		}
 		return userId;
