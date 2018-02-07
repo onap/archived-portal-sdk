@@ -126,7 +126,11 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 		try {
 			logger.debug("init: creating instance of class " + className);
 			Class<?> implClass = Class.forName(className);
-			portalRestApiServiceImpl = (IPortalRestAPIService) (implClass.getConstructor().newInstance());
+			if (!isCentralized.equals(isAccessCentralized))
+				portalRestApiServiceImpl = (IPortalRestAPIService) (implClass.getConstructor().newInstance());
+			else {
+				portalRestApiServiceImpl = new PortalRestAPICentralServiceImpl();				
+			}
 		} catch (Exception ex) {
 			throw new ServletException("init: Failed to find or instantiate class " + className, ex);
 		}
@@ -243,17 +247,12 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			// Example: /user <-- create user
 			if (requestUri.endsWith(PortalApiConstants.API_PREFIX + "/user")) {
 				try {
-					if (isCentralized.equals(isAccessCentralized)) {
-						responseJson = buildJsonResponse(true, errorMessage);
-						response.setStatus(HttpServletResponse.SC_OK);
-					} else {
-						EcompUser user = mapper.readValue(requestBody, EcompUser.class);
-						pushUser(user);
-						if (logger.isDebugEnabled())
-							logger.debug("doPost: pushUser: success");
-						responseJson = buildJsonResponse(true, null);
-						response.setStatus(HttpServletResponse.SC_OK);
-					}
+					EcompUser user = mapper.readValue(requestBody, EcompUser.class);
+					pushUser(user);
+					if (logger.isDebugEnabled())
+						logger.debug("doPost: pushUser: success");
+					responseJson = buildJsonResponse(true, null);
+					response.setStatus(HttpServletResponse.SC_OK);
 				} catch (Exception ex) {
 					responseJson = buildJsonResponse(ex);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -264,17 +263,12 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 			if (requestUri.contains(PortalApiConstants.API_PREFIX + "/user/") && !(requestUri.endsWith("/roles"))) {
 				String loginId = requestUri.substring(requestUri.lastIndexOf('/') + 1);
 				try {
-					if (isCentralized.equals(isAccessCentralized)) {
-						responseJson = buildJsonResponse(true, errorMessage);
-						response.setStatus(HttpServletResponse.SC_OK);
-					} else {
-						EcompUser user = mapper.readValue(requestBody, EcompUser.class);
-						editUser(loginId, user);
-						if (logger.isDebugEnabled())
-							logger.debug("doPost: editUser: success");
-						responseJson = buildJsonResponse(true, null);
-						response.setStatus(HttpServletResponse.SC_OK);
-					}
+					EcompUser user = mapper.readValue(requestBody, EcompUser.class);
+					editUser(loginId, user);
+					if (logger.isDebugEnabled())
+						logger.debug("doPost: editUser: success");
+					responseJson = buildJsonResponse(true, null);
+					response.setStatus(HttpServletResponse.SC_OK);
 				} catch (Exception ex) {
 					responseJson = buildJsonResponse(ex);
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

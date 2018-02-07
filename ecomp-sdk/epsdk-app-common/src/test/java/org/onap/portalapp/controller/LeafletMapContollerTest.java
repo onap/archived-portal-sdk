@@ -35,59 +35,36 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-package org.onap.portalapp.controller.core;
+package org.onap.portalapp.controller;
 
-import static org.junit.Assert.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.assertNull;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.onap.portalapp.controller.sample.LeafletMapContoller;
 import org.onap.portalapp.framework.MockitoTestSuite;
-import org.onap.portalsdk.core.domain.User;
-import org.onap.portalsdk.core.web.support.UserUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-public class AngularAdminControllerTest {
+public class LeafletMapContollerTest {
 
 	@InjectMocks
-	AngularAdminController angularAdminController = new AngularAdminController();
+	LeafletMapContoller leafletMapContoller = new LeafletMapContoller();
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
-	
+
 	MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
-	
 	HttpServletRequest mockedRequest = mockitoTestSuite.getMockedRequest();
-	HttpServletResponse mockedResponse = mockitoTestSuite.getMockedResponse();
-	
-	NullPointerException nullPointerException = new NullPointerException();
-	
-	User user = new User();
-	
-	@Mock
-	UserUtils userUtils = new UserUtils();
 	
 	@Test
-	public void viewTest() {
-		ModelAndView modelandView = new ModelAndView("user_profile_list");	
-		ModelAndView expectedModelandView =	angularAdminController.view();
-		assertEquals(expectedModelandView.getViewName(), modelandView.getViewName());
-	}
-	
-	@Test
-	public void adminViewTest() {	
-		ModelAndView expectedModelandView =	angularAdminController.adminView();
-		assertNull(expectedModelandView.getViewName());
+	public void plotTest() {
+		ModelAndView expectedResluts = leafletMapContoller.plot();
+        assertNull(expectedResluts.getViewName());
 	}
 }
-

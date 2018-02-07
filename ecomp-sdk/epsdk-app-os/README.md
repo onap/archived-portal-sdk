@@ -29,6 +29,7 @@ Version 1.4.0
 - PORTAL-104 Replaced the sql connector to maria db
 - PORTAL-127 Remove GreenSock license code from b2b library
 - PORTAL-118 Missing Error page in Portal-SDK app when there is an exception happen in the backend.
+- PORTAL-19 Replaced openecomp keyword to onap 
 
 * Put new entries here *
 

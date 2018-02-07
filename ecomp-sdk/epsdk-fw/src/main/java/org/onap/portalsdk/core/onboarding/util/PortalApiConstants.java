@@ -80,4 +80,6 @@ public interface PortalApiConstants {
     
     public static final String EXT_REQUEST_CONNECTION_TIMEOUT = "ext_req_connection_timeout";
 	public static final String EXT_REQUEST_READ_TIMEOUT = "ext_req_read_timeout";
+	public static final String ROLE_ACCESS_CENTRALIZED_FLAG = "role_access_centralized";
+	
 }

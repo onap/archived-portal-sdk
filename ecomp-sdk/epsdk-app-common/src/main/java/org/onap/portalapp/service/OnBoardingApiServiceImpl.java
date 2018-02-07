@@ -37,9 +37,12 @@
  */
 package org.onap.portalapp.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -47,18 +50,24 @@ import java.util.TreeSet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.onap.portalsdk.core.auth.LoginStrategy;
+import org.onap.portalsdk.core.domain.App;
 import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.domain.UserApp;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.onboarding.client.AppContextManager;
 import org.onap.portalsdk.core.onboarding.crossapi.IPortalRestAPIService;
+import org.onap.portalsdk.core.onboarding.crossapi.IPortalRestCentralService;
+import org.onap.portalsdk.core.onboarding.exception.CipherUtilException;
 import org.onap.portalsdk.core.onboarding.exception.PortalAPIException;
 import org.onap.portalsdk.core.onboarding.listener.PortalTimeoutHandler;
+import org.onap.portalsdk.core.onboarding.util.CipherUtil;
 import org.onap.portalsdk.core.onboarding.util.PortalApiConstants;
 import org.onap.portalsdk.core.onboarding.util.PortalApiProperties;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
+import org.onap.portalsdk.core.service.AppService;
+import org.onap.portalsdk.core.service.AppServiceImpl;
 import org.onap.portalsdk.core.service.RestApiRequestBuilder;
 import org.onap.portalsdk.core.service.RoleService;
 import org.onap.portalsdk.core.service.UserProfileService;
@@ -82,7 +91,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
  * 'injection' is done indirectly using AppContextManager class.
  *
  */
-public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
+public class OnBoardingApiServiceImpl implements IPortalRestAPIService, IPortalRestCentralService {
 
 	private static final EELFLoggerDelegate logger = EELFLoggerDelegate.getLogger(OnBoardingApiServiceImpl.class);
 
@@ -93,6 +102,7 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 	private LoginStrategy loginStrategy;
 	private UserService userService;
 	private RestApiRequestBuilder restApiRequestBuilder;
+	private AppService appServiceImpl;
 
 	private static final String isAccessCentralized = PortalApiProperties
 			.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED);
@@ -113,6 +123,7 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 		userService = appContext.getBean(UserService.class);
 		if(isCentralized.equals(isAccessCentralized)){
 		restApiRequestBuilder = appContext.getBean(RestApiRequestBuilder.class);
+		appServiceImpl = appContext.getBean(AppService.class);
 		}
 	}
 
@@ -226,6 +237,7 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 			}
 			else{
 			   user = userProfileService.getUserByLoginId(loginId);
+			   user.getRoles().removeIf(role -> (role.getActive() == false));
 			}
 			if (user == null) {
 				logger.info(EELFLoggerDelegate.debugLogger, "User + " + loginId + " doesn't exist");
@@ -365,6 +377,7 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 			SortedSet<Role> currentRoles = null;
 			if (user != null) {
 				currentRoles = user.getRoles();
+				currentRoles.removeIf(role -> (role.getActive() == false));
 				if (currentRoles != null)
 					for (Role role : currentRoles)
 						ecompRoles.add(UserUtils.convertToEcompRole(role));
@@ -434,5 +447,33 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService {
 	@Override
 	public String getUserId(HttpServletRequest request) throws PortalAPIException {
 		return loginStrategy.getUserId(request);
+	}
+	
+	@Override
+	public Map<String, String> getAppCredentials() throws PortalAPIException{
+		Map<String, String> credentialsMap = new HashMap<>();
+		String appName = null;
+		String appUserName = null;
+		String decryptedPwd = null;
+		App app = appServiceImpl.getDefaultApp();
+		if (app != null) {
+			appName = app.getName();
+			appUserName = app.getUsername();
+			try {
+				decryptedPwd = CipherUtil.decryptPKC(app.getAppPassword(),
+						SystemProperties.getProperty(SystemProperties.Decryption_Key));
+			} catch (CipherUtilException e) {
+				logger.error(EELFLoggerDelegate.errorLogger, "getAppCredentials failed", e);
+			}
+		} else {
+			logger.warn(EELFLoggerDelegate.errorLogger,
+					"getAppCredentials: Unable to locate the app information from the database.");
+			appUserName = "unknown";
+			appName = SystemProperties.SDK_NAME;
+		}
+		credentialsMap.put("username", appUserName);
+		credentialsMap.put("password", decryptedPwd);
+		credentialsMap.put("appName", appName);
+		return credentialsMap;
 	}
 }
