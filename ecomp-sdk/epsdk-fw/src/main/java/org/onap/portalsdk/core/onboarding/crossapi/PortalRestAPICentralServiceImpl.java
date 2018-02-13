@@ -99,7 +99,7 @@ public class PortalRestAPICentralServiceImpl implements IPortalRestAPIService {
 		EcompUser user = new EcompUser();
 		String responseString = null;
 		try {
-			responseString = RestWebServiceClient.getInstance().getPortalContent("/ecompUser/" + loginId, null,
+			responseString = RestWebServiceClient.getInstance().getPortalContent("/v2/user/" + loginId, null,
 					appName, null, username, password, true);
 			logger.debug("responseString is: " + responseString);
 			user = mapper.readValue(responseString, EcompUser.class);
@@ -136,7 +136,7 @@ public class PortalRestAPICentralServiceImpl implements IPortalRestAPIService {
 		List<EcompRole> rolesList = new ArrayList<>();
 		String responseString = null;
 		try {
-			responseString = RestWebServiceClient.getInstance().getPortalContent("/ecompRoles", requestedLoginId,
+			responseString = RestWebServiceClient.getInstance().getPortalContent("/v2/roles", requestedLoginId,
 					appName, null, username, password, true);
 			logger.debug("responseString is: " + responseString);
 			rolesList = mapper.readValue(responseString,
@@ -163,7 +163,7 @@ public class PortalRestAPICentralServiceImpl implements IPortalRestAPIService {
 		EcompUser user = new EcompUser();
 		String responseString = null;
 		try {
-			responseString = RestWebServiceClient.getInstance().getPortalContent("/ecompUser/" + loginId, null,
+			responseString = RestWebServiceClient.getInstance().getPortalContent("/v2/user/" + loginId, null,
 					appName, null, username, password, true);
 			logger.debug("responseString is: " + responseString);
 			user = mapper.readValue(responseString, EcompUser.class);

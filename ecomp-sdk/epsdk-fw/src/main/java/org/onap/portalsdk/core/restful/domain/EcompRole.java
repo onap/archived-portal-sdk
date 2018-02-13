@@ -37,7 +37,10 @@
  */
 package org.onap.portalsdk.core.restful.domain;
 
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * This bean holds the information for a role in the role and user management
@@ -48,6 +51,16 @@ public class EcompRole implements Comparable<EcompRole> {
 
 	protected Long id;
 	private String name;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+    private Set roleFunctions;
+    
+	public Set getRoleFunctions() {
+		return roleFunctions;
+	}
+
+	public void setRoleFunctions(Set roleFunctions) {
+		this.roleFunctions = roleFunctions;
+	}
 
 	public Long getId() {
 		return id;
