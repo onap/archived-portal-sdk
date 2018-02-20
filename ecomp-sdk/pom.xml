@@ -307,13 +307,13 @@
 		     The IDs MUST match Jenkins template values. -->
 		<repository>
 			<id>releases</id>
-			<name>OpenECOMP - Release Repository</name>
+			<name>ONAP - Release Repository</name>
 			<url>${nexusproxy}/${releaseNexusPath}</url>
 		</repository>
 		<!-- no support for a "stagingRepository" -->
 		<snapshotRepository>
 			<id>snapshots</id>
-			<name>OpenECOMP - Snapshot Repository</name>
+			<name>ONAP - Snapshot Repository</name>
 			<url>${nexusproxy}/${snapshotNexusPath}</url>
 		</snapshotRepository>
 		<!-- Javadocs -->

@@ -37,12 +37,16 @@
  */
 package org.onap.portalsdk.core.command;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
+import junit.framework.Assert;
+
 public class PostSearchBeanTest {
 
+	PostSearchBean postSearchBean= new PostSearchBean();
 	
 	public PostSearchBean mockPostSearchBean()
 	{
@@ -92,6 +96,24 @@ public class PostSearchBeanTest {
 		postSearchBean.setEmailOrig("testEmailOrig");
 		postSearchBean.setOrgManagerUserIdOrig("testOrgManagerUserIdOrig");
 		
+		postSearchBean.setSortBy1(null);
+		postSearchBean.setSortBy2(null);
+		postSearchBean.setSortBy3(null);
+		postSearchBean.setSortBy1Orig(null);
+		postSearchBean.setSortBy2Orig(null);
+		postSearchBean.setSortBy3Orig(null);
+		postSearchBean.setAccessType(null);
+		postSearchBean.setSubmitAction(null);
+		postSearchBean.setMasterId(null);
+		postSearchBean.setDetailId(null);
+		postSearchBean.setShowResult(null);
+		postSearchBean.setSearchResult(null);
+		postSearchBean.setSortByModifier1(null);
+		postSearchBean.setSortByModifier1Orig(null);
+		postSearchBean.setSortByModifier2(null);
+		postSearchBean.setSortByModifier2Orig(null);
+		postSearchBean.setSortByModifier3(null);
+		postSearchBean.setSortByModifier3Orig(null);
 		return postSearchBean;
 	}
 	
@@ -145,6 +167,26 @@ public class PostSearchBeanTest {
 		postSearchBean.setOrgCodeOrig("testOrgCodeOrig");
 		postSearchBean.setEmailOrig("testEmailOrig");
 		postSearchBean.setOrgManagerUserIdOrig("testOrgManagerUserIdOrig");
+		
+		postSearchBean.setSortBy1(null);
+		postSearchBean.setSortBy2(null);
+		postSearchBean.setSortBy3(null);
+		postSearchBean.setSortBy1Orig(null);
+		postSearchBean.setSortBy2Orig(null);
+		postSearchBean.setSortBy3Orig(null);
+		postSearchBean.setAccessType(null);
+		postSearchBean.setSubmitAction(null);
+		postSearchBean.setMasterId(null);
+		postSearchBean.setDetailId(null);
+		postSearchBean.setShowResult(null);
+		postSearchBean.setSearchResult(null);
+		postSearchBean.setSortByModifier1(null);
+		postSearchBean.setSortByModifier1Orig(null);
+		postSearchBean.setSortByModifier2(null);
+		postSearchBean.setSortByModifier2Orig(null);
+		postSearchBean.setSortByModifier3(null);
+		postSearchBean.setSortByModifier3Orig(null);
+		
 		assertNull(postSearchBean.getUser().getCity());	
 		assertNull(postSearchBean.getUserOrig().getCity());	
 		assertEquals(postSearchBean.getSelected().length, mockPostSearchBean.getSelected().length);
@@ -189,5 +231,58 @@ public class PostSearchBeanTest {
 		assertEquals(postSearchBean.getEmailOrig(),mockPostSearchBean.getEmailOrig());
 		assertEquals(postSearchBean.getOrgManagerUserIdOrig(),mockPostSearchBean.getOrgManagerUserIdOrig());
 		
+		assertEquals(postSearchBean.getSortBy1(),mockPostSearchBean.getSortBy1());
+		assertEquals(postSearchBean.getSortBy2(),mockPostSearchBean.getSortBy2());
+		assertEquals(postSearchBean.getSortBy3(),mockPostSearchBean.getSortBy3());
+		assertEquals(postSearchBean.getSortBy1Orig(),mockPostSearchBean.getSortBy1Orig());
+		assertEquals(postSearchBean.getSortBy2Orig(),mockPostSearchBean.getSortBy2Orig());
+		assertEquals(postSearchBean.getSortBy3Orig(),mockPostSearchBean.getSortBy3Orig());
+		assertEquals(postSearchBean.getAccessType(),mockPostSearchBean.getAccessType());
+		assertEquals(postSearchBean.getSubmitAction(),mockPostSearchBean.getSubmitAction());
+		assertEquals(postSearchBean.getMasterId(),mockPostSearchBean.getMasterId());
+		assertEquals(postSearchBean.getDetailId(),mockPostSearchBean.getDetailId());
+		assertEquals(postSearchBean.getShowResult(),mockPostSearchBean.getShowResult());
+		assertEquals(postSearchBean.getSearchResult(),mockPostSearchBean.getSearchResult());
+		assertEquals(postSearchBean.getSortByModifier1(),mockPostSearchBean.getSortByModifier1());
+		assertEquals(postSearchBean.getSortByModifier1Orig(),mockPostSearchBean.getSortByModifier1Orig());
+		assertEquals(postSearchBean.getSortByModifier2(),mockPostSearchBean.getSortByModifier2());
+		assertEquals(postSearchBean.getSortByModifier2Orig(),mockPostSearchBean.getSortByModifier2Orig());
+		assertEquals(postSearchBean.getSortByModifier3(),mockPostSearchBean.getSortByModifier3());
+		assertEquals(postSearchBean.getSortByModifier3Orig(),mockPostSearchBean.getSortByModifier3Orig());
 	}
+	
+	@Test
+	public void getPageNoTest(){
+		postSearchBean.setPageNo(1);
+		postSearchBean.getPageNo();
+	}
+	
+	@Test
+	public void getPageSizeTest(){
+		postSearchBean.setPageSize(1);
+		postSearchBean.getPageSize();
+	}
+	
+	@Test
+	public void getDataSizeTest(){
+		postSearchBean.setDataSize(1);
+		postSearchBean.getDataSize();
+	}
+	
+	@Test
+	public void getNewDataSizeTest(){
+		postSearchBean.getNewDataSize();
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	public void isSortingUpdatedTest(){
+		Assert.assertEquals(false, postSearchBean.isSortingUpdated());
+	}
+	
+	@Test
+	public void resetSearchTest(){
+		postSearchBean.resetSearch();
+	}
+	
 }

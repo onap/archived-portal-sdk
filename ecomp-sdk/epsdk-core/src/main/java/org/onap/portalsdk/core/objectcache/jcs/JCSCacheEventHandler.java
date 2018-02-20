@@ -34,7 +34,7 @@
  * ============LICENSE_END============================================
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
- */
+*/
 package org.onap.portalsdk.core.objectcache.jcs;
 
 import org.apache.jcs.engine.control.event.behavior.IElementEvent;

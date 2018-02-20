@@ -2,7 +2,7 @@
  * ============LICENSE_START==========================================
  * ONAP Portal SDK
  * ===================================================================
- * Copyright © 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright Â© 2017 AT&T Intellectual Property. All rights reserved.
  * ===================================================================
  *
  * Unless otherwise specified, all software contained herein is licensed
@@ -68,7 +68,15 @@ public class UserProfileServiceImplTest {
 		Assert.assertTrue(true);
 	}
 	
-	
+	/*public void getUserByLoginId(){
+		String loginId = "123";
+		List<User> users = new ArrayList<>();
+		User user = new User();
+		users.add(user);
+		Mockito.when(dataAccessService.getList(Mockito.any(), Mockito.any(), Mockito.anyList(), Mockito.any())).thenReturn(users);
+		User retrunUser = userProfileServiceImpl.getUserByLoginId(loginId);
+		Assert.assertNotNull(retrunUser);
+	}*/
 	
 	@Test
 	public void saveUserTest(){

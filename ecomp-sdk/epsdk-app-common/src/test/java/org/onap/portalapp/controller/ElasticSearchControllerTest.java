@@ -45,6 +45,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.conn.ssl.SSLInitializationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,7 +73,6 @@ import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.client.http.JestHttpClient;
 
-
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ JestClientFactory.class, JestClient.class })
 public class ElasticSearchControllerTest {
@@ -84,62 +84,48 @@ public class ElasticSearchControllerTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
+
 	@Mock
 	JestClientFactory factory;
 	@Mock
-	JestClient client ;
-	
+	JestClient client;
+
 	MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
 	HttpServletRequest mockedRequest = mockitoTestSuite.getMockedRequest();
 	HttpServletResponse mockedResponse = mockitoTestSuite.getMockedResponse();
-	
+
 	@Test
-	public void searchTest()
-	{
-		 ModelAndView expectedResult = elasticSearchController.search();
-	     assertEquals(expectedResult.getViewName(), "es_search_demo");
+	public void searchTest() {
+		ModelAndView expectedResult = elasticSearchController.search();
+		assertEquals(expectedResult.getViewName(), "es_search_demo");
+	}
+
+	@Test
+	public void suggestTest() {
+		ModelAndView expectedResult = elasticSearchController.suggest();
+		assertEquals(expectedResult.getViewName(), "es_suggest_demo");
+	}
+
+	@Test(expected = Exception.class)
+	public void doSuggestTest() throws IOException {
+		String task = "{ \"data\" : \"Data\" , \"size\" : \"Size\" , \"fuzzy\" : \"Fuzzy\", \"resultname\" : \"Result Name\" }";
+		elasticSearchController.doSuggest(task);
 	}
 	
-	@Test
-	public void suggestTest()
-	{
-		 ModelAndView expectedResult = elasticSearchController.suggest();
-	     assertEquals(expectedResult.getViewName(), "es_suggest_demo");
+	@Test(expected = Exception.class)
+	public void doSearchTest() throws IOException {
+		String task = "{ \"data\" : \"Data\" , \"size\" : \"Size\" , \"fuzzy\" : \"Fuzzy\", \"resultname\" : \"Result Name\" }";
+		elasticSearchController.doSearch(task);
 	}
-	
-//	@Test
-//	public void doSuggestTest() throws IOException
-//	{
-//		PowerMockito.mockStatic(JestClient.class);
-//		PowerMockito.mockStatic(JestClientFactory.class);
-//		SearchResult result = new SearchResult(new Gson());
-//		Mockito.when(factory.getObject()).thenReturn(client);
-//		Mockito.when(client.execute(Matchers.anyObject())).thenReturn(result);
-////	    Mockito.doNothing().when(factory).setHttpClientConfig(new HttpClientConfig
-////			.Builder(Matchers.anyString())
-////		    .multiThreaded(Matchers.anyBoolean())
-////		    .build());
-//		
-//		JestClientFactory factory = Mockito.spy(new JestClientFactory());
-//        HttpClientConfig httpClientConfig = Mockito.spy(new HttpClientConfig.Builder("http://localhost:9200")
-//                .discoveryEnabled(true)
-//                .build());
-//        factory.setHttpClientConfig(httpClientConfig);
-//        JestHttpClient jestClient = (JestHttpClient) factory.getObject();
-//        
-//		elasticSearchController.doSearch("{\"data\":\"1\",\"size\":\"1\"}");
-//	}
-	
+
 	@Test
-	public void sendResultTest()
-	{
+	public void sendResultTest() {
 		ResponseEntity<Result> result = elasticSearchController.sendResult(null);
 		assertEquals(result.getStatusCode(), HttpStatus.OK);
 	}
-	
+
 	@Test
-	public void isRestFultest()
-	{
+	public void isRestFultest() {
 		assertTrue(elasticSearchController.isRESTfulCall());
 	}
 }

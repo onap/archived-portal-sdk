@@ -34,7 +34,7 @@
  * ============LICENSE_END============================================
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
- */
+ 
 
 package org.onap.portalsdk.fw.test;
 
@@ -98,3 +98,4 @@ public class PortalTimeoutHandlerTest extends AbstractModelTest {
 		PortalTimeoutHandler.gatherSessionExtensions();
 	}
 }
+*/

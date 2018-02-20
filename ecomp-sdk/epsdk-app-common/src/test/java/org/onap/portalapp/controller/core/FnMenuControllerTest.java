@@ -48,12 +48,16 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -63,12 +67,21 @@ import org.onap.portalsdk.core.domain.Menu;
 import org.onap.portalsdk.core.domain.MenuData;
 import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.domain.User;
+import org.onap.portalsdk.core.menu.MenuBuilder;
+import org.onap.portalsdk.core.service.AppService;
+import org.onap.portalsdk.core.service.DataAccessService;
 import org.onap.portalsdk.core.service.FnMenuService;
 import org.onap.portalsdk.core.service.FunctionalMenuListService;
 import org.onap.portalsdk.core.web.support.UserUtils;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({UserUtils.class})
 public class FnMenuControllerTest {
 	
 	@InjectMocks
@@ -79,6 +92,15 @@ public class FnMenuControllerTest {
 	
 	@Mock
 	FunctionalMenuListService functionalMenuListService;
+	
+	@Mock
+	private MenuBuilder menuBuilder;
+
+	@Mock
+	private DataAccessService dataAccessService;
+
+	@Mock
+	private AppService appService;
 
 	@Before
 	public void setup() {
@@ -225,5 +247,16 @@ public class FnMenuControllerTest {
 		fnMenuController.setViewName(expectedResult);
 		String actualResult = fnMenuController.getViewName();
 		assertEquals(expectedResult, actualResult);
+	}
+	
+	@Test
+	public void getMenuTest() {
+		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+		PowerMockito.mockStatic(UserUtils.class);
+		HttpSession session = Mockito.mock(HttpSession.class);
+		Mockito.when(request.getSession()).thenReturn(session);
+		Mockito.when(UserUtils.getUserSession(request)).thenReturn(new User());
+		Map<String, Object> model = fnMenuController.getMenu(request);
+		Assert.assertTrue(model.size() > 0 );
 	}
 }
