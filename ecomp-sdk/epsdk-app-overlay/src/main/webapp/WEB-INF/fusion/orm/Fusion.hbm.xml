@@ -211,6 +211,8 @@
     <class name="RoleFunction" table="FN_FUNCTION">
         <id        name="code"  column="function_cd"   />
         <property  name="name"  column="function_name" />
+        <property  name="type"  column="type" />
+        <property  name="action"  column="action" />
     </class>
     
     <!-- Menu class mapping details -->
@@ -284,16 +286,6 @@
         <property name="siteCd"      column="broadcast_site_cd"    />
     </class>
     
-    <class name="org.onap.portalsdk.analytics.model.base.ReportUserRole" table="cr_report_access">
-		<composite-id>
-			<key-property name="repId" column="rep_id" />
-			<key-property name="orderNo" column="order_no" />
-		</composite-id>
-
-        <property name="roleId" column="role_id"/>
-        <property name="userId"  column="user_id"/>
-        <property name="readOnlyYn"  column="read_only_yn"/>
-    </class>    
     
     <!-- State Lookup class mapping details -->
     <class name="LuState" table="FN_LU_STATE">
@@ -378,23 +370,7 @@
     <query name="getAllRoles">
       select id, name from Role order by name
     </query>	
-    
-    <query name="getReportSecurityUsers">
-      select repId, orderNo, roleId, userId, readOnlyYn from ReportUserRole where repId = :report_id and userId is not null
-    </query>
-        
-    <query name="getReportSecurityRoles">
-      select repId, orderNo, roleId, userId, readOnlyYn from ReportUserRole where repId = :report_id and roleId is not null
-    </query>    
-
-    <query name="deleteReportSecurityUsers">
-      delete from ReportUserRole where repId = :report_id and userId =:user_id
-    </query>
-
-    <query name="deleteReportSecurityRoles">
-      delete from ReportUserRole where repId = :report_id and roleId =:role_id
-    </query>
-    
+      
      <query name="getUserByProfileId">
       select orgUserId from User where id = :user_id
      </query>

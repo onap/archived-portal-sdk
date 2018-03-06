@@ -251,7 +251,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					pushUser(user);
 					if (logger.isDebugEnabled())
 						logger.debug("doPost: pushUser: success");
-					responseJson = buildJsonResponse(true, null);
+					responseJson = buildJsonResponse(true, "user saved successfully");
 					response.setStatus(HttpServletResponse.SC_OK);
 				} catch (Exception ex) {
 					responseJson = buildJsonResponse(ex);
@@ -267,7 +267,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 					editUser(loginId, user);
 					if (logger.isDebugEnabled())
 						logger.debug("doPost: editUser: success");
-					responseJson = buildJsonResponse(true, null);
+					responseJson = buildJsonResponse(true, "user saved successfully");
 					response.setStatus(HttpServletResponse.SC_OK);
 				} catch (Exception ex) {
 					responseJson = buildJsonResponse(ex);
@@ -290,7 +290,7 @@ public class PortalRestAPIProxy extends HttpServlet implements IPortalRestAPISer
 						pushUserRole(loginId, roles);
 						if (logger.isDebugEnabled())
 							logger.debug("doPost: pushUserRole: success");
-						responseJson = buildJsonResponse(true, null);
+						responseJson = buildJsonResponse(true, "saveRoles is successful");
 						response.setStatus(HttpServletResponse.SC_OK);
 					}
 				} catch (Exception ex) {

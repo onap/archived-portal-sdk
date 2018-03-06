@@ -51,6 +51,7 @@ import org.onap.portalsdk.core.domain.Role;
 import org.onap.portalsdk.core.domain.RoleFunction;
 import org.onap.portalsdk.core.domain.User;
 import org.onap.portalsdk.core.domain.UserApp;
+import org.onap.portalsdk.core.web.support.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +65,8 @@ public class UserServiceCentalizedImpl implements UserService {
 
 	@Autowired
 	private DataAccessService dataAccessService;
+	
+	private static String portalApiVersion = "/v1";
 
 	public DataAccessService getDataAccessService() {
 		return dataAccessService;
@@ -76,7 +79,7 @@ public class UserServiceCentalizedImpl implements UserService {
 	@Override
 	public User getUser(String id) throws IOException {
 		String orgUserId = getUserByProfileId(id);
-		String responseString = restApiRequestBuilder.getViaREST("/user/" + orgUserId, true, id);
+		String responseString = restApiRequestBuilder.getViaREST(portalApiVersion+"/user/" + orgUserId, true, id);
 		User user = userMapper(responseString);
 		return user;
 	}
@@ -96,7 +99,6 @@ public class UserServiceCentalizedImpl implements UserService {
 	public User userMapper(String res) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		User user = mapper.readValue(res, User.class);
-		Set<RoleFunction> roleFunctionListNew = new HashSet<>();
 		SortedSet<UserApp> userAppSet = new TreeSet<>();
 		@SuppressWarnings("unchecked")
 		Set<UserApp> setAppsObj = user.getUserApps();
@@ -108,6 +110,7 @@ public class UserServiceCentalizedImpl implements UserService {
 			@SuppressWarnings("unchecked")
 			Set<RoleFunction> roleFunctionList = role.getRoleFunctions();
 			Iterator<RoleFunction> roleFnIter = roleFunctionList.iterator();
+			Set<RoleFunction> roleFunctionListNew = new HashSet<>();
 			while (roleFnIter.hasNext()) {
 				Object nextValue = roleFnIter.next();
 				RoleFunction roleFunction = mapper.convertValue(nextValue, RoleFunction.class);

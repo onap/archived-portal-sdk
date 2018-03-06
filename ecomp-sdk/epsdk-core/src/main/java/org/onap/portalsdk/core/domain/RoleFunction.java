@@ -40,6 +40,7 @@ package org.onap.portalsdk.core.domain;
 import org.onap.portalsdk.core.domain.support.DomainVo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * <p>
@@ -57,6 +58,24 @@ public class RoleFunction extends DomainVo {
 	private static final long serialVersionUID = 1L;
 	private String code;
 	private String name;
+	private String type;
+	private String action;
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
 
 	public String getName() {
 		return name;

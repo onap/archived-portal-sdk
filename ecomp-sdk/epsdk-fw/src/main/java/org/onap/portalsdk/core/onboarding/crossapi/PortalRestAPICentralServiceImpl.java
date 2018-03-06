@@ -143,7 +143,7 @@ public class PortalRestAPICentralServiceImpl implements IPortalRestAPIService {
 					TypeFactory.defaultInstance().constructCollectionType(List.class, EcompRole.class));
 
 		} catch (IOException e) {
-			String response = "PortalRestAPICentralServiceImpl.getUsers failed";
+			String response = "PortalRestAPICentralServiceImpl.getRoles failed";
 			logger.error(response, e);
 			throw new PortalAPIException(response, e);
 		}

@@ -71,6 +71,8 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 
 	@Autowired
 	private UserService userService;
+	
+	private static String portalApiVersion = "/v1";
 
 	@Override
 	public LoginBean findUser(LoginBean bean, String menuPropertiesFilename,
@@ -210,7 +212,7 @@ public class LoginServiceCentralizedImpl extends FusionService implements LoginS
 	}
 
 	private User findUser(LoginBean bean) throws IOException {
-		String repsonse = restApiRequestBuilder.getViaREST("/user/" + bean.getUserid(), true, bean.getUserid());
+		String repsonse = restApiRequestBuilder.getViaREST(portalApiVersion+"/user/" + bean.getUserid(), true, bean.getUserid());
 		User user = userService.userMapper(repsonse);
 		user.setId(getUserIdByOrgUserId(user.getOrgUserId()));
 		return user;

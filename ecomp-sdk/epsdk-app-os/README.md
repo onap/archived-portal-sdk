@@ -12,12 +12,15 @@ like Apache Tomcat.  Eclipse users must install the M2E-WTP connector, see
 https://www.eclipse.org/m2e-wtp/
 
 ## Release Notes
+Version 2.2.0
+- PORTAL 136 Junits for SDK
+- PORTAL 87 hibernate mapping in epsdk-overlay forces use of analytics dependency jar
+- PORTAL 155 Review security issues: portal
 
 Version 2.1.0
 - PORTAL 161 Refer epsdk-app-common
 - PORTAL 160 Refer epsdk-app-common
 - PORTAL 159 Refer epsdk-app-common
-- PORTAL 136 Junits for SDK
 
 Version 1.4.0
 - PORTAL-19 Rename Java package base to org.onap

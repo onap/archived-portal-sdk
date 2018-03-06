@@ -60,10 +60,12 @@ public class RoleServiceCentralizedAccess implements RoleService {
 
 	@Autowired
 	private RestApiRequestBuilder restApiRequestBuilder;
+	
+	private static String portalApiVersion = "/v1";
 
 	@Override
 	public List<RoleFunction> getRoleFunctions(String loginId) throws IOException {
-		String roleFunctionString = restApiRequestBuilder.getViaREST("/functions", true, loginId);
+		String roleFunctionString = restApiRequestBuilder.getViaREST(portalApiVersion+"/functions", true, loginId);
 		ObjectMapper mapper = new ObjectMapper();
 		List<RoleFunction> roleFunctionList = mapper.readValue(roleFunctionString,
 				TypeFactory.defaultInstance().constructCollectionType(List.class, RoleFunction.class));
@@ -105,7 +107,7 @@ public class RoleServiceCentralizedAccess implements RoleService {
 	@Override
 	public Role getRole(String loginId, Long id) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		String roleString = restApiRequestBuilder.getViaREST("/role/" + id, true, loginId);
+		String roleString = restApiRequestBuilder.getViaREST(portalApiVersion+"/role/" + id, true, loginId);
 		Role role = mapper.readValue(roleString, Role.class);
 		if (role.getRoleFunctions() != null) {
 			@SuppressWarnings("unchecked")
@@ -141,7 +143,7 @@ public class RoleServiceCentralizedAccess implements RoleService {
 	@Override
 	public List<Role> getAvailableRoles(String requestedLoginId) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		String roleList = restApiRequestBuilder.getViaREST("/roles", true, requestedLoginId);
+		String roleList = restApiRequestBuilder.getViaREST(portalApiVersion+"/roles", true, requestedLoginId);
 		List<Role> roles = mapper.readValue(roleList,
 				TypeFactory.defaultInstance().constructCollectionType(List.class, Role.class));
 		return roles;
@@ -150,7 +152,7 @@ public class RoleServiceCentralizedAccess implements RoleService {
 	@Override
 	public List<Role> getActiveRoles(String requestedLoginId) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		String roleString = restApiRequestBuilder.getViaREST("/activeRoles", true, requestedLoginId);
+		String roleString = restApiRequestBuilder.getViaREST(portalApiVersion+"/activeRoles", true, requestedLoginId);
 		List<Role> roles = mapper.readValue(roleString,
 				TypeFactory.defaultInstance().constructCollectionType(List.class, Role.class));
 		return roles;
@@ -159,7 +161,7 @@ public class RoleServiceCentralizedAccess implements RoleService {
 	@Override
 	public RoleFunction getRoleFunction(String requestedLoginId, String code) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		String responseString = restApiRequestBuilder.getViaREST("/function/" + code, true, requestedLoginId);
+		String responseString = restApiRequestBuilder.getViaREST(portalApiVersion+"/function/" + code, true, requestedLoginId);
 		RoleFunction roleFunction = new RoleFunction();
 		if (!responseString.isEmpty()) {
 			roleFunction = mapper.readValue(responseString, RoleFunction.class);
@@ -171,7 +173,7 @@ public class RoleServiceCentralizedAccess implements RoleService {
 	public void saveRoleFunction(String requestedLoginId, RoleFunction domainRoleFunction) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		String roleFunction = mapper.writeValueAsString(domainRoleFunction);
-		restApiRequestBuilder.postViaREST("/roleFunction", true, roleFunction, requestedLoginId);
+		restApiRequestBuilder.postViaREST(portalApiVersion+"/roleFunction", true, roleFunction, requestedLoginId);
 	}
 
 	@Override

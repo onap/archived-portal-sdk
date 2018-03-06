@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -75,7 +76,7 @@ public class UserServiceCentalizedImplTest {
 		params.put("user_id", new Long(id));
 		Mockito.when(dataAccessService.executeNamedQuery("getUserByProfileId", params, null)).thenReturn(orgUsreIds);
 		String responseString = " { \"id\": 2, \"userApps\":[{\"app\":{\"id\":1},\"role\":{\"active\":true, \"roleFunctions\":[{\"id\":1}] } } ] }";
-		Mockito.when(restApiRequestBuilder.getViaREST("/user/" + orgUserId, true, id)).thenReturn(responseString);
+		Mockito.when(restApiRequestBuilder.getViaREST("/v1/user/" + orgUserId, true, id)).thenReturn(responseString);
 		
 		User user = userServiceCentalizedImpl.getUser(id);
 		Assert.assertNotNull(user);

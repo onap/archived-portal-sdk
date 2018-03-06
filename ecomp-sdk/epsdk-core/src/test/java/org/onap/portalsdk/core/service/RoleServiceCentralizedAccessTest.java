@@ -44,6 +44,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.onap.portalsdk.core.domain.Role;
@@ -63,7 +64,7 @@ public class RoleServiceCentralizedAccessTest {
 	public void getRoleFunctionsTest() throws Exception {
 		String loginId ="1234";
 		String response ="[    {        \"code\" : \"abc\",        \"name\" : \"xyz\"    },    {        \"code\" : \"pqr\",        \"name\" : \"str\"    } ]";
-		Mockito.when(restApiRequestBuilder.getViaREST("/functions", true, loginId)).thenReturn(response);
+		Mockito.when(restApiRequestBuilder.getViaREST(Matchers.anyString(), Matchers.anyBoolean(), Matchers.anyString())).thenReturn(response);
 		List<RoleFunction> roleFunctions = roleServiceCntrlAccess.getRoleFunctions(loginId);
 		Assert.assertTrue(roleFunctions.size() > 0);
 	}
@@ -73,7 +74,7 @@ public class RoleServiceCentralizedAccessTest {
 		String loginId = "123";
 		Long roleId = null;
 		String response ="[    {        \"active\" : true,        \"name\" : \"xyz\"    } ]";
-		Mockito.when(restApiRequestBuilder.getViaREST("/roles", true, loginId)).thenReturn(response);
+		Mockito.when(restApiRequestBuilder.getViaREST("/v1/roles", true, loginId)).thenReturn(response);
 		List<Role> roles = roleServiceCntrlAccess.getAvailableChildRoles(loginId, roleId);
 		Assert.assertNotNull(roles);
 	}
@@ -83,7 +84,7 @@ public class RoleServiceCentralizedAccessTest {
 		String loginId = "123";
 		Long roleId = 0L;
 		String response ="[    {        \"active\" : true,        \"name\" : \"xyz\"    } ]";
-		Mockito.when(restApiRequestBuilder.getViaREST("/roles", true, loginId)).thenReturn(response);
+		Mockito.when(restApiRequestBuilder.getViaREST("/v1/roles", true, loginId)).thenReturn(response);
 		List<Role> roles = roleServiceCntrlAccess.getAvailableChildRoles(loginId, roleId);
 		Assert.assertNotNull(roles);
 	}
@@ -93,9 +94,9 @@ public class RoleServiceCentralizedAccessTest {
 		String loginId = "123";
 		Long roleId = 123L;
 		String response ="[    {        \"active\" : false,        \"name\" : \"xyz\"    } ]";
-		Mockito.when(restApiRequestBuilder.getViaREST("/roles", true, loginId)).thenReturn(response);
-		String roleResponse =" {        \"active\" : true,        \"name\" : \"xyz\", \"roleFunctions\" : [    {        \"code\" : \"abc\",        \"name\" : \"RF1\"    },    {        \"code\" : \"pqr\",        \"name\" : \"RF2\"    } ]    ,  \"parentRoles\": [   {\"active\" : false,        \"name\" : \"XYZ-ABC\"}, {\"active\" : true,        \"name\" : \"ABC\"}  ]    } ";
-		Mockito.when(restApiRequestBuilder.getViaREST("/role/" + roleId, true, loginId)).thenReturn(roleResponse);
+		Mockito.when(restApiRequestBuilder.getViaREST("/v1/roles", true, loginId)).thenReturn(response);
+		String roleResponse =" {        \"active\" : true,        \"name\" : \"xyz\", \"roleFunctions\" : [    {        \"code\" : \"abc\",        \"name\" : \"RF1\" , \"type\" : \"abc\", \"action\" : \"abc\"   },    {        \"code\" : \"pqr\",        \"name\" : \"RF2\"  , \"type\" : \"abc\", \"action\" : \"abc\"  } ]    ,  \"parentRoles\": [   {\"active\" : false,        \"name\" : \"XYZ-ABC\"}, {\"active\" : true,        \"name\" : \"ABC\"}  ]    } ";
+		Mockito.when(restApiRequestBuilder.getViaREST("/v1/role/" + roleId, true, loginId)).thenReturn(roleResponse);
 		roleServiceCntrlAccess.getAvailableChildRoles(loginId, roleId);
 		Assert.assertTrue(true);
 	}
@@ -121,7 +122,7 @@ public class RoleServiceCentralizedAccessTest {
 	public void getActiveRolesTest() throws Exception {
 		String requestedLoginId ="1234";
 		String response ="[    {        \"active\" : true,        \"name\" : \"role1\"    }, {        \"active\" : false,        \"name\" : \"role2\"    } ]";
-		Mockito.when(restApiRequestBuilder.getViaREST("/activeRoles", true, requestedLoginId)).thenReturn(response);
+		Mockito.when(restApiRequestBuilder.getViaREST("/v1/activeRoles", true, requestedLoginId)).thenReturn(response);
 		List<Role> roles = roleServiceCntrlAccess.getActiveRoles(requestedLoginId);
 		Assert.assertNotNull(roles);
 	}
@@ -131,8 +132,9 @@ public class RoleServiceCentralizedAccessTest {
 		String requestedLoginId = "xyz";
 		String code ="abc";
 		
-		String responseString = " {        \"code\" : \"abc\",        \"name\" : \"xyz\"    }";
-		Mockito.when(restApiRequestBuilder.getViaREST("/function/" + code, true, requestedLoginId)).thenReturn(responseString);
+		String responseString = " {        \"code\" : \"abc\",        \"name\" : \"xyz\"   , \"type\" : \"abc\", \"action\" : \"abc\" }";
+//		Mockito.when(restApiRequestBuilder.getViaREST("v1/function/" + code, true, requestedLoginId)).thenReturn(responseString);
+		Mockito.when(restApiRequestBuilder.getViaREST(Matchers.anyString(), Matchers.anyBoolean(), Matchers.anyString())).thenReturn(responseString);
 		RoleFunction roleFunction = roleServiceCntrlAccess.getRoleFunction(requestedLoginId, code);
 		Assert.assertNotNull(roleFunction);
 	}

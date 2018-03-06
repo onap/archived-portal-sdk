@@ -60,8 +60,11 @@ import org.onap.portalsdk.core.exception.SessionExpiredException;
 import org.onap.portalsdk.core.logging.logic.EELFLoggerDelegate;
 import org.onap.portalsdk.core.menu.MenuBuilder;
 import org.onap.portalsdk.core.restful.domain.EcompRole;
+import org.onap.portalsdk.core.restful.domain.EcompRoleFunction;
 import org.onap.portalsdk.core.restful.domain.EcompUser;
 import org.onap.portalsdk.core.util.SystemProperties;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SuppressWarnings("rawtypes")
 public class UserUtils {
@@ -333,6 +336,8 @@ public class UserUtils {
 	 * @return EcompUser with a subset of fields.
 	 */
 	public static EcompUser convertToEcompUser(User user) {
+		ObjectMapper mapper = new ObjectMapper();
+
 		EcompUser userJson = new EcompUser();
 		userJson.setEmail(user.getEmail());
 		userJson.setFirstName(user.getFirstName());
@@ -348,7 +353,12 @@ public class UserUtils {
 		userJson.setOrgUserId(user.getOrgUserId());
 		userJson.setActive(user.getActive());
 		Set<EcompRole> ecompRoles = new TreeSet<>();
-		for (Role role : user.getRoles()) {
+		Set<Role> roles = user.getRoles();
+		Iterator<Role> roleIter = roles.iterator();
+
+		while (roleIter.hasNext()) {
+			Object nextValue = roleIter.next();
+			Role role = mapper.convertValue(nextValue, Role.class);
 			ecompRoles.add(convertToEcompRole(role));
 		}
 		userJson.setRoles(ecompRoles);
@@ -362,11 +372,35 @@ public class UserUtils {
 	 * @param role
 	 * @return EcompRole with a subset of fields: ID and name
 	 */
-	public static EcompRole convertToEcompRole(Role role) {
-		EcompRole ecompRole = new EcompRole();
-		ecompRole.setId(role.getId());
-		ecompRole.setName(role.getName());
-		return ecompRole;
-	}
+    public static EcompRole convertToEcompRole(Role role) {
+		ObjectMapper mapper = new ObjectMapper();
+
+        EcompRole ecompRole = new EcompRole();
+        ecompRole.setId(role.getId());
+        ecompRole.setName(role.getName());
+        Set<EcompRoleFunction> ecompRolefunctions = new TreeSet<>();
+        @SuppressWarnings("unchecked")
+        Set<RoleFunction> rolefunctions = role.getRoleFunctions();
+        Iterator<RoleFunction> roleFnIter = rolefunctions.iterator();
+        while (roleFnIter.hasNext()) {
+			Object nextValue = roleFnIter.next();
+			RoleFunction roleFunction = mapper.convertValue(nextValue, RoleFunction.class);
+            ecompRolefunctions.add(convertToEcompRoleFunction(roleFunction));
+        }
+        ecompRole.setRoleFunctions(ecompRolefunctions);
+        return ecompRole;
+ }
+ 
+ public static EcompRoleFunction convertToEcompRoleFunction(RoleFunction rolefun)
+ {
+        EcompRoleFunction ecompRoleFunction = new EcompRoleFunction();
+        ecompRoleFunction.setName(rolefun.getName());
+        ecompRoleFunction.setCode(rolefun.getCode());
+        ecompRoleFunction.setType(rolefun.getType());
+        ecompRoleFunction.setAction(rolefun.getAction());
+        return ecompRoleFunction;
+ }
+ 
+
 
 }

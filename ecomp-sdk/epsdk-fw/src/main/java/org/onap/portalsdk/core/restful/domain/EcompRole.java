@@ -46,14 +46,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * This bean holds the information for a role in the role and user management
  * REST API.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class EcompRole implements Comparable<EcompRole> {
 
 	protected Long id;
 	private String name;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
     private Set roleFunctions;
-    
+
 	public Set getRoleFunctions() {
 		return roleFunctions;
 	}
@@ -103,10 +101,11 @@ public class EcompRole implements Comparable<EcompRole> {
 		return true;
 	}
 
+	
+
 	@Override
 	public String toString() {
-		String s = "@EcompRole[id: " + id + "; name: " + name + "]";
-		return s;
+		return "EcompRole [id=" + id + ", name=" + name + ", roleFunctions=" + roleFunctions + "]";
 	}
 
 	@Override

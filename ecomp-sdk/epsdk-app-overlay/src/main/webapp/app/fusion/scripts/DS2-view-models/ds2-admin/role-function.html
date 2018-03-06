@@ -39,6 +39,8 @@
 					<tr>
 						<th b2b-table-header key="name">Name</th>
 						<th b2b-table-header key="code">Code</th>
+						<th b2b-table-header key="type">Type</th>
+						<th b2b-table-header key="action">Action</th>
 						<th b2b-table-header sortable="false" ng-if="isAppCentralized=='false'">Edit</th>
 						<th b2b-table-header sortable="false" ng-if="isAppCentralized=='false'">Delete</th>
 					</tr>
@@ -47,6 +49,8 @@
 					<tr>
 						<td b2b-table-body ng-bind="rowData['name']"></td>
 						<td b2b-table-body ng-bind="rowData['code']"></td>
+						<td b2b-table-body ng-bind="rowData['type']"></td>
+						<td b2b-table-body ng-bind="rowData['action']"></td>
 						<td b2b-table-body ng-if="isAppCentralized=='false'">
 							<div style="font-size: 20px;">
 								<a ng-click="saveRoleFuncPopUp(rowData);" class="icon-misc-pen"></a>

@@ -39,7 +39,6 @@ package org.onap.portalapp.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -129,7 +128,7 @@ public class OnBoardingApiServiceImplTest {
 		Assert.assertTrue(true);
 	}
 
-	@Test(expected = PortalAPIException.class)
+	@Test(expected = org.onap.portalsdk.core.onboarding.exception.PortalAPIException.class)
 	public void pushUserExceptionTest() throws Exception {
 		PowerMockito.mockStatic(PortalApiProperties.class);
 		Mockito.when(PortalApiProperties.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED)).thenReturn("remote");
@@ -173,7 +172,7 @@ public class OnBoardingApiServiceImplTest {
 		Mockito.when(PortalApiProperties.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED)).thenReturn("remote");
 
 		String responseString = "Response";
-		Mockito.when(restApiRequestBuilder.getViaREST("/user/" + loginId, true, loginId)).thenReturn(responseString);
+		Mockito.when(restApiRequestBuilder.getViaREST("/v1/user/" + loginId, true, loginId)).thenReturn(responseString);
 		Mockito.when(userService.userMapper(responseString)).thenReturn(new User());
 
 		OnBoardingApiServiceImpl onBoardingApiServiceImpl = new OnBoardingApiServiceImpl();
@@ -201,7 +200,7 @@ public class OnBoardingApiServiceImplTest {
 		PowerMockito.mockStatic(PortalApiProperties.class);
 		Mockito.when(PortalApiProperties.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED)).thenReturn("local");
 		String responseString = "Response";
-		Mockito.when(restApiRequestBuilder.getViaREST("/user/" + loginId, true, loginId)).thenThrow(IOException.class);
+		Mockito.when(restApiRequestBuilder.getViaREST("/v1/user/" + loginId, true, loginId)).thenThrow(IOException.class);
 		Mockito.when(userService.userMapper(responseString)).thenReturn(null);
 
 		OnBoardingApiServiceImpl onBoardingApiServiceImpl = new OnBoardingApiServiceImpl();
@@ -320,7 +319,7 @@ public class OnBoardingApiServiceImplTest {
 	public void getUserRolesTest() throws Exception {
 		String loginId = "123";
 		String responseString = "Response";
-		Mockito.when(restApiRequestBuilder.getViaREST("/user/" + loginId, true, loginId)).thenReturn(responseString);
+		Mockito.when(restApiRequestBuilder.getViaREST("/v1/user/" + loginId, true, loginId)).thenReturn(responseString);
 		User user = new User();
 		SortedSet<Role> currentRoles = new TreeSet<>();
 		Role role = new Role();
@@ -333,10 +332,10 @@ public class OnBoardingApiServiceImplTest {
 		Assert.assertNotNull(ecompRoles);
 	}
 
-	@Test(expected = PortalAPIException.class)
+	@Test(expected = org.onap.portalsdk.core.onboarding.exception.PortalAPIException.class)
 	public void getUserRolesExceptionTest() throws Exception {
 		String loginId = "123";
-		Mockito.when(restApiRequestBuilder.getViaREST("/user/" + loginId, true, loginId)).thenThrow(IOException.class);
+		Mockito.when(restApiRequestBuilder.getViaREST("/v1/user/" + loginId, true, loginId)).thenThrow(IOException.class);
 		OnBoardingApiServiceImpl onBoardingApiServiceImpl = new OnBoardingApiServiceImpl();
 		onBoardingApiServiceImpl.getUserRoles(loginId);
 	}

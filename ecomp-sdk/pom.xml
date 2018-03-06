@@ -31,14 +31,14 @@
 
 	<properties>
 		<encoding>UTF-8</encoding>
-		<springframework.version>4.2.0.RELEASE</springframework.version>
+		<springframework.version>4.2.2.RELEASE</springframework.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<skiptests>false</skiptests>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 		<snapshotNexusPath>content/repositories/snapshots/</snapshotNexusPath>
 		<stagingNexusPath>content/repositories/staging/</stagingNexusPath>
 		<releaseNexusPath>content/repositories/releases/</releaseNexusPath>
-		<jacoco.version>0.7.7.201606060606</jacoco.version>
+		<jacoco.version>0.7.9</jacoco.version>
 		<sonar.exclusions>**/scripts/**/*,**.js</sonar.exclusions>
 		<sonar.test.exclusions>**/test/**/*,**/tests/**/*</sonar.test.exclusions>
 		<sonar.language>java</sonar.language>

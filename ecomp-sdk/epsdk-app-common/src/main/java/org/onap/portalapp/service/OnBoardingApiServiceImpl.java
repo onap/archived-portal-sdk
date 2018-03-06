@@ -108,6 +108,7 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService, IPortalR
 			.getProperty(PortalApiConstants.ROLE_ACCESS_CENTRALIZED);
 	
 	private static final String isCentralized = "remote";
+	private static String portalApiVersion = "/v1";
 	
 	public OnBoardingApiServiceImpl() {
 		// Defend against null-pointer exception during server startup
@@ -229,11 +230,12 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService, IPortalR
 		try {
 			if (logger.isDebugEnabled())
 				logger.debug(EELFLoggerDelegate.debugLogger, "## REST API ## loginId: {}", loginId);
-			
+
 			User user = null;
-			if(isCentralized.equals(isAccessCentralized)){
-			   String responseString = restApiRequestBuilder.getViaREST("/user/" + loginId, true, loginId);
-			   user = userService.userMapper(responseString);
+			if (isCentralized.equals(isAccessCentralized)) {
+				String responseString = restApiRequestBuilder.getViaREST(portalApiVersion+"/user/" + loginId, true,
+						loginId);
+				user = userService.userMapper(responseString);
 			}
 			else{
 			   user = userProfileService.getUserByLoginId(loginId);
@@ -359,30 +361,30 @@ public class OnBoardingApiServiceImpl implements IPortalRestAPIService, IPortalR
 			logger.debug(EELFLoggerDelegate.debugLogger, "## REST API ## loginId: {}", loginId);
 		List<EcompRole> ecompRoles = new ArrayList<EcompRole>();
 		try {
-			
-			if(isCentralized.equals(isAccessCentralized)){
+
+			if (isCentralized.equals(isAccessCentralized)) {
 				User user = null;
-					String responseString = restApiRequestBuilder.getViaREST("/user/" + loginId, true, loginId);
-					user = userService.userMapper(responseString);
-					SortedSet<Role> currentRoles = null;
-					if (user != null) {
-						currentRoles = user.getRoles();
-						if (currentRoles != null)
-							for (Role role : currentRoles)
-								ecompRoles.add(UserUtils.convertToEcompRole(role));
-					}
+				String responseString = restApiRequestBuilder.getViaREST(portalApiVersion+"/user/" + loginId, true,
+						loginId);
+				user = userService.userMapper(responseString);
+				SortedSet<Role> currentRoles = null;
+				if (user != null) {
+					currentRoles = user.getRoles();
+					if (currentRoles != null)
+						for (Role role : currentRoles)
+							ecompRoles.add(UserUtils.convertToEcompRole(role));
+				}
+			} else {
+				User user = userProfileService.getUserByLoginId(loginId);
+				SortedSet<Role> currentRoles = null;
+				if (user != null) {
+					currentRoles = user.getRoles();
+					currentRoles.removeIf(role -> (role.getActive() == false));
+					if (currentRoles != null)
+						for (Role role : currentRoles)
+							ecompRoles.add(UserUtils.convertToEcompRole(role));
+				}
 			}
-			else{
-			User user = userProfileService.getUserByLoginId(loginId);
-			SortedSet<Role> currentRoles = null;
-			if (user != null) {
-				currentRoles = user.getRoles();
-				currentRoles.removeIf(role -> (role.getActive() == false));
-				if (currentRoles != null)
-					for (Role role : currentRoles)
-						ecompRoles.add(UserUtils.convertToEcompRole(role));
-			}
-		}	
 			return ecompRoles;
 		} catch (Exception e) {
 			String response = "OnboardingApiService.getUserRoles failed";

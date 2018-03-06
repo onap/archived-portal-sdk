@@ -9,7 +9,7 @@
 	
 	<div class="b2b-modal-body ng-scope ng-isolate-scope in" tabindex="0"
 		role="region" aria-label="Modal header text content"
-		style="height: 145px;">
+		style="height: 280px;">
 
 		<div class="field-group">
 			<span ID="required" style="color: Red;" visible="false"> *</span>Name <input id="textinputID-2a" ddh-reset ng-model="roleFun['name']"
@@ -28,6 +28,16 @@
 		<div class="error-container"
 			ng-show="!roleFun['code']||roleFun['code']==0">
 			<small id="code-required" class="err-message">Code is Required</small>
+		</div>
+			<br>
+		<div class="field-group">
+			Type <input id="textinputID-2b" ddh-reset ng-model="roleFun['type']"
+				placeholder="Type" class="span12" type="text">
+		</div>
+		<br>
+		<div class="field-group">
+			Action <input id="textinputID-2c" ddh-reset ng-model="roleFun['action']"
+				placeholder="Action" class="span12" type="text">
 		</div>
 		
 	</div>

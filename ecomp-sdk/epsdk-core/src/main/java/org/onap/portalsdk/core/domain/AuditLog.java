@@ -77,7 +77,14 @@ public class AuditLog extends DomainVo {
 	public AuditLog() {
 		setCreated(new Date());
 	}
-
+	
+	public AuditLog(String activityCode, String affectedRecordId, String comments, Long userId){
+		this.activityCode = activityCode;
+		this.affectedRecordId = affectedRecordId;
+		this.comments = comments;
+		this.userId = userId;
+		setCreated(new Date());
+	}
 	public String getActivityCode() {
 		return activityCode;
 	}

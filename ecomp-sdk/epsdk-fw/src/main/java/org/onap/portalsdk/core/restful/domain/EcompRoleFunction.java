@@ -37,17 +37,11 @@
 */
 package org.onap.portalsdk.core.restful.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class EcompRoleFunction implements Comparable<EcompRoleFunction>{
        
        private String name;
        private String code;
-       @JsonInclude(JsonInclude.Include.NON_NULL)
        private String type;
-       @JsonInclude(JsonInclude.Include.NON_NULL)
        private String action;
        
        
@@ -75,10 +69,19 @@ public class EcompRoleFunction implements Comparable<EcompRoleFunction>{
        public void setAction(String action) {
               this.action = action;
        }
+
 	@Override
 	public int compareTo(EcompRoleFunction arg0) {
-		return this.getCode().compareTo(arg0.getCode());
+		int result = this.code.compareTo(arg0.getCode());
+		if (result == 0) {
+			result = this.name.compareTo(arg0.getName());
+		}
+		if (result == 0) {
+			result = this.type.compareTo(arg0.getType());
+		}
+		if (result == 0) {
+			result = this.action.compareTo(arg0.getAction());
+		}
+		return result;
 	}
-
 }
-

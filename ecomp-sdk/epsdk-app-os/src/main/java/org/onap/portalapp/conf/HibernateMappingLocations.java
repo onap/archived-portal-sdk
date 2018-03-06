@@ -51,7 +51,9 @@ public class HibernateMappingLocations implements HibernateMappingLocatable {
 	public Resource[] getMappingLocations() {
 		return new Resource[] { new ClassPathResource("../fusion/orm/Fusion.hbm.xml"),
 				new ClassPathResource("../fusion/orm/Workflow.hbm.xml"),
-				new ClassPathResource("../fusion/orm/RNoteBookIntegration.hbm.xml") };
+				new ClassPathResource("../fusion/orm/RNoteBookIntegration.hbm.xml") ,
+				new ClassPathResource("../fusion/orm/Analytics.hbm.xml") 
+		};
 	}
 
 	@Override
