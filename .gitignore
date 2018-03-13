@@ -1,3 +1,9 @@
 .idea
 .project
 /bin/
+ecomp-sdk/*/logs/
+ecomp-sdk/*/debug-logs/
+ecomp-sdk/*/null*.csv
+ecomp-sdk/*/null*
+ecomp-sdk/*/jacoco.exec
+test.txt

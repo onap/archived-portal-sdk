@@ -77,67 +77,67 @@ public class SystemUpgrade extends org.onap.portalsdk.analytics.RaptorObject {
 		}*/
 	}   // upgradeDB
 
-	private static void upgrateFromV1ToV2_0(HttpServletRequest request) throws Exception {
-		StringBuffer log = new StringBuffer();
-		log.append("Starting upgrade...<br>\n");
-		
-		DataSet ds = DbUtils.executeQuery("SELECT cr.rep_id, cr.sched_mailto_user_ids FROM cr_report cr");
-		for(int i=0; i<ds.getRowCount(); i++) {
-			String repId = ds.getString(i, 0);
-			log.append("<li>Processing report ["+repId+"]: ");
-			
-			Connection connection = DbUtils.startTransaction();
-			String emailIds = nvls(ds.getString(i, 1));
-			if(emailIds.length()>0)
-				try {
-					log.append("Converting emails ");
-					StringTokenizer st = new StringTokenizer(emailIds, ",");
-					while(st.hasMoreTokens()) {
-						String userId = nvls(st.nextToken());
-						log.append(userId);
-						if(userId.length()>0)
-							DbUtils.executeUpdate(connection, "INSERT INTO cr_report_schedule_users (rep_id, user_id) VALUES ("+repId+", "+userId+")");
-						log.append("-success, ");
-					}   // while
-					log.append(" <font color=green>COMPLETED</font>; ");
-				} catch(Exception e) {
-					log.append("-<font color=red>FAILED</font>; ");
-				}
-			
-			String reportXML = ReportLoader.loadCustomReportXML(repId);
-			ReportDefinition rdef = ReportDefinition.unmarshal(reportXML, repId, request);
-			ReportWrapper rw = new ReportWrapper(rdef.cloneCustomReport(), repId, null, null, null, null, null, null, false);
-			
-			for(Iterator iter=rw.getAllColumns().iterator(); iter.hasNext(); ) {
-				DataColumnType col = (DataColumnType) iter.next();
-				String drillDownURL = nvls(col.getDrillDownURL());
-				if(drillDownURL.startsWith("dispatcher?action=custrep.run&c_master=")) {
-					drillDownURL = AppUtils.getReportExecuteActionURL()+drillDownURL.substring("dispatcher?action=custrep.run&c_master=".length());
-					log.append("Drill-down processed; ");
-					col.setDrillDownURL(drillDownURL);
-				}
-			}   // for
-			
-			reportXML = rw.marshal();
-
-			/*PrintWriter xmlOut = new PrintWriter(new BufferedWriter(new FileWriter(new File(AppUtils.getTempFolderPath()+AppUtils.getUserID(request)))));
-			xmlOut.println(reportXML);
-			xmlOut.close();*/
-
-			try {
-				ReportLoader.updateCustomReportRec(connection, rw, reportXML);
-				DbUtils.commitTransaction(connection);
-				log.append("<font color=green>REPORT UPDATED</font></li>\n");
-			} catch(Exception e) {
-				log.append("<font color=red>REPORT UPDATE FAILED</font></li>\n");
-				DbUtils.rollbackTransaction(connection);
-			} finally {
-                DbUtils.clearConnection(connection);         
-            }
-		}   // for
-		
-		log.append("<br>\nSystem upgrade successfully completed...<br>\n");
-		request.setAttribute("system_message", log.toString());
-	}   // upgrateFromV1ToV2_0
+//	private static void upgrateFromV1ToV2_0(HttpServletRequest request) throws Exception {
+//		StringBuffer log = new StringBuffer();
+//		log.append("Starting upgrade...<br>\n");
+//		
+//		DataSet ds = DbUtils.executeQuery("SELECT cr.rep_id, cr.sched_mailto_user_ids FROM cr_report cr");
+//		for(int i=0; i<ds.getRowCount(); i++) {
+//			String repId = ds.getString(i, 0);
+//			log.append("<li>Processing report ["+repId+"]: ");
+//			
+//			Connection connection = DbUtils.startTransaction();
+//			String emailIds = nvls(ds.getString(i, 1));
+//			if(emailIds.length()>0)
+//				try {
+//					log.append("Converting emails ");
+//					StringTokenizer st = new StringTokenizer(emailIds, ",");
+//					while(st.hasMoreTokens()) {
+//						String userId = nvls(st.nextToken());
+//						log.append(userId);
+//						if(userId.length()>0)
+//							DbUtils.executeUpdate(connection, "INSERT INTO cr_report_schedule_users (rep_id, user_id) VALUES ("+repId+", "+userId+")");
+//						log.append("-success, ");
+//					}   // while
+//					log.append(" <font color=green>COMPLETED</font>; ");
+//				} catch(Exception e) {
+//					log.append("-<font color=red>FAILED</font>; ");
+//				}
+//			
+//			String reportXML = ReportLoader.loadCustomReportXML(repId);
+//			ReportDefinition rdef = ReportDefinition.unmarshal(reportXML, repId, request);
+//			ReportWrapper rw = new ReportWrapper(rdef.cloneCustomReport(), repId, null, null, null, null, null, null, false);
+//			
+//			for(Iterator iter=rw.getAllColumns().iterator(); iter.hasNext(); ) {
+//				DataColumnType col = (DataColumnType) iter.next();
+//				String drillDownURL = nvls(col.getDrillDownURL());
+//				if(drillDownURL.startsWith("dispatcher?action=custrep.run&c_master=")) {
+//					drillDownURL = AppUtils.getReportExecuteActionURL()+drillDownURL.substring("dispatcher?action=custrep.run&c_master=".length());
+//					log.append("Drill-down processed; ");
+//					col.setDrillDownURL(drillDownURL);
+//				}
+//			}   // for
+//			
+//			reportXML = rw.marshal();
+//
+//			/*PrintWriter xmlOut = new PrintWriter(new BufferedWriter(new FileWriter(new File(AppUtils.getTempFolderPath()+AppUtils.getUserID(request)))));
+//			xmlOut.println(reportXML);
+//			xmlOut.close();*/
+//
+//			try {
+//				ReportLoader.updateCustomReportRec(connection, rw, reportXML);
+//				DbUtils.commitTransaction(connection);
+//				log.append("<font color=green>REPORT UPDATED</font></li>\n");
+//			} catch(Exception e) {
+//				log.append("<font color=red>REPORT UPDATE FAILED</font></li>\n");
+//				DbUtils.rollbackTransaction(connection);
+//			} finally {
+//                DbUtils.clearConnection(connection);         
+//            }
+//		}   // for
+//		
+//		log.append("<br>\nSystem upgrade successfully completed...<br>\n");
+//		request.setAttribute("system_message", log.toString());
+//	}   // upgrateFromV1ToV2_0
 
 }	// SystemUpgrade

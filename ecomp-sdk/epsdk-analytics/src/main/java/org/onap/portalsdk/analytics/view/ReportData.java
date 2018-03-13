@@ -88,6 +88,14 @@ public class ReportData extends org.onap.portalsdk.analytics.RaptorObject implem
 		columnVisuals = new Vector();
 	} // ReportData
 
+	public Vector getColumnVisuals() {
+		return columnVisuals;
+	}
+
+	public void setColumnVisuals(Vector columnVisuals) {
+		this.columnVisuals = columnVisuals;
+	}
+
 	public int getPageNo() {
 		return pageNo;
 	} // pageNo

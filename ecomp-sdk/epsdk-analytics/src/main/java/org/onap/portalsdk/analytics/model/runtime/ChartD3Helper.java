@@ -113,144 +113,144 @@ public class ChartD3Helper {
 		this.reportRuntime = rr;
 	}
 	
-	public String createVisualization(String reportID, HttpServletRequest request) throws RaptorException {
-		//From annotations chart
-		clearReportRuntimeBackup(request);
-		
-		//HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
-        final Long user_id = new Long((long) UserUtils.getUserId(request));
-		//String action = request.getParameter(AppConstants.RI_ACTION);
-		//String reportID = AppUtils.getRequestValue(request, AppConstants.RI_REPORT_ID);
-
-		ReportHandler rh = new ReportHandler();
-		ReportData reportData = null;
-		 HashMap<String, String> chartOptionsMap = new HashMap<String, String>();
-		try {
-		 if(reportID !=null) {	
-			 reportRuntime = rh.loadReportRuntime(request, reportID, true, 1);
-			 setChartType(reportRuntime.getChartType());
-			 reportData 		= reportRuntime.loadReportData(0, user_id.toString(), 10000,request, false);
-		 }
-		 
-		
-			
-			String rotateLabelsStr = "";
-			rotateLabelsStr = AppUtils.nvl(reportRuntime.getLegendLabelAngle());
-			if(rotateLabelsStr.toLowerCase().equals("standard")) {
-				rotateLabelsStr = "0";
-			} else if (rotateLabelsStr.toLowerCase().equals("up45")) {
-				rotateLabelsStr = "45";
-			} else if (rotateLabelsStr.toLowerCase().equals("down45")) {
-				rotateLabelsStr = "-45";
-			} else if (rotateLabelsStr.toLowerCase().equals("up90")) {
-				rotateLabelsStr = "90";
-			} else if (rotateLabelsStr.toLowerCase().equals("down90")) {
-				rotateLabelsStr = "-90";
-			} else
-				rotateLabelsStr = "0";
-			
-			String width 							= (AppUtils.getRequestNvlValue(request, "width").length()>0?AppUtils.getRequestNvlValue(request, "width"):(AppUtils.nvl(reportRuntime.getChartWidth()).length()>0?reportRuntime.getChartWidth():"700"));
-			String height 							= (AppUtils.getRequestNvlValue(request, "height").length()>0?AppUtils.getRequestNvlValue(request, "height"):(AppUtils.nvl(reportRuntime.getChartHeight()).length()>0?reportRuntime.getChartHeight():"300"));
-			String animationStr 					= (AppUtils.getRequestNvlValue(request, "animation").length()>0?AppUtils.getRequestNvlValue(request, "animation"):new Boolean(reportRuntime.isAnimateAnimatedChart()).toString());
-			
-			String rotateLabels 					= (AppUtils.getRequestNvlValue(request, "rotateLabels").length()>0?AppUtils.getRequestNvlValue(request, "rotateLabels"):(rotateLabelsStr.length()>0?rotateLabelsStr:"0"));
-			String staggerLabelsStr 				= (AppUtils.getRequestNvlValue(request, "staggerLabels").length()>0?AppUtils.getRequestNvlValue(request, "staggerLabels"):"false");
-			String showMaxMinStr 					= (AppUtils.getRequestNvlValue(request, "showMaxMin").length()>0?AppUtils.getRequestNvlValue(request, "showMaxMin"):"false");
-			String showControlsStr 					= (AppUtils.getRequestNvlValue(request, "showControls").length()>0?AppUtils.getRequestNvlValue(request, "showControls"):new Boolean(reportRuntime.displayBarControls()).toString());
-			String showLegendStr 					= (AppUtils.getRequestNvlValue(request, "showLegend").length()>0?AppUtils.getRequestNvlValue(request, "showLegend"):new Boolean(!new Boolean(reportRuntime.hideChartLegend())).toString()); 
-			String topMarginStr 					= AppUtils.getRequestNvlValue(request, "topMargin");
-			String topMargin 						= (AppUtils.nvl(topMarginStr).length()<=0)?(reportRuntime.getTopMargin()!=null?reportRuntime.getTopMargin().toString():"30"):topMarginStr;
-			String bottomMarginStr 					= AppUtils.getRequestNvlValue(request, "bottomMargin");
-			String bottomMargin 					= (AppUtils.nvl(bottomMarginStr).length()<=0)?(reportRuntime.getBottomMargin()!=null?reportRuntime.getBottomMargin().toString():"50"):bottomMarginStr;
-			String leftMarginStr 					= AppUtils.getRequestNvlValue(request, "leftMargin");
-			String leftMargin 						= (AppUtils.nvl(leftMarginStr).length()<=0)?(reportRuntime.getLeftMargin()!=null?reportRuntime.getLeftMargin().toString():"100"):leftMarginStr;
-			String rightMarginStr 					= AppUtils.getRequestNvlValue(request, "rightMargin");
-			String rightMargin 						= (AppUtils.nvl(rightMarginStr).length()<=0)?(reportRuntime.getRightMargin()!=null?reportRuntime.getRightMargin().toString():"160"):rightMarginStr;
-			String showTitleStr 					= (AppUtils.getRequestNvlValue(request, "showTitle").length()>0?AppUtils.getRequestNvlValue(request, "showTitle"):new Boolean(reportRuntime.displayChartTitle()).toString()); 
-			String subType 							= AppUtils.getRequestNvlValue(request, "subType").length()>0?AppUtils.getRequestNvlValue(request, "subType"):(AppUtils.nvl(reportRuntime.getTimeSeriesRender()).equals("area")?reportRuntime.getTimeSeriesRender():"");
-			String stackedStr 						= AppUtils.getRequestNvlValue(request, "stacked").length()>0?AppUtils.getRequestNvlValue(request, "stacked"):new Boolean(reportRuntime.isChartStacked()).toString();
-			String horizontalBar 					= AppUtils.getRequestNvlValue(request, "horizontalBar").length()>0?AppUtils.getRequestNvlValue(request, "horizontalBar"):new Boolean(reportRuntime.isHorizontalOrientation()).toString();
-			String barRealTimeAxis					= AppUtils.getRequestNvlValue(request, "barRealTimeAxis");
-			String barReduceXAxisLabels				= AppUtils.getRequestNvlValue(request, "barReduceXAxisLabels").length()>0?AppUtils.getRequestNvlValue(request, "barReduceXAxisLabels"):new Boolean(reportRuntime.isLessXaxisTickers()).toString();;
-			String timeAxis							= AppUtils.getRequestNvlValue(request, "timeAxis").length()>0?AppUtils.getRequestNvlValue(request, "timeAxis"):new Boolean(reportRuntime.isTimeAxis()).toString();
-			String logScale 						= AppUtils.getRequestNvlValue(request, "logScale").length()>0?AppUtils.getRequestNvlValue(request, "logScale"):new Boolean(reportRuntime.isLogScale()).toString();
-			String precision 						= AppUtils.getRequestNvlValue(request, "precision").length()>0?AppUtils.getRequestNvlValue(request, "precision"):"2";
-			
-
-			chartOptionsMap.put("width", width);
-			chartOptionsMap.put("height", height);
-			chartOptionsMap.put("animation", animationStr);
-			chartOptionsMap.put("rotateLabels", rotateLabels);
-			chartOptionsMap.put("staggerLabels", staggerLabelsStr);
-			chartOptionsMap.put("showMaxMin", showMaxMinStr);
-			chartOptionsMap.put("showControls", showControlsStr);
-			chartOptionsMap.put("showLegend", showLegendStr);
-			chartOptionsMap.put("topMargin", topMargin);
-			chartOptionsMap.put("bottomMargin", bottomMargin);
-			chartOptionsMap.put("leftMargin", leftMargin);
-			chartOptionsMap.put("rightMargin", rightMargin);
-			chartOptionsMap.put("showTitle", showTitleStr);
-			chartOptionsMap.put("subType", subType);
-			chartOptionsMap.put("stacked", stackedStr);
-			chartOptionsMap.put("horizontalBar", horizontalBar);
-			chartOptionsMap.put("timeAxis", timeAxis);
-			chartOptionsMap.put("barRealTimeAxis", barRealTimeAxis);
-			chartOptionsMap.put("barReduceXAxisLabels", barReduceXAxisLabels);
-			
-			chartOptionsMap.put("logScale", logScale);
-			chartOptionsMap.put("precision", precision);
-			
-		
-		} catch (RaptorException ex) {
-			ex.printStackTrace();
-		}
-		return createVisualization(reportRuntime, chartOptionsMap, request);
-	}
+//	public String createVisualization(String reportID, HttpServletRequest request) throws RaptorException {
+//		//From annotations chart
+//		clearReportRuntimeBackup(request);
+//		
+//		//HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+//        final Long user_id = new Long((long) UserUtils.getUserId(request));
+//		//String action = request.getParameter(AppConstants.RI_ACTION);
+//		//String reportID = AppUtils.getRequestValue(request, AppConstants.RI_REPORT_ID);
+//
+//		ReportHandler rh = new ReportHandler();
+//		ReportData reportData = null;
+//		 HashMap<String, String> chartOptionsMap = new HashMap<String, String>();
+//		try {
+//		 if(reportID !=null) {	
+//			 reportRuntime = rh.loadReportRuntime(request, reportID, true, 1);
+//			 setChartType(reportRuntime.getChartType());
+//			 reportData 		= reportRuntime.loadReportData(0, user_id.toString(), 10000,request, false);
+//		 }
+//		 
+//		
+//			
+//			String rotateLabelsStr = "";
+//			rotateLabelsStr = AppUtils.nvl(reportRuntime.getLegendLabelAngle());
+//			if(rotateLabelsStr.toLowerCase().equals("standard")) {
+//				rotateLabelsStr = "0";
+//			} else if (rotateLabelsStr.toLowerCase().equals("up45")) {
+//				rotateLabelsStr = "45";
+//			} else if (rotateLabelsStr.toLowerCase().equals("down45")) {
+//				rotateLabelsStr = "-45";
+//			} else if (rotateLabelsStr.toLowerCase().equals("up90")) {
+//				rotateLabelsStr = "90";
+//			} else if (rotateLabelsStr.toLowerCase().equals("down90")) {
+//				rotateLabelsStr = "-90";
+//			} else
+//				rotateLabelsStr = "0";
+//			
+//			String width 							= (AppUtils.getRequestNvlValue(request, "width").length()>0?AppUtils.getRequestNvlValue(request, "width"):(AppUtils.nvl(reportRuntime.getChartWidth()).length()>0?reportRuntime.getChartWidth():"700"));
+//			String height 							= (AppUtils.getRequestNvlValue(request, "height").length()>0?AppUtils.getRequestNvlValue(request, "height"):(AppUtils.nvl(reportRuntime.getChartHeight()).length()>0?reportRuntime.getChartHeight():"300"));
+//			String animationStr 					= (AppUtils.getRequestNvlValue(request, "animation").length()>0?AppUtils.getRequestNvlValue(request, "animation"):new Boolean(reportRuntime.isAnimateAnimatedChart()).toString());
+//			
+//			String rotateLabels 					= (AppUtils.getRequestNvlValue(request, "rotateLabels").length()>0?AppUtils.getRequestNvlValue(request, "rotateLabels"):(rotateLabelsStr.length()>0?rotateLabelsStr:"0"));
+//			String staggerLabelsStr 				= (AppUtils.getRequestNvlValue(request, "staggerLabels").length()>0?AppUtils.getRequestNvlValue(request, "staggerLabels"):"false");
+//			String showMaxMinStr 					= (AppUtils.getRequestNvlValue(request, "showMaxMin").length()>0?AppUtils.getRequestNvlValue(request, "showMaxMin"):"false");
+//			String showControlsStr 					= (AppUtils.getRequestNvlValue(request, "showControls").length()>0?AppUtils.getRequestNvlValue(request, "showControls"):new Boolean(reportRuntime.displayBarControls()).toString());
+//			String showLegendStr 					= (AppUtils.getRequestNvlValue(request, "showLegend").length()>0?AppUtils.getRequestNvlValue(request, "showLegend"):new Boolean(!new Boolean(reportRuntime.hideChartLegend())).toString()); 
+//			String topMarginStr 					= AppUtils.getRequestNvlValue(request, "topMargin");
+//			String topMargin 						= (AppUtils.nvl(topMarginStr).length()<=0)?(reportRuntime.getTopMargin()!=null?reportRuntime.getTopMargin().toString():"30"):topMarginStr;
+//			String bottomMarginStr 					= AppUtils.getRequestNvlValue(request, "bottomMargin");
+//			String bottomMargin 					= (AppUtils.nvl(bottomMarginStr).length()<=0)?(reportRuntime.getBottomMargin()!=null?reportRuntime.getBottomMargin().toString():"50"):bottomMarginStr;
+//			String leftMarginStr 					= AppUtils.getRequestNvlValue(request, "leftMargin");
+//			String leftMargin 						= (AppUtils.nvl(leftMarginStr).length()<=0)?(reportRuntime.getLeftMargin()!=null?reportRuntime.getLeftMargin().toString():"100"):leftMarginStr;
+//			String rightMarginStr 					= AppUtils.getRequestNvlValue(request, "rightMargin");
+//			String rightMargin 						= (AppUtils.nvl(rightMarginStr).length()<=0)?(reportRuntime.getRightMargin()!=null?reportRuntime.getRightMargin().toString():"160"):rightMarginStr;
+//			String showTitleStr 					= (AppUtils.getRequestNvlValue(request, "showTitle").length()>0?AppUtils.getRequestNvlValue(request, "showTitle"):new Boolean(reportRuntime.displayChartTitle()).toString()); 
+//			String subType 							= AppUtils.getRequestNvlValue(request, "subType").length()>0?AppUtils.getRequestNvlValue(request, "subType"):(AppUtils.nvl(reportRuntime.getTimeSeriesRender()).equals("area")?reportRuntime.getTimeSeriesRender():"");
+//			String stackedStr 						= AppUtils.getRequestNvlValue(request, "stacked").length()>0?AppUtils.getRequestNvlValue(request, "stacked"):new Boolean(reportRuntime.isChartStacked()).toString();
+//			String horizontalBar 					= AppUtils.getRequestNvlValue(request, "horizontalBar").length()>0?AppUtils.getRequestNvlValue(request, "horizontalBar"):new Boolean(reportRuntime.isHorizontalOrientation()).toString();
+//			String barRealTimeAxis					= AppUtils.getRequestNvlValue(request, "barRealTimeAxis");
+//			String barReduceXAxisLabels				= AppUtils.getRequestNvlValue(request, "barReduceXAxisLabels").length()>0?AppUtils.getRequestNvlValue(request, "barReduceXAxisLabels"):new Boolean(reportRuntime.isLessXaxisTickers()).toString();;
+//			String timeAxis							= AppUtils.getRequestNvlValue(request, "timeAxis").length()>0?AppUtils.getRequestNvlValue(request, "timeAxis"):new Boolean(reportRuntime.isTimeAxis()).toString();
+//			String logScale 						= AppUtils.getRequestNvlValue(request, "logScale").length()>0?AppUtils.getRequestNvlValue(request, "logScale"):new Boolean(reportRuntime.isLogScale()).toString();
+//			String precision 						= AppUtils.getRequestNvlValue(request, "precision").length()>0?AppUtils.getRequestNvlValue(request, "precision"):"2";
+//			
+//
+//			chartOptionsMap.put("width", width);
+//			chartOptionsMap.put("height", height);
+//			chartOptionsMap.put("animation", animationStr);
+//			chartOptionsMap.put("rotateLabels", rotateLabels);
+//			chartOptionsMap.put("staggerLabels", staggerLabelsStr);
+//			chartOptionsMap.put("showMaxMin", showMaxMinStr);
+//			chartOptionsMap.put("showControls", showControlsStr);
+//			chartOptionsMap.put("showLegend", showLegendStr);
+//			chartOptionsMap.put("topMargin", topMargin);
+//			chartOptionsMap.put("bottomMargin", bottomMargin);
+//			chartOptionsMap.put("leftMargin", leftMargin);
+//			chartOptionsMap.put("rightMargin", rightMargin);
+//			chartOptionsMap.put("showTitle", showTitleStr);
+//			chartOptionsMap.put("subType", subType);
+//			chartOptionsMap.put("stacked", stackedStr);
+//			chartOptionsMap.put("horizontalBar", horizontalBar);
+//			chartOptionsMap.put("timeAxis", timeAxis);
+//			chartOptionsMap.put("barRealTimeAxis", barRealTimeAxis);
+//			chartOptionsMap.put("barReduceXAxisLabels", barReduceXAxisLabels);
+//			
+//			chartOptionsMap.put("logScale", logScale);
+//			chartOptionsMap.put("precision", precision);
+//			
+//		
+//		} catch (RaptorException ex) {
+//			ex.printStackTrace();
+//		}
+//		return createVisualization(reportRuntime, chartOptionsMap, request);
+//	}
 	
-	public String createVisualization(ReportRuntime reportRuntime, HttpServletRequest request) throws RaptorException {
-		
-		String rotateLabelsStr = "";
-		rotateLabelsStr = AppUtils.nvl(reportRuntime.getLegendLabelAngle());
-		if(rotateLabelsStr.toLowerCase().equals("standard")) {
-			rotateLabelsStr = "0";
-		} else if (rotateLabelsStr.toLowerCase().equals("up45")) {
-			rotateLabelsStr = "45";
-		} else if (rotateLabelsStr.toLowerCase().equals("down45")) {
-			rotateLabelsStr = "-45";
-		} else if (rotateLabelsStr.toLowerCase().equals("up90")) {
-			rotateLabelsStr = "90";
-		} else if (rotateLabelsStr.toLowerCase().equals("down90")) {
-			rotateLabelsStr = "-90";
-		} else
-			rotateLabelsStr = "0";
-		
-		HashMap<String,String> chartOptionsMap = new HashMap<String, String>();
-		chartOptionsMap.put("width", reportRuntime.getChartWidth());
-		chartOptionsMap.put("height", reportRuntime.getChartHeight());
-		chartOptionsMap.put("animation", new Boolean(reportRuntime.isAnimateAnimatedChart()).toString());
-		chartOptionsMap.put("rotateLabels", rotateLabelsStr);
-		chartOptionsMap.put("staggerLabels", "false");
-		chartOptionsMap.put("showMaxMin", "false");
-		chartOptionsMap.put("showControls", new Boolean(reportRuntime.displayBarControls()).toString());
-		chartOptionsMap.put("showLegend", new Boolean(!reportRuntime.hideChartLegend()).toString());
-		chartOptionsMap.put("topMargin", reportRuntime.getTopMargin()!=null?reportRuntime.getTopMargin().toString():"30");
-		chartOptionsMap.put("bottomMargin", reportRuntime.getBottomMargin()!=null?reportRuntime.getBottomMargin().toString():"50");
-		chartOptionsMap.put("leftMargin", reportRuntime.getLeftMargin()!=null?reportRuntime.getLeftMargin().toString():"100");
-		chartOptionsMap.put("rightMargin", reportRuntime.getRightMargin()!=null?reportRuntime.getRightMargin().toString():"160");
-		chartOptionsMap.put("showTitle", new Boolean(reportRuntime.displayChartTitle()).toString());
-		chartOptionsMap.put("subType", (AppUtils.nvl(reportRuntime.getTimeSeriesRender()).equals("area")?reportRuntime.getTimeSeriesRender():""));
-		chartOptionsMap.put("stacked", new Boolean(reportRuntime.isChartStacked()).toString());
-		chartOptionsMap.put("horizontalBar", new Boolean(reportRuntime.isHorizontalOrientation()).toString());
-		chartOptionsMap.put("timeAxis", new Boolean(reportRuntime.isTimeAxis()).toString());
-		chartOptionsMap.put("barReduceXAxisLabels", new Boolean(reportRuntime.isLessXaxisTickers()).toString());
-
-		chartOptionsMap.put("logScale", new Boolean(reportRuntime.isLogScale()).toString());
-		chartOptionsMap.put("precision", "2");
-		
-
-		
-		return createVisualization(reportRuntime, chartOptionsMap, request);
-	}
+//	public String createVisualization(ReportRuntime reportRuntime, HttpServletRequest request) throws RaptorException {
+//		
+//		String rotateLabelsStr = "";
+//		rotateLabelsStr = AppUtils.nvl(reportRuntime.getLegendLabelAngle());
+//		if(rotateLabelsStr.toLowerCase().equals("standard")) {
+//			rotateLabelsStr = "0";
+//		} else if (rotateLabelsStr.toLowerCase().equals("up45")) {
+//			rotateLabelsStr = "45";
+//		} else if (rotateLabelsStr.toLowerCase().equals("down45")) {
+//			rotateLabelsStr = "-45";
+//		} else if (rotateLabelsStr.toLowerCase().equals("up90")) {
+//			rotateLabelsStr = "90";
+//		} else if (rotateLabelsStr.toLowerCase().equals("down90")) {
+//			rotateLabelsStr = "-90";
+//		} else
+//			rotateLabelsStr = "0";
+//		
+//		HashMap<String,String> chartOptionsMap = new HashMap<String, String>();
+//		chartOptionsMap.put("width", reportRuntime.getChartWidth());
+//		chartOptionsMap.put("height", reportRuntime.getChartHeight());
+//		chartOptionsMap.put("animation", new Boolean(reportRuntime.isAnimateAnimatedChart()).toString());
+//		chartOptionsMap.put("rotateLabels", rotateLabelsStr);
+//		chartOptionsMap.put("staggerLabels", "false");
+//		chartOptionsMap.put("showMaxMin", "false");
+//		chartOptionsMap.put("showControls", new Boolean(reportRuntime.displayBarControls()).toString());
+//		chartOptionsMap.put("showLegend", new Boolean(!reportRuntime.hideChartLegend()).toString());
+//		chartOptionsMap.put("topMargin", reportRuntime.getTopMargin()!=null?reportRuntime.getTopMargin().toString():"30");
+//		chartOptionsMap.put("bottomMargin", reportRuntime.getBottomMargin()!=null?reportRuntime.getBottomMargin().toString():"50");
+//		chartOptionsMap.put("leftMargin", reportRuntime.getLeftMargin()!=null?reportRuntime.getLeftMargin().toString():"100");
+//		chartOptionsMap.put("rightMargin", reportRuntime.getRightMargin()!=null?reportRuntime.getRightMargin().toString():"160");
+//		chartOptionsMap.put("showTitle", new Boolean(reportRuntime.displayChartTitle()).toString());
+//		chartOptionsMap.put("subType", (AppUtils.nvl(reportRuntime.getTimeSeriesRender()).equals("area")?reportRuntime.getTimeSeriesRender():""));
+//		chartOptionsMap.put("stacked", new Boolean(reportRuntime.isChartStacked()).toString());
+//		chartOptionsMap.put("horizontalBar", new Boolean(reportRuntime.isHorizontalOrientation()).toString());
+//		chartOptionsMap.put("timeAxis", new Boolean(reportRuntime.isTimeAxis()).toString());
+//		chartOptionsMap.put("barReduceXAxisLabels", new Boolean(reportRuntime.isLessXaxisTickers()).toString());
+//
+//		chartOptionsMap.put("logScale", new Boolean(reportRuntime.isLogScale()).toString());
+//		chartOptionsMap.put("precision", "2");
+//		
+//
+//		
+//		return createVisualization(reportRuntime, chartOptionsMap, request);
+//	}
 	
 	public String createVisualization(ReportRuntime reportRuntime, HashMap<String,String> chartOptionsMap, HttpServletRequest request) throws RaptorException {
 		

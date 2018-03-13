@@ -35,84 +35,35 @@
  *
  * ECOMP is a trademark and service mark of AT&T Intellectual Property.
  */
-package org.onap.portalsdk.analytics.view;
+package org.onap.portalsdk.analytics.system.fusion.web;
 
-import java.util.Vector;
+import static org.junit.Assert.*;
 
-public class ColumnHeaderRow extends Vector {
-	private String rowHeight = "";
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-	private String displayWidth = "";
-	
-	private String alignment = "center";
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
+import org.onap.portalsdk.analytics.xmlobj.MockitoTestSuite;
 
-	private int nextElemIdx = 0;
+public class ReportsSearchListControllerTest {
+	@InjectMocks
+	ReportsSearchListController reportsSearchListController = new ReportsSearchListController();
 
-	public void resetNext() {
-		resetNext(0);
-	} // resetNext
-
-	public void resetNext(int toPos) {
-		nextElemIdx = toPos;
-	} // resetNext
-
-	public boolean hasNext() {
-		return (nextElemIdx < size());
-	} // hasNext
-
-	public ColumnHeader getNext() {
-		return hasNext() ? getColumnHeader(nextElemIdx++) : null;
-	} // getNext
-
-	public ColumnHeader getColumnHeader(int idx) {
-		return (ColumnHeader) get(idx);
-	} // getColumnHeader
-
-	public void addColumnHeader(ColumnHeader columnHeader) {
-		add(columnHeader);
-	} // addColumnHeader
-
-	public void addColumnHeader(int idx, ColumnHeader columnHeader) {
-		add(idx, columnHeader);
-	} // addColumnHeader
-
-	public String getRowHeightHtml() {
-		return (rowHeight.length() == 0) ? "" : (" height=" + rowHeight);
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
 	}
 
-	public String getRowHeight() {
-		return rowHeight;
+	MockitoTestSuite mockitoTestSuite = new MockitoTestSuite();
+	HttpServletRequest mockedRequest = mockitoTestSuite.getMockedRequest();
+	HttpServletResponse mockedResponse = mockitoTestSuite.getMockedResponse();
+
+	@Test
+	public void handleRequestInternalTest() {
+		assertNull(reportsSearchListController.handleRequestInternal(mockedRequest, mockedResponse));
 	}
 
-	public void setRowHeight(String rowHeight) {
-		this.rowHeight = nvl(rowHeight);
-	}
-
-	public void setDisplayWidth(String displayWidth) {
-		this.displayWidth = nvl(displayWidth);
-	}
-
-	public String getDisplayWidth() {
-		return this.displayWidth;
-	}
-	/** ************************************************************************************************* */
-
-	private String nvl(String s) {
-		return (s == null) ? "" : s;
-	}
-
-//	private String nvl(String s, String sDefault) {
-//		return nvl(s).equals("") ? sDefault : s;
-//	}
-
-	public String getAlignment() {
-		return alignment;
-	}
-
-	public void setAlignment(String alignment) {
-		if(nvl(alignment).length()>0)
-			this.alignment = alignment;
-	}
-
-} // ColumnHeaderRow
-
+}

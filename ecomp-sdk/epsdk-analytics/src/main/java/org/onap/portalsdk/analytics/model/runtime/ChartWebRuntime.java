@@ -94,7 +94,7 @@ public class ChartWebRuntime implements Serializable {
 		public List getRolesCommaSeperated(HttpServletRequest request) {
 			Map roles = UserUtils.getRoles(request);
 			List roleList =  null;
-			StringBuffer roleBuf = new StringBuffer("");
+//			StringBuffer roleBuf = new StringBuffer("");
 			int count = 0;
 			if( roles != null ) {
 				roleList = Arrays.asList(roles.keySet().toArray());
