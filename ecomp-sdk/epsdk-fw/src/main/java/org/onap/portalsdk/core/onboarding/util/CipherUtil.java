@@ -263,7 +263,7 @@ public class CipherUtil {
 		return CipherUtil.decryptPKC(encryptedText, keyString);
 	}
 
-	public static void main(String[] args) throws CipherUtilException {
+	/*public static void main(String[] args) throws CipherUtilException {
 
 		String testValue = "Welcome123";
 		String encrypted;
@@ -291,5 +291,5 @@ public class CipherUtil {
 			}
 		}
 	}
-
+*/
 }

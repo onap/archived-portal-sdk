@@ -154,10 +154,14 @@ public class EELFLoggerAdvice {
 			if (MDC.get(SystemProperties.TARGET_ENTITY) == null || MDC.get(SystemProperties.TARGET_ENTITY) == "") {
 				MDC.put(SystemProperties.TARGET_ENTITY, appName + "_BE");
 			}
+			
+			MDC.put(SystemProperties.STATUS_CODE, result);
 
+			
 			MDC.put(SystemProperties.METRICSLOG_BEGIN_TIMESTAMP,
 					MDC.get(className + methodName + SystemProperties.METRICSLOG_BEGIN_TIMESTAMP));
 			MDC.put(SystemProperties.METRICSLOG_END_TIMESTAMP, getCurrentDateTimeUTC());
+
 			this.calculateDateTimeDifference(MDC.get(SystemProperties.METRICSLOG_BEGIN_TIMESTAMP),
 					MDC.get(SystemProperties.METRICSLOG_END_TIMESTAMP));
 
@@ -186,6 +190,8 @@ public class EELFLoggerAdvice {
 				MDC.remove(className + methodName + SystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
 				MDC.remove(SystemProperties.AUDITLOG_BEGIN_TIMESTAMP);
 				MDC.remove(SystemProperties.AUDITLOG_END_TIMESTAMP);
+			}else{
+				MDC.put(SystemProperties.STATUS_CODE, "COMPLETE");
 			}
 
 			MDC.remove(className + methodName + SystemProperties.METRICSLOG_BEGIN_TIMESTAMP);
@@ -194,6 +200,8 @@ public class EELFLoggerAdvice {
 			MDC.remove(SystemProperties.MDC_TIMER);
 			MDC.remove(SystemProperties.TARGET_ENTITY);
 			MDC.remove(SystemProperties.TARGET_SERVICE_NAME);
+			MDC.remove(SystemProperties.STATUS_CODE);
+
 		} catch (Exception e) {
 			adviceLogger.error(EELFLoggerDelegate.errorLogger, "after failed", e);
 		}
@@ -236,7 +244,7 @@ public class EELFLoggerAdvice {
 			try {
 				Date beginDate = ecompLogDateFormat.parse(beginDateTime);
 				Date endDate = ecompLogDateFormat.parse(endDateTime);
-				String timeDifference = String.format("%d ms", endDate.getTime() - beginDate.getTime());
+				String timeDifference = String.format("%d", endDate.getTime() - beginDate.getTime());
 				MDC.put(SystemProperties.MDC_TIMER, timeDifference);
 			} catch (Exception e) {
 				adviceLogger.error(EELFLoggerDelegate.errorLogger, "calculateDateTimeDifference failed", e);
