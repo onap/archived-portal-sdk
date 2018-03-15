@@ -44,6 +44,7 @@ package org.onap.portalsdk.analytics.model;
 
 import org.junit.Assert;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -123,11 +124,19 @@ public class SearchHandlerTest {
 	@Before
     public void init() throws Exception {
 				
+		
 		PowerMockito.mockStatic(Globals.class);
 		PowerMockito.mockStatic(AppUtils.class);
 		PowerMockito.mockStatic(DbUtils.class);
 						
 		MockitoAnnotations.initMocks(this);
+		
+		
+		
+		FileWriter myFile = PowerMockito.mock(FileWriter.class);
+	    PowerMockito.whenNew(FileWriter.class).withAnyArguments().thenReturn(myFile);
+	    
+		
 
 		PowerMockito.when(Globals.getAppUtils()).thenReturn(iAppUtils);
  	    PowerMockito.when(AppUtils.getImgFolderURL()).thenReturn("http://sometesturl:9090/hi");
