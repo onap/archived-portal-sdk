@@ -47,9 +47,8 @@
 		<put-attribute name="viewName" value="elastic_search"></put-attribute>
 	</definition>
 
-	<definition extends="ebz_template" name="error">
-		<put-attribute name="body" value="/WEB-INF/jsp/error.jsp"></put-attribute>
-		<put-attribute name="viewName" value="error"></put-attribute>
+	<definition name="error" template="/WEB-INF/jsp/error.jsp">
+		
 	</definition>
 	
 	<!-- <definition name="notebook"
