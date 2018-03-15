@@ -40,7 +40,6 @@ package org.onap.portalsdk.analytics.controller;
 
 
 import static org.junit.Assert.*;
-import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
@@ -75,16 +74,18 @@ import org.onap.portalsdk.analytics.xmlobj.DataColumnType;
 import org.onap.portalsdk.analytics.xmlobj.DataSourceType;
 import org.onap.portalsdk.analytics.xmlobj.FormFieldType;
 import org.onap.portalsdk.analytics.xmlobj.JavascriptItemType;
-import org.onap.portalsdk.analytics.xmlobj.ObjectFactory;
+import org.onap.portalsdk.analytics.xmlobj.ReportMap;
 import org.onap.portalsdk.analytics.xmlobj.SemaphoreList;
 import org.onap.portalsdk.analytics.xmlobj.SemaphoreType;
 import org.onap.portalsdk.core.domain.User;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({DbUtils.class, Globals.class, IAppUtils.class, WizardProcessor.class})//,  RaptorAdapter.class})
+@PrepareForTest({DbUtils.class, Globals.class, IAppUtils.class, WizardProcessor.class, ESAPI.class})
 public class WizardProcessorTest {
 
 	WizardProcessor wizardProcessor;
@@ -137,6 +138,9 @@ public class WizardProcessorTest {
 	@Mock
 	ReportSecurity reportSecurity;
 	
+	@Mock
+	Encoder encoder;
+	
 	private String REPORT_ID="1000"; 
 	private String DETAIL_ID="3000";
 
@@ -145,14 +149,17 @@ public class WizardProcessorTest {
 		
 		PowerMockito.mockStatic(DbUtils.class);
 		PowerMockito.mockStatic(Globals.class);
-		PowerMockito.mockStatic(IAppUtils.class);				
+		PowerMockito.mockStatic(IAppUtils.class);
+		PowerMockito.mockStatic(ESAPI.class);
 		
 		Mockito.when(httpServletRequest.getSession()).thenReturn(httpSession);
 
 		Mockito.when(httpSession.getAttribute(AppConstants.SI_REPORT_DEFINITION)).thenReturn(reportDefinition);
 		Mockito.when(httpSession.getAttribute(AppConstants.SI_REPORT_SCHEDULE)).thenReturn(reportSchedule);
 		Mockito.when(httpSession.getAttribute(AppConstants.SI_REPORT_RUNTIME)).thenReturn(reportRuntime);
-			
+		
+		PowerMockito.when(ESAPI.encoder()).thenReturn(encoder);
+		
 		PowerMockito.whenNew(ReportHandler.class).withNoArguments().thenReturn(reportHandler);
 
 		PowerMockito.when(Globals.getAppUtils()).thenReturn(appUtils);
@@ -173,13 +180,26 @@ public class WizardProcessorTest {
 		
 		wizardProcessor = Mockito.spy(WizardProcessor.class);
 	}
+
+	
+	private void mockHttpAttribute(String attributeName, String attributeValue) {
+		Mockito.when(httpServletRequest.getAttribute(attributeName)).thenReturn(attributeValue);
+	}
+	
+	private void mockHttpParameter(String parameterName, String parameterValue) {
+		Mockito.when(httpServletRequest.getParameter(parameterName)).thenReturn(parameterValue);
+	}
+	
+	private void mockHttpParameterValues(String parameterName, String[] parameterValue) {
+		Mockito.when(httpServletRequest.getParameterValues(parameterName)).thenReturn(parameterValue);
+	}	
+
 	
 	@Test
 	public void testWizardProcessor() {
 		WizardProcessor wizardProcessorLocal = new WizardProcessor();
 		assertNotNull(wizardProcessorLocal);
 	}
-
 
 	
 	@Test(expected=NullPointerException.class)
@@ -952,8 +972,74 @@ public class WizardProcessorTest {
 		wizardProcessor.processWizardStep(httpServletRequest);
 		Mockito.verify(wizardProcessor, Mockito.times(1)).processWizardStep(httpServletRequest);
 	}	
-	
 		
+	@Test
+	public void testProcessWizardStep_processForecasting_case1() throws Exception {
+		mockHttpParameter(AppConstants.RI_WIZARD_ACTION, AppConstants.RI_ACTION);
+		mockHttpAttribute(AppConstants.RI_REPORT_ID,REPORT_ID);
+		mockHttpAttribute("showDashboardOptions","");
+		mockHttpAttribute(AppConstants.RI_DETAIL_ID,DETAIL_ID);
+		
+		mockHttpAttribute("timeAttribute", null);
+		mockHttpAttribute("timeFormat", "");
+		mockHttpAttribute("forecastingPeriod", "10hr");
+		mockHttpAttribute("classifiers", "Y");
+		
+		mockHttpParameterValues("forecastCol", null);
+
+		setWizardSteps(AppConstants.WS_DATA_FORECASTING, AppConstants.WSS_INFO_BAR);
+		Mockito.when(encoder.encodeForSQL(Mockito.anyObject(), Mockito.anyString())).thenReturn(null);
+		
+		wizardProcessor.processWizardStep(httpServletRequest);
+		Mockito.verify(wizardProcessor, Mockito.times(1)).processWizardStep(httpServletRequest);
+	}	
+	
+
+	@Test
+	public void testProcessWizardStep_processForecasting_case2() throws Exception {
+		mockHttpParameter(AppConstants.RI_WIZARD_ACTION, AppConstants.RI_ACTION);
+		mockHttpAttribute(AppConstants.RI_REPORT_ID,REPORT_ID);
+		mockHttpAttribute("showDashboardOptions","");
+		mockHttpAttribute(AppConstants.RI_DETAIL_ID,DETAIL_ID);
+
+		mockHttpAttribute("timeAttribute", "REP_ID");
+		mockHttpAttribute("timeFormat", "Default");
+		mockHttpAttribute("forecastingPeriod", "10hr");
+		mockHttpAttribute("classifiers", "Y");
+		
+		String []forecastCol = {"REP_ID", "ORDER_NO"};		
+		mockHttpParameterValues("forecastCol", forecastCol);
+
+		setWizardSteps(AppConstants.WS_DATA_FORECASTING, AppConstants.WSS_INFO_BAR);
+				
+		DataColumnType dataColumnType1 = new DataColumnType();
+		
+		dataColumnType1.setTableId("reportaccess");
+		dataColumnType1.setDbColName("REP_ID");
+		dataColumnType1.setColName("REP_ID");
+		dataColumnType1.setDbColType("INTEGER");
+		dataColumnType1.setDisplayName("Report Id");
+		dataColumnType1.setColId("REP_ID");
+		
+		DataColumnType dataColumnType2 = new DataColumnType();
+		
+		dataColumnType2.setTableId("reportaccess");
+		dataColumnType2.setDbColName("ORDER_NO");
+		dataColumnType2.setColName("ORDER_NO");
+		dataColumnType2.setDbColType("INTEGER");
+		dataColumnType2.setDisplayName("Order No");
+		dataColumnType2.setColId("ORDER_NO");
+		
+		List<DataColumnType> listDataColumnType = new ArrayList<DataColumnType>();
+		listDataColumnType.add(dataColumnType1);
+		listDataColumnType.add(dataColumnType2);
+		
+		Mockito.when(reportDefinition.getAllColumns()).thenReturn(listDataColumnType);
+
+		wizardProcessor.processWizardStep(httpServletRequest);
+		Mockito.verify(wizardProcessor, Mockito.times(1)).processWizardStep(httpServletRequest);
+	}	
+	
 	@Test
 	public void testProcessWizardStep_processFilterAddEdit_case1() throws Exception {
 		mockHttpParameter(AppConstants.RI_WIZARD_ACTION, "ACTION");
@@ -2942,6 +3028,7 @@ public class WizardProcessorTest {
 		Mockito.verify(wizardProcessor, Mockito.times(1)).processImportSemaphorePopup(httpServletRequest);
 	}		
 	
+
 	@Test
 	public void testProcessImportSemaphore_case2() throws Exception {
 		SemaphoreList semaphoreList = new SemaphoreList();		
@@ -2970,37 +3057,61 @@ public class WizardProcessorTest {
 		Mockito.verify(wizardProcessor, Mockito.times(1)).processImportSemaphorePopup(httpServletRequest);
 	}		
 	
-	/*
 
+	/***
+	
 	@Test
 	public void testProcessSemaphorePopup_case1() throws Exception {
-		SemaphoreList semaphoreList = new SemaphoreList();		
-		List<SemaphoreType> listSemaphoreType = semaphoreList.getSemaphore();
 		
-		SemaphoreType st1 = new SemaphoreType();
-		SemaphoreType st2 = new SemaphoreType();
+		mockHttpAttribute("semaphoreId", "Id");
+		mockHttpAttribute("semaphoreName", "Name");
+		mockHttpAttribute("semaphoreType", "Type");
+
+		String [] formatId = {"", ""};
+		String [] lessThanValue = {"1", "1"};
+		String [] expression = {"", ""};
+		String [] bold = {"", ""};
+		String [] italic = {"", ""};
+		String [] underline = {"", ""};
+		String [] bgColor = {"", ""};
+		String [] fontColor = {"", ""};
+		String [] fontFace = {"", ""};
+		String [] fontSize = {"", ""};
 		
-		st1.setSemaphoreName("Name1");
-	    st1.setSemaphoreId("Id1");
-	    
-		st2.setSemaphoreName("Name2");
-	    st2.setSemaphoreId("Id2");
-	    
-	    listSemaphoreType.add(st1);
-	    listSemaphoreType.add(st2);
+		mockHttpParameterValues("formatId", formatId);
+		mockHttpParameterValues("lessThanValue", lessThanValue);
+		mockHttpParameterValues("expression", expression);
+		mockHttpParameterValues("bold", bold);
+		mockHttpParameterValues("italic", italic);
+		mockHttpParameterValues("underline", underline);
+		mockHttpParameterValues("bgColor", bgColor);
+		mockHttpParameterValues("fontColor", fontColor);
+		mockHttpParameterValues("fontFace", fontFace);
+		mockHttpParameterValues("fontSize", fontSize);
 		
-	    mockHttpAttribute(AppConstants.RI_REPORT_ID, REPORT_ID);
+		SemaphoreType semaphoreType = new SemaphoreType();
 		
-		Mockito.when(reportRuntime.getSemaphoreList()).thenReturn(semaphoreList);
+		//Mockito.when(reportDefinition.getSemaphoreFormatById(Mockito.anyObject(), Mockito.anyString())).thenReturn(new FormatType());
+		//PowerMockito.when(reportDefinition.addEmptyFormatType(Mockito.anyObject(), Mockito.anyObject())).thenReturn(new FormatType());
 		
-		Mockito.when(reportDefinition.addSemaphore(Mockito.anyObject(), Mockito.anyObject())).thenReturn(st1);
+		Mockito.when(reportDefinition.addSemaphoreType( Mockito.anyObject(),  Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(new SemaphoreType());
 		
+		Mockito.when(reportDefinition.getSemaphoreById("Id")).thenReturn(semaphoreType);
+
+		PowerMockito.when(ReportDefinition.getSemaphoreFormatById( Mockito.anyObject(),  Mockito.anyString())).thenReturn(new FormatType());
+		
+		//Mockito.when(reportDefinition.getSemaphoreById("Id")).thenReturn(null);
+
+		//Mockito.when(reportRuntime.getSemaphoreList()).thenReturn(semaphoreList);
+		
+		//Mockito.when(reportDefinition.addSemaphore(Mockito.anyObject(), Mockito.anyObject())).thenReturn(st1);
+
 		wizardProcessor.processSemaphorePopup(httpServletRequest);
 	
-		Mockito.verify(wizardProcessor, Mockito.times(1)).processImportSemaphorePopup(httpServletRequest);
-	}		
+		Mockito.verify(wizardProcessor, Mockito.times(1)).processSemaphorePopup(httpServletRequest);
+	}	
+	***/	
 
-*/
 	
 	/*
 	
@@ -3160,19 +3271,6 @@ public class WizardProcessorTest {
 	
 	***/
 	
-	/***
-
-	@throws Exception 
-	 * @Test
-	public void testProcessImportSemaphorePopup() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testProcessSemaphorePopup() {
-		fail("Not yet implemented");
-	}
-*/
 	
 	@Test
 	public void testProcessAdhocSchedule_Add_User_case1() throws Exception {
@@ -3338,16 +3436,77 @@ public class WizardProcessorTest {
 	}
 	
 
-	private void mockHttpAttribute(String attributeName, String attributeValue) {
-		Mockito.when(httpServletRequest.getAttribute(attributeName)).thenReturn(attributeValue);
-	}
+	@Test
+	public void testProcessWizardStep_processMap_case1() throws Exception {
+		mockHttpParameter(AppConstants.RI_WIZARD_ACTION, AppConstants.RI_ACTION);
+		mockHttpAttribute(AppConstants.RI_REPORT_ID,REPORT_ID);
+		mockHttpAttribute("showDashboardOptions","");
+		mockHttpAttribute(AppConstants.RI_DETAIL_ID,DETAIL_ID);
+
+		setWizardSteps(AppConstants.WS_MAP, AppConstants.WA_SAVE);
+
+		mockHttpAttribute("addressColumn0", "");
+		mockHttpAttribute("dataColumn0", "");
+		mockHttpAttribute("legendColumn", "");
+		mockHttpAttribute("markerColor0", "");
+		mockHttpAttribute("isMapAllowed", "");
+		mockHttpAttribute("useDefaultSize", "");
+		mockHttpAttribute("height", "");
+		mockHttpAttribute("width", "");
+		mockHttpAttribute("addAddress", "");
+		mockHttpAttribute("latColumn", "");
+		mockHttpAttribute("longColumn", "");
+		mockHttpAttribute("colorColumn", "");
+		
+		mockHttpAttribute("markerCount", "");
+		
+		
+		Mockito.when(reportDefinition.getReportMap()).thenReturn(null);
+		wizardProcessor.processWizardStep(httpServletRequest);
+
+		Mockito.verify(wizardProcessor, Mockito.times(1)).processWizardStep(httpServletRequest);
+	}		
 	
-	private void mockHttpParameter(String parameterName, String parameterValue) {
-		Mockito.when(httpServletRequest.getParameter(parameterName)).thenReturn(parameterValue);
-	}
-	
-	private void mockHttpParameterValues(String parameterName, String[] parameterValue) {
-		Mockito.when(httpServletRequest.getParameterValues(parameterName)).thenReturn(parameterValue);
-	}	
+	@Test
+	public void testProcessWizardStep_processMap_case2() throws Exception {
+		mockHttpParameter(AppConstants.RI_WIZARD_ACTION, AppConstants.RI_ACTION);
+		mockHttpAttribute(AppConstants.RI_REPORT_ID,REPORT_ID);
+		mockHttpAttribute("showDashboardOptions","");
+		mockHttpAttribute(AppConstants.RI_DETAIL_ID,DETAIL_ID);
+
+		setWizardSteps(AppConstants.WS_MAP, AppConstants.WA_SAVE);
+
+		ReportMap reportMap = new ReportMap();
+		
+		mockHttpAttribute("addressColumn0", "Y");
+		mockHttpAttribute("dataColumn0", "Y");
+		mockHttpAttribute("legendColumn", "Y");
+		mockHttpAttribute("markerColor0", "Y");
+		mockHttpAttribute("isMapAllowed", "Y");
+		mockHttpAttribute("useDefaultSize", "Y");
+		mockHttpAttribute("height", "Y");
+		mockHttpAttribute("width", "Y");
+		mockHttpAttribute("addAddress", "Y");
+		mockHttpAttribute("latColumn", "Y");
+		mockHttpAttribute("longColumn", "Y");
+		mockHttpAttribute("colorColumn", "Y");
+		
+		mockHttpAttribute("markerCount", "3");
+		
+		mockHttpAttribute("addressColumn1", "1");
+		mockHttpAttribute("dataHeader1", "Header1");
+		mockHttpAttribute("dataColumn1", "DataColumn1");
+		mockHttpAttribute("markerColor1", "Color1");
+		
+		mockHttpAttribute("addressColumn2", "2");
+		mockHttpAttribute("dataHeader2", "Header2");
+		mockHttpAttribute("dataColumn2", "DataColumn2");
+		mockHttpAttribute("markerColor2", "Color2");
+
+		Mockito.when(reportDefinition.getReportMap()).thenReturn(reportMap);
+		wizardProcessor.processWizardStep(httpServletRequest);
+
+		Mockito.verify(wizardProcessor, Mockito.times(1)).processWizardStep(httpServletRequest);
+	}		
 
 }
