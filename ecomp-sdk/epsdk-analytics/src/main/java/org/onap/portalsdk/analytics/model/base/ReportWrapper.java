@@ -5198,182 +5198,182 @@ public class ReportWrapper extends org.onap.portalsdk.analytics.RaptorObject {
 
 	/** ************************************************************************************************* */
 
-	public void printFormatType(FormatType ft) {
-        System.out.println("------------------------------------------------");
-		System.out.println("Semaphore Col Format");
-		System.out.println("------------------------------------------------");
-		System.out.println("FormatId: [" + ft.getFormatId() + "]");
-		System.out.println("LessThanValue: [" + ft.getLessThanValue() + "]");
-		System.out.println("Expression: [" + ft.getExpression() + "]");
-		System.out.println("Bold: [" + ft.isBold() + "]");
-		System.out.println("Italic: [" + ft.isItalic() + "]");
-		System.out.println("Underline: [" + ft.isUnderline() + "]");
-		System.out.println("BgColor: [" + ft.getBgColor() + "]");
-		System.out.println("FontColor: [" + ft.getFontColor() + "]");
-		System.out.println("FontFace: [" + ft.getFontFace() + "]");
-		System.out.println("FontSize: [" + ft.getFontSize() + "]");
-		System.out.println("Alignment: [" + ft.getAlignment() + "]");
-		System.out.println("Comment: [" + ft.getComment() + "]");
-		System.out.println("------------------------------------------------");
-	} // printFormatType
+//	public void printFormatType(FormatType ft) {
+//        System.out.println("------------------------------------------------");
+//		System.out.println("Semaphore Col Format");
+//		System.out.println("------------------------------------------------");
+//		System.out.println("FormatId: [" + ft.getFormatId() + "]");
+//		System.out.println("LessThanValue: [" + ft.getLessThanValue() + "]");
+//		System.out.println("Expression: [" + ft.getExpression() + "]");
+//		System.out.println("Bold: [" + ft.isBold() + "]");
+//		System.out.println("Italic: [" + ft.isItalic() + "]");
+//		System.out.println("Underline: [" + ft.isUnderline() + "]");
+//		System.out.println("BgColor: [" + ft.getBgColor() + "]");
+//		System.out.println("FontColor: [" + ft.getFontColor() + "]");
+//		System.out.println("FontFace: [" + ft.getFontFace() + "]");
+//		System.out.println("FontSize: [" + ft.getFontSize() + "]");
+//		System.out.println("Alignment: [" + ft.getAlignment() + "]");
+//		System.out.println("Comment: [" + ft.getComment() + "]");
+//		System.out.println("------------------------------------------------");
+//	} // printFormatType
 
-	public void printSemaphoreType(SemaphoreType st) {
-		System.out.println("------------------------------------------------");
-		System.out.println("Semaphore");
-		System.out.println("------------------------------------------------");
-		System.out.println("SemaphoreId: [" + st.getSemaphoreId() + "]");
-		System.out.println("SemaphoreName: [" + st.getSemaphoreName() + "]");
-		System.out.println("SemaphoreType: [" + st.getSemaphoreType() + "]");
-		System.out.println("Comment: [" + st.getComment() + "]");
+//	public void printSemaphoreType(SemaphoreType st) {
+//		System.out.println("------------------------------------------------");
+//		System.out.println("Semaphore");
+//		System.out.println("------------------------------------------------");
+//		System.out.println("SemaphoreId: [" + st.getSemaphoreId() + "]");
+//		System.out.println("SemaphoreName: [" + st.getSemaphoreName() + "]");
+//		System.out.println("SemaphoreType: [" + st.getSemaphoreType() + "]");
+//		System.out.println("Comment: [" + st.getComment() + "]");
+//
+//		if (st.getFormatList() != null)
+//			for (Iterator iter = st.getFormatList().getFormat().iterator(); iter.hasNext();)
+//				printFormatType((FormatType) iter.next());
+//
+//		System.out.println("------------------------------------------------");
+//	} // printSemaphoreType
 
-		if (st.getFormatList() != null)
-			for (Iterator iter = st.getFormatList().getFormat().iterator(); iter.hasNext();)
-				printFormatType((FormatType) iter.next());
+//	public void printFormFieldType(FormFieldType fft) {
+//		System.out.println("------------------------------------------------");
+//		System.out.println("Form Field");
+//		System.out.println("------------------------------------------------");
+//		System.out.println("FieldId: [" + fft.getFieldId() + "]");
+//		System.out.println("ColId: [" + fft.getColId() + "]");
+//		System.out.println("FieldName: [" + fft.getFieldName() + "]");
+//		System.out.println("FieldType: [" + fft.getFieldType() + "]");
+//		System.out.println("ValidationType: [" + fft.getValidationType() + "]");
+//		System.out.println("Mandatory: [" + fft.getMandatory() + "]");
+//		System.out.println("DefaultValue: [" + fft.getDefaultValue() + "]");
+//		System.out.println("OrderBySeq: [" + fft.getOrderBySeq() + "]");
+//		System.out.println("FieldSQL: [" + fft.getFieldSQL() + "]");
+//		System.out.println("Comment: [" + fft.getComment() + "]");
+//		if (fft.getPredefinedValueList() != null)
+//			for (Iterator iter = fft.getPredefinedValueList().getPredefinedValue().iterator(); iter
+//					.hasNext();)
+//				System.out.println("PredefinedValues: [" + ((String) iter.next()) + "]");
+//
+//		System.out.println("------------------------------------------------");
+//	} // printFormFieldType
 
-		System.out.println("------------------------------------------------");
-	} // printSemaphoreType
+//	public void printColFilterType(ColFilterType cft) {
+//		System.out.println("------------------------------------------------");
+//		System.out.println("Col Filter");
+//		System.out.println("------------------------------------------------");
+//		System.out.println("ColId: [" + cft.getColId() + "]");
+//		System.out.println("FilterSeq: [" + cft.getFilterSeq() + "]");
+//		System.out.println("JoinCondition: [" + cft.getJoinCondition() + "]");
+//		System.out.println("OpenBrackets: [" + cft.getOpenBrackets() + "]");
+//		System.out.println("Expression: [" + cft.getExpression() + "]");
+//		System.out.println("ArgType: [" + cft.getArgType() + "]");
+//		System.out.println("ArgValue: [" + cft.getArgValue() + "]");
+//		System.out.println("CloseBrackets: [" + cft.getCloseBrackets() + "]");
+//		System.out.println("Comment: [" + cft.getComment() + "]");
+//		System.out.println("------------------------------------------------");
+//	} // printColFilterType
 
-	public void printFormFieldType(FormFieldType fft) {
-		System.out.println("------------------------------------------------");
-		System.out.println("Form Field");
-		System.out.println("------------------------------------------------");
-		System.out.println("FieldId: [" + fft.getFieldId() + "]");
-		System.out.println("ColId: [" + fft.getColId() + "]");
-		System.out.println("FieldName: [" + fft.getFieldName() + "]");
-		System.out.println("FieldType: [" + fft.getFieldType() + "]");
-		System.out.println("ValidationType: [" + fft.getValidationType() + "]");
-		System.out.println("Mandatory: [" + fft.getMandatory() + "]");
-		System.out.println("DefaultValue: [" + fft.getDefaultValue() + "]");
-		System.out.println("OrderBySeq: [" + fft.getOrderBySeq() + "]");
-		System.out.println("FieldSQL: [" + fft.getFieldSQL() + "]");
-		System.out.println("Comment: [" + fft.getComment() + "]");
-		if (fft.getPredefinedValueList() != null)
-			for (Iterator iter = fft.getPredefinedValueList().getPredefinedValue().iterator(); iter
-					.hasNext();)
-				System.out.println("PredefinedValues: [" + ((String) iter.next()) + "]");
+//	public void printDataColumnType(DataColumnType dct) {
+//		System.out.println("------------------------------------------------");
+//		System.out.println("Data Column");
+//		System.out.println("------------------------------------------------");
+//		System.out.println("ColId: [" + dct.getColId() + "]");
+//		System.out.println("TableId: [" + dct.getTableId() + "]");
+//		System.out.println("DbColName: [" + dct.getDbColName() + "]");
+//		System.out.println("CrossTabValue: [" + dct.getCrossTabValue() + "]");
+//		System.out.println("ColName: [" + dct.getColName() + "]");
+//		System.out.println("DisplayName: [" + dct.getDisplayName() + "]");
+//		System.out.println("DisplayWidth: [" + dct.getDisplayWidth() + "]");
+//		System.out.println("DisplayAlignment: [" + dct.getDisplayAlignment() + "]");
+//		System.out.println("DisplayHeaderAlignment: [" + dct.getDisplayHeaderAlignment() + "]");
+//		System.out.println("OrderSeq(): [" + dct.getOrderSeq() + "]");
+//		System.out.println("Visible: [" + dct.isVisible() + "]");
+//		System.out.println("Calculated: [" + dct.isCalculated() + "]");
+//		System.out.println("ColType: [" + dct.getColType() + "]");
+//		System.out.println("ColFormat: [" + dct.getColFormat() + "]");
+//		System.out.println("GroupBreak: [" + dct.isGroupBreak() + "]");
+//		System.out.println("OrderBySeq: [" + dct.getOrderBySeq() + "]");
+//		System.out.println("OrderByAscDesc: [" + dct.getOrderByAscDesc() + "]");
+//		System.out.println("DisplayTotal: [" + dct.getDisplayTotal() + "]");
+//		System.out.println("ColOnChart: [" + dct.getColOnChart() + "]");
+//		System.out.println("ChartSeq: [" + dct.getChartSeq() + "]");
+//		System.out.println("ChartColor: [" + dct.getChartColor() + "]");
+//		System.out.println("DrillDownType: [" + dct.getDrillDownType() + "]");
+//		System.out.println("DrillDownURL: [" + dct.getDrillDownURL() + "]");
+//		System.out.println("DrillDownParams: [" + dct.getDrillDownParams() + "]");
+//		System.out.println("Comment: [" + dct.getComment() + "]");
+//
+//		if (dct.getColFilterList() != null)
+//			for (Iterator iter = dct.getColFilterList().getColFilter().iterator(); iter
+//					.hasNext();)
+//				printColFilterType((ColFilterType) iter.next());
+//
+//		System.out.println("SemaphoreId: [" + dct.getSemaphoreId() + "]");
+//		System.out.println("DbColType: [" + dct.getDbColType() + "]");
+//		System.out.println("------------------------------------------------");
+//	} // printDataColumnType
 
-		System.out.println("------------------------------------------------");
-	} // printFormFieldType
+//	public void printDataSourceType(DataSourceType dst) {
+//		System.out.println("------------------------------------------------");
+//		System.out.println("Data Source");
+//		System.out.println("------------------------------------------------");
+//		System.out.println("TableId: [" + dst.getTableId() + "]");
+//		System.out.println("TableName: [" + dst.getTableName() + "]");
+//		System.out.println("TablePK: [" + dst.getTablePK() + "]");
+//		System.out.println("DisplayName: [" + dst.getDisplayName() + "]");
+//		System.out.println("RefTableId: [" + dst.getRefTableId() + "]");
+//		System.out.println("RefDefinition: [" + dst.getRefDefinition() + "]");
+//		System.out.println("Comment: [" + dst.getComment() + "]");
+//
+//		for (Iterator iter = dst.getDataColumnList().getDataColumn().iterator(); iter
+//				.hasNext();)
+//			printDataColumnType((DataColumnType) iter.next());
+//
+//		System.out.println("------------------------------------------------");
+//	} // printDataSourceType
 
-	public void printColFilterType(ColFilterType cft) {
-		System.out.println("------------------------------------------------");
-		System.out.println("Col Filter");
-		System.out.println("------------------------------------------------");
-		System.out.println("ColId: [" + cft.getColId() + "]");
-		System.out.println("FilterSeq: [" + cft.getFilterSeq() + "]");
-		System.out.println("JoinCondition: [" + cft.getJoinCondition() + "]");
-		System.out.println("OpenBrackets: [" + cft.getOpenBrackets() + "]");
-		System.out.println("Expression: [" + cft.getExpression() + "]");
-		System.out.println("ArgType: [" + cft.getArgType() + "]");
-		System.out.println("ArgValue: [" + cft.getArgValue() + "]");
-		System.out.println("CloseBrackets: [" + cft.getCloseBrackets() + "]");
-		System.out.println("Comment: [" + cft.getComment() + "]");
-		System.out.println("------------------------------------------------");
-	} // printColFilterType
-
-	public void printDataColumnType(DataColumnType dct) {
-		System.out.println("------------------------------------------------");
-		System.out.println("Data Column");
-		System.out.println("------------------------------------------------");
-		System.out.println("ColId: [" + dct.getColId() + "]");
-		System.out.println("TableId: [" + dct.getTableId() + "]");
-		System.out.println("DbColName: [" + dct.getDbColName() + "]");
-		System.out.println("CrossTabValue: [" + dct.getCrossTabValue() + "]");
-		System.out.println("ColName: [" + dct.getColName() + "]");
-		System.out.println("DisplayName: [" + dct.getDisplayName() + "]");
-		System.out.println("DisplayWidth: [" + dct.getDisplayWidth() + "]");
-		System.out.println("DisplayAlignment: [" + dct.getDisplayAlignment() + "]");
-		System.out.println("DisplayHeaderAlignment: [" + dct.getDisplayHeaderAlignment() + "]");
-		System.out.println("OrderSeq(): [" + dct.getOrderSeq() + "]");
-		System.out.println("Visible: [" + dct.isVisible() + "]");
-		System.out.println("Calculated: [" + dct.isCalculated() + "]");
-		System.out.println("ColType: [" + dct.getColType() + "]");
-		System.out.println("ColFormat: [" + dct.getColFormat() + "]");
-		System.out.println("GroupBreak: [" + dct.isGroupBreak() + "]");
-		System.out.println("OrderBySeq: [" + dct.getOrderBySeq() + "]");
-		System.out.println("OrderByAscDesc: [" + dct.getOrderByAscDesc() + "]");
-		System.out.println("DisplayTotal: [" + dct.getDisplayTotal() + "]");
-		System.out.println("ColOnChart: [" + dct.getColOnChart() + "]");
-		System.out.println("ChartSeq: [" + dct.getChartSeq() + "]");
-		System.out.println("ChartColor: [" + dct.getChartColor() + "]");
-		System.out.println("DrillDownType: [" + dct.getDrillDownType() + "]");
-		System.out.println("DrillDownURL: [" + dct.getDrillDownURL() + "]");
-		System.out.println("DrillDownParams: [" + dct.getDrillDownParams() + "]");
-		System.out.println("Comment: [" + dct.getComment() + "]");
-
-		if (dct.getColFilterList() != null)
-			for (Iterator iter = dct.getColFilterList().getColFilter().iterator(); iter
-					.hasNext();)
-				printColFilterType((ColFilterType) iter.next());
-
-		System.out.println("SemaphoreId: [" + dct.getSemaphoreId() + "]");
-		System.out.println("DbColType: [" + dct.getDbColType() + "]");
-		System.out.println("------------------------------------------------");
-	} // printDataColumnType
-
-	public void printDataSourceType(DataSourceType dst) {
-		System.out.println("------------------------------------------------");
-		System.out.println("Data Source");
-		System.out.println("------------------------------------------------");
-		System.out.println("TableId: [" + dst.getTableId() + "]");
-		System.out.println("TableName: [" + dst.getTableName() + "]");
-		System.out.println("TablePK: [" + dst.getTablePK() + "]");
-		System.out.println("DisplayName: [" + dst.getDisplayName() + "]");
-		System.out.println("RefTableId: [" + dst.getRefTableId() + "]");
-		System.out.println("RefDefinition: [" + dst.getRefDefinition() + "]");
-		System.out.println("Comment: [" + dst.getComment() + "]");
-
-		for (Iterator iter = dst.getDataColumnList().getDataColumn().iterator(); iter
-				.hasNext();)
-			printDataColumnType((DataColumnType) iter.next());
-
-		System.out.println("------------------------------------------------");
-	} // printDataSourceType
-
-	public void print() {
-		System.out.println("------------------------------------------------");
-		System.out.println("ReportWrapper object");
-		System.out.println("------------------------------------------------");
-		System.out.println("PageSize: [" + getPageSize() + "]");
-		System.out.println("ReportType: [" + getReportType() + "]");
-		System.out.println("ReportName: [" + getReportName() + "]");
-		System.out.println("ReportDescr: [" + getReportDescr() + "]");
-		System.out.println("ChartType: [" + getChartType() + "]");
-		System.out.println("ChartTypeFixed: [" + getChartTypeFixed() + "]");
-		//System.out.println("ChartLeftAxisLabel: [" + getChartLeftAxisLabel() + "]");
-		//System.out.println("ChartRightAxisLabel: [" + getChartRightAxisLabel() + "]");
-		System.out.println("ChartWidth: [" + getChartWidth() + "]");
-		System.out.println("ChartHeight: [" + getChartHeight() + "]");
-		System.out.println("Public: [" + isPublic() + "]");
-		System.out.println("CreateId: NOT USED ANYMORE[" + /* getCreateId()+ */"]");
-		System.out.println("CreateDate: NOT USED ANYMORE[" + /* getCreateDate()+ */"]");
-		System.out.println("ReportSQL: [" + getReportSQL() + "]");
-		System.out.println("ReportTitle: [" + getReportTitle() + "]");
-		System.out.println("DbInfo: [" + getDBInfo() + "]");
-		System.out.println("ReportSubTitle: [" + getReportSubTitle() + "]");
-		System.out.println("ReportHeader: [" + getReportHeader() + "]");
-		System.out.println("ReportFooter: [" + getReportFooter() + "]");
-		System.out.println("NumFormCols: [" + getNumFormCols() + "]");
-		System.out.println("DisplayOptions: [" + getDisplayOptions() + "]");
-		System.out.println("Comment: [" + getComment() + "]");
-
-		for (Iterator iter = cr.getDataSourceList().getDataSource().iterator(); iter.hasNext();)
-			printDataSourceType((DataSourceType) iter.next());
-
-		if (cr.getFormFieldList() != null)
-			for (Iterator iter = cr.getFormFieldList().getFormField().iterator(); iter
-					.hasNext();)
-				printFormFieldType((FormFieldType) iter.next());
-
-		if (cr.getSemaphoreList() != null)
-			for (Iterator iter = cr.getSemaphoreList().getSemaphore().iterator(); iter
-					.hasNext();)
-				printSemaphoreType((SemaphoreType) iter.next());
-
-		System.out.println("------------------------------------------------");
-		System.out.println("ReportWrapper object end");
-		System.out.println("------------------------------------------------");
-	} // print
+//	public void print() {
+//		System.out.println("------------------------------------------------");
+//		System.out.println("ReportWrapper object");
+//		System.out.println("------------------------------------------------");
+//		System.out.println("PageSize: [" + getPageSize() + "]");
+//		System.out.println("ReportType: [" + getReportType() + "]");
+//		System.out.println("ReportName: [" + getReportName() + "]");
+//		System.out.println("ReportDescr: [" + getReportDescr() + "]");
+//		System.out.println("ChartType: [" + getChartType() + "]");
+//		System.out.println("ChartTypeFixed: [" + getChartTypeFixed() + "]");
+//		//System.out.println("ChartLeftAxisLabel: [" + getChartLeftAxisLabel() + "]");
+//		//System.out.println("ChartRightAxisLabel: [" + getChartRightAxisLabel() + "]");
+//		System.out.println("ChartWidth: [" + getChartWidth() + "]");
+//		System.out.println("ChartHeight: [" + getChartHeight() + "]");
+//		System.out.println("Public: [" + isPublic() + "]");
+//		System.out.println("CreateId: NOT USED ANYMORE[" + /* getCreateId()+ */"]");
+//		System.out.println("CreateDate: NOT USED ANYMORE[" + /* getCreateDate()+ */"]");
+//		System.out.println("ReportSQL: [" + getReportSQL() + "]");
+//		System.out.println("ReportTitle: [" + getReportTitle() + "]");
+//		System.out.println("DbInfo: [" + getDBInfo() + "]");
+//		System.out.println("ReportSubTitle: [" + getReportSubTitle() + "]");
+//		System.out.println("ReportHeader: [" + getReportHeader() + "]");
+//		System.out.println("ReportFooter: [" + getReportFooter() + "]");
+//		System.out.println("NumFormCols: [" + getNumFormCols() + "]");
+//		System.out.println("DisplayOptions: [" + getDisplayOptions() + "]");
+//		System.out.println("Comment: [" + getComment() + "]");
+//
+//		for (Iterator iter = cr.getDataSourceList().getDataSource().iterator(); iter.hasNext();)
+//			printDataSourceType((DataSourceType) iter.next());
+//
+//		if (cr.getFormFieldList() != null)
+//			for (Iterator iter = cr.getFormFieldList().getFormField().iterator(); iter
+//					.hasNext();)
+//				printFormFieldType((FormFieldType) iter.next());
+//
+//		if (cr.getSemaphoreList() != null)
+//			for (Iterator iter = cr.getSemaphoreList().getSemaphore().iterator(); iter
+//					.hasNext();)
+//				printSemaphoreType((SemaphoreType) iter.next());
+//
+//		System.out.println("------------------------------------------------");
+//		System.out.println("ReportWrapper object end");
+//		System.out.println("------------------------------------------------");
+//	} // print
 
 	private int getIntValue(String value, int defaultValue) {
 		int iValue = defaultValue;

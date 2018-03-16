@@ -269,27 +269,7 @@ public class CipherUtil {
 		String encrypted;
 		String decrypted;
 
-		if (args.length != 2) {
-			System.out.println("Default password testing... ");
-			System.out.println("Plain password: " + testValue);
-			encrypted = encryptPKC(testValue);
-			System.out.println("Encrypted password: " + encrypted);
-			decrypted = decryptPKC(encrypted);
-			System.out.println("Decrypted  password: " + decrypted);
-		} else {
-			String whatToDo = args[0];
-			if (whatToDo.equalsIgnoreCase("d")) {
-				encrypted = args[1];
-				System.out.println("Encrypted Text: " + encrypted);
-				decrypted = decrypt(encrypted);
-				System.out.println("Decrypted Text: " + decrypted);
-			} else {
-				decrypted = args[1];
-				System.out.println("Plain Text: " + decrypted);
-				encrypted = encrypt(decrypted);
-				System.out.println("Encrypted Text" + encrypted);
-			}
-		}
+
 	}
 */
 }

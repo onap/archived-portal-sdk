@@ -79,8 +79,14 @@ import javax.xml.bind.annotation.XmlType;
 public class JavascriptList {
 
     protected List<JavascriptItemType> javascriptItem;
+    
 
-    /**
+    public void setJavascriptItem(List<JavascriptItemType> javascriptItem) {
+		this.javascriptItem = javascriptItem;
+	}
+
+
+	/**
      * Gets the value of the javascriptItem property.
      * 
      * <p>

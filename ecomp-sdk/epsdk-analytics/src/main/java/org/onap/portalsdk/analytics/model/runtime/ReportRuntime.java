@@ -183,6 +183,12 @@ public class ReportRuntime extends ReportWrapper implements Cloneable, Serializa
 	
 	private int DATE_OPTION = -1;
 
+	
+	public void setReportFormFields(ReportFormFields reportFormFields) {
+		this.reportFormFields = reportFormFields;
+	}
+
+	
 	/*
 	 * private ReportRuntime(CustomReport cr, String reportID,
 	 * HttpServletRequest request) { super(cr, reportID);
@@ -594,6 +600,11 @@ public class ReportRuntime extends ReportWrapper implements Cloneable, Serializa
 	public ReportFormFields getReportFormFields() {
 		return reportFormFields;
 	} // getReportFormFields
+
+	public void setChartDataCache(DataSet chartDataCache) {
+		this.chartDataCache = chartDataCache;
+	}
+
 
 	/** ************** Report Data processing *************** */
 	public DataSet loadChartData(String userId, HttpServletRequest request) throws RaptorException {
@@ -2077,65 +2088,65 @@ public class ReportRuntime extends ReportWrapper implements Cloneable, Serializa
 		return this.cr.getDbInfo();
 	}
 
-    private String fixSQL(StringBuffer sql) {
-        int pos = 0;
-        int pos_f_format = 0;
-        int pos_t_format = 0;
-        int pos_alias = 0;
-        String format = "";
-        String alias = null;
-        if(sql.indexOf("SELECT", 7)!= -1) {
-            pos = sql.indexOf("SELECT", 7);
-            if(sql.indexOf("TO_CHAR", pos)!= -1){
-                pos = sql.indexOf("TO_CHAR", pos);
-                if(sql.indexOf("999",pos)!= -1) {
-                    pos = sql.indexOf("999",pos);
-                    pos_f_format = sql.lastIndexOf(", '", pos);
-                    if(pos_f_format == -1 || (pos - pos_f_format > 10)) {
-                        pos_f_format = sql.lastIndexOf(",'", pos);
-                        pos_f_format -= 1;
-                    }
-                    pos = pos_f_format;
-                    if(sql.indexOf("')", pos)!= -1) {
-                        pos_t_format = sql.indexOf("')", pos);
-                        //debugLogger.debug("pos_t - " + pos_t_format + " " + pos);
-                        if(pos_t_format == -1 || (pos_t_format - pos > 20)) {
-                            pos_t_format = sql.indexOf("' )", pos);
-                            pos_t_format += 3;
-                        }
-                        else if (pos_t_format != -1)
-                            pos_t_format += 2;
-                        format = sql.substring(pos_f_format+3, pos_t_format);
-                        //alias = sql.substring(pos_t_format+3, pos_t_format+6);
-                        pos_alias = sql.indexOf(" ", pos_t_format);
-                        alias = sql.substring(pos_alias+1, pos_alias+4);                       
-                    }
-                }
-            }
-            
-            if(sql.indexOf(alias)!=-1) {
-                pos = sql.indexOf(alias);
-                //debugLogger.debug(pos + " " + alias.length()+1 + "\n" + sql);
-                sql.delete(pos,pos+4);
-                sql.insert(pos, "TO_NUMBER("+alias+", '"+format+"')),'"+ format + "')");
-                pos = sql.lastIndexOf("SUM", pos);
-                if(pos==-1)
-                    pos = sql.lastIndexOf("AVG", pos);
-                else if (pos==-1)
-                    pos = sql.lastIndexOf("COUNT", pos);
-                else if (pos == -1)
-                    pos = sql.lastIndexOf("STDDEV", pos);
-                else if (pos == -1)
-                    pos = sql.lastIndexOf("VARIANCE", pos);
-                sql.insert(pos, "TO_CHAR (");
-            }
-            
-        }
-        
-        //debugLogger.debug("Alias|" + alias + "|  Format " + format);
-        //debugLogger.debug(sql.toString());
-        return sql.toString();
-    } // FixSQL
+//    private String fixSQL(StringBuffer sql) {
+//        int pos = 0;
+//        int pos_f_format = 0;
+//        int pos_t_format = 0;
+//        int pos_alias = 0;
+//        String format = "";
+//        String alias = null;
+//        if(sql.indexOf("SELECT", 7)!= -1) {
+//            pos = sql.indexOf("SELECT", 7);
+//            if(sql.indexOf("TO_CHAR", pos)!= -1){
+//                pos = sql.indexOf("TO_CHAR", pos);
+//                if(sql.indexOf("999",pos)!= -1) {
+//                    pos = sql.indexOf("999",pos);
+//                    pos_f_format = sql.lastIndexOf(", '", pos);
+//                    if(pos_f_format == -1 || (pos - pos_f_format > 10)) {
+//                        pos_f_format = sql.lastIndexOf(",'", pos);
+//                        pos_f_format -= 1;
+//                    }
+//                    pos = pos_f_format;
+//                    if(sql.indexOf("')", pos)!= -1) {
+//                        pos_t_format = sql.indexOf("')", pos);
+//                        //debugLogger.debug("pos_t - " + pos_t_format + " " + pos);
+//                        if(pos_t_format == -1 || (pos_t_format - pos > 20)) {
+//                            pos_t_format = sql.indexOf("' )", pos);
+//                            pos_t_format += 3;
+//                        }
+//                        else if (pos_t_format != -1)
+//                            pos_t_format += 2;
+//                        format = sql.substring(pos_f_format+3, pos_t_format);
+//                        //alias = sql.substring(pos_t_format+3, pos_t_format+6);
+//                        pos_alias = sql.indexOf(" ", pos_t_format);
+//                        alias = sql.substring(pos_alias+1, pos_alias+4);                       
+//                    }
+//                }
+//            }
+//            
+//            if(sql.indexOf(alias)!=-1) {
+//                pos = sql.indexOf(alias);
+//                //debugLogger.debug(pos + " " + alias.length()+1 + "\n" + sql);
+//                sql.delete(pos,pos+4);
+//                sql.insert(pos, "TO_NUMBER("+alias+", '"+format+"')),'"+ format + "')");
+//                pos = sql.lastIndexOf("SUM", pos);
+//                if(pos==-1)
+//                    pos = sql.lastIndexOf("AVG", pos);
+//                else if (pos==-1)
+//                    pos = sql.lastIndexOf("COUNT", pos);
+//                else if (pos == -1)
+//                    pos = sql.lastIndexOf("STDDEV", pos);
+//                else if (pos == -1)
+//                    pos = sql.lastIndexOf("VARIANCE", pos);
+//                sql.insert(pos, "TO_CHAR (");
+//            }
+//            
+//        }
+//        
+//        //debugLogger.debug("Alias|" + alias + "|  Format " + format);
+//        //debugLogger.debug(sql.toString());
+//        return sql.toString();
+//    } // FixSQL
     
     public String parseReportSQL(String sql) throws RaptorException {
         StringBuffer parsedSQL = new StringBuffer();
@@ -3017,189 +3028,189 @@ public List getMapMarkers(ReportData rd, org.onap.portalsdk.analytics.xmlobj.Rep
 				
 	}	
 	
-	private void refreshFormFieldsWithLatestValue(HttpServletRequest request, String userId, FormField ff_src, ArrayList<FormFieldJSON> formFieldJSONList) {
-		ArrayList<IdNameValue> formFieldValues = new ArrayList<IdNameValue>();
-		List<String> requestValueList = null;
-		IdNameList lookup =  null;
-		lookup = ff_src.getLookupList();
-		IdNameSql lu = (IdNameSql) lookup;
-		String SQL = "" ;
-		String oldSQL = "";
-		String oldDefaultSQL = "";
-		String defaultSQL  = "";
-		IdNameList lookupList = null;
-		if(lu != null) {
-			SQL = lu.getSql();
-			oldSQL = lu.getSql();
-			oldDefaultSQL = lu.getDefaultSQL();
-			defaultSQL = lu.getDefaultSQL();
-		}
-		boolean readOnly = false;
-		for (Iterator iter1 = formFieldJSONList.iterator(); iter1.hasNext();) {
-				FormFieldJSON ffJSON = (FormFieldJSON) iter1.next();
-				if((ffJSON.getFieldId().equals(ff_src.getFieldName())) && ffJSON.isVisible()) {
-					for (Iterator iter = reportFormFields.iterator(); iter.hasNext();) {
-						formFieldValues = new ArrayList<IdNameValue>();
-						FormField ff = (FormField) iter.next();
-						if(!ff.getFieldName().equals(ff_src.getFieldName())) {
-						//IdNameList lookup =  null;
-	 					//lookup = ff.getLookupList();
-	 					String selectedValue = "";
-	 					
-	 					
-	 					
-						String [] requestParam = request.getParameterValues(ff.getFieldName());
-						if(requestParam != null) {
-							requestValueList = Arrays.asList(request.getParameterValues(ff.getFieldName()));
-
-						} else {
-							requestValueList = new ArrayList<String>();
-						}
-	 					
-	 					
-						if(nvl(ff_src.getBaseSQL()).length()>0 && ff_src.getBaseSQL().indexOf("["+ff.getFieldDisplayName() +"]")!= -1) {
-							if(lookup!=null) {
-								try {
-	   								if(!ff_src.hasPredefinedList) {
-										String formatSelected = null;
-										if(ff_src.getFieldType().equals(FormField.FFT_LIST_MULTI) || ff_src.getFieldType().equals(FormField.FFT_CHECK_BOX)) {
-												formatSelected = formatSelectedItems(requestValueList, ff_src.getFieldType());
-										} else
-												formatSelected = requestValueList.size()>0?requestValueList.get(0):"";
-										SQL = Utils.replaceInString(SQL, "["+ff_src.getFieldDisplayName()+"]", formatSelected);
-										defaultSQL = Utils.replaceInString(defaultSQL, "["+ff_src.getFieldDisplayName()+"]", formatSelected);
-										defaultSQL = parseAndFillWithCurrentValues(request, defaultSQL, ff_src);
-										defaultSQL = parseAndFillReq_Session_UserValues(request, defaultSQL, userId);
-										SQL = parseAndFillReq_Session_UserValues(request, SQL, userId);
-										SQL = parseAndFillWithCurrentValues(request, SQL, ff_src);
-										
-	   								}
-								} catch (Exception ex) {
-		   								ex.printStackTrace();
-		   						}
-								
-							}
-									
-						}
-					}
-				}
-					
-					if(nvl(ff_src.getBaseSQL()).length()>0) { 
-						lookup = new IdNameSql(-1,SQL,defaultSQL);
-						lookupList = lookup;
-						try {
-							lookup.loadUserData(0, "", ff_src.getDbInfo(), ff_src.getUserId());
-						} catch (Exception e ){ 
-							e.printStackTrace(); //throw new RaptorRuntimeException(e);
-						}
-						if(!ff_src.hasPredefinedList) {
-							lookup.trimToSize();
-							for (lookup.resetNext(); lookup.hasNext();) {
-									IdNameValue value = lookup.getNext();
-									readOnly = value.isReadOnly();
-									formFieldValues.add(value);
-								}
-						}
-						ffJSON.setFormFieldValues(formFieldValues);
-					}
-					if(!ff_src.hasPredefinedList) {
-							if(oldSQL != null && !oldSQL.equals("")) {
-								((IdNameSql)lookup).setSQL(oldSQL);
-							}
-							if(oldDefaultSQL != null && !oldDefaultSQL.equals("")) {
-								((IdNameSql)lookup).setDefaultSQL(oldDefaultSQL);
-							}
-					}        
-					
-				}
-			}
-
-	}
+//	private void refreshFormFieldsWithLatestValue(HttpServletRequest request, String userId, FormField ff_src, ArrayList<FormFieldJSON> formFieldJSONList) {
+//		ArrayList<IdNameValue> formFieldValues = new ArrayList<IdNameValue>();
+//		List<String> requestValueList = null;
+//		IdNameList lookup =  null;
+//		lookup = ff_src.getLookupList();
+//		IdNameSql lu = (IdNameSql) lookup;
+//		String SQL = "" ;
+//		String oldSQL = "";
+//		String oldDefaultSQL = "";
+//		String defaultSQL  = "";
+//		IdNameList lookupList = null;
+//		if(lu != null) {
+//			SQL = lu.getSql();
+//			oldSQL = lu.getSql();
+//			oldDefaultSQL = lu.getDefaultSQL();
+//			defaultSQL = lu.getDefaultSQL();
+//		}
+//		boolean readOnly = false;
+//		for (Iterator iter1 = formFieldJSONList.iterator(); iter1.hasNext();) {
+//				FormFieldJSON ffJSON = (FormFieldJSON) iter1.next();
+//				if((ffJSON.getFieldId().equals(ff_src.getFieldName())) && ffJSON.isVisible()) {
+//					for (Iterator iter = reportFormFields.iterator(); iter.hasNext();) {
+//						formFieldValues = new ArrayList<IdNameValue>();
+//						FormField ff = (FormField) iter.next();
+//						if(!ff.getFieldName().equals(ff_src.getFieldName())) {
+//						//IdNameList lookup =  null;
+//	 					//lookup = ff.getLookupList();
+//	 					String selectedValue = "";
+//	 					
+//	 					
+//	 					
+//						String [] requestParam = request.getParameterValues(ff.getFieldName());
+//						if(requestParam != null) {
+//							requestValueList = Arrays.asList(request.getParameterValues(ff.getFieldName()));
+//
+//						} else {
+//							requestValueList = new ArrayList<String>();
+//						}
+//	 					
+//	 					
+//						if(nvl(ff_src.getBaseSQL()).length()>0 && ff_src.getBaseSQL().indexOf("["+ff.getFieldDisplayName() +"]")!= -1) {
+//							if(lookup!=null) {
+//								try {
+//	   								if(!ff_src.hasPredefinedList) {
+//										String formatSelected = null;
+//										if(ff_src.getFieldType().equals(FormField.FFT_LIST_MULTI) || ff_src.getFieldType().equals(FormField.FFT_CHECK_BOX)) {
+//												formatSelected = formatSelectedItems(requestValueList, ff_src.getFieldType());
+//										} else
+//												formatSelected = requestValueList.size()>0?requestValueList.get(0):"";
+//										SQL = Utils.replaceInString(SQL, "["+ff_src.getFieldDisplayName()+"]", formatSelected);
+//										defaultSQL = Utils.replaceInString(defaultSQL, "["+ff_src.getFieldDisplayName()+"]", formatSelected);
+//										defaultSQL = parseAndFillWithCurrentValues(request, defaultSQL, ff_src);
+//										defaultSQL = parseAndFillReq_Session_UserValues(request, defaultSQL, userId);
+//										SQL = parseAndFillReq_Session_UserValues(request, SQL, userId);
+//										SQL = parseAndFillWithCurrentValues(request, SQL, ff_src);
+//										
+//	   								}
+//								} catch (Exception ex) {
+//		   								ex.printStackTrace();
+//		   						}
+//								
+//							}
+//									
+//						}
+//					}
+//				}
+//					
+//					if(nvl(ff_src.getBaseSQL()).length()>0) { 
+//						lookup = new IdNameSql(-1,SQL,defaultSQL);
+//						lookupList = lookup;
+//						try {
+//							lookup.loadUserData(0, "", ff_src.getDbInfo(), ff_src.getUserId());
+//						} catch (Exception e ){ 
+//							e.printStackTrace(); //throw new RaptorRuntimeException(e);
+//						}
+//						if(!ff_src.hasPredefinedList) {
+//							lookup.trimToSize();
+//							for (lookup.resetNext(); lookup.hasNext();) {
+//									IdNameValue value = lookup.getNext();
+//									readOnly = value.isReadOnly();
+//									formFieldValues.add(value);
+//								}
+//						}
+//						ffJSON.setFormFieldValues(formFieldValues);
+//					}
+//					if(!ff_src.hasPredefinedList) {
+//							if(oldSQL != null && !oldSQL.equals("")) {
+//								((IdNameSql)lookup).setSQL(oldSQL);
+//							}
+//							if(oldDefaultSQL != null && !oldDefaultSQL.equals("")) {
+//								((IdNameSql)lookup).setDefaultSQL(oldDefaultSQL);
+//							}
+//					}        
+//					
+//				}
+//			}
+//
+//	}
 
 	
-	private void triggerOtherFormFieldsWithThisValue(HttpServletRequest request, String userId, FormField ff_src, ArrayList<String> requestValueList, ArrayList<FormFieldJSON> formFieldJSONList) {
-		ArrayList<IdNameValue> formFieldValues = new ArrayList<IdNameValue>();
-		//ArrayList<FormFieldJSON> formFieldJSONList = new ArrayList<FormFieldJSON>();
-		for (Iterator iter = reportFormFields.iterator(); iter.hasNext();) {
-			formFieldValues = new ArrayList<IdNameValue>();
-			FormField ff = (FormField) iter.next();
-			if(!ff_src.getFieldName().equals(ff.getFieldName())) {
-				for (Iterator iter1 = formFieldJSONList.iterator(); iter1.hasNext();) {
-					FormFieldJSON ffJSON = (FormFieldJSON) iter1.next();
-					if(ffJSON.getFieldId().equals(ff.getFieldName()) && ffJSON.isVisible()) {
-						if(nvl(ff.getBaseSQL()).length()>0 && ff.getBaseSQL().indexOf("["+ff_src.getFieldDisplayName() +"]")!= -1) {
-							IdNameList lookup =  null;
-	     					lookup = ff.getLookupList();
-	     					String selectedValue = "";
-	     					String oldSQL = "";
-	     					String oldDefaultSQL = "";
-	     					IdNameList lookupList = null;
-	     					boolean readOnly = false;
-	   						if(lookup!=null) {
-	   							try {
-	   								if(!ff.hasPredefinedList) {
-	   										IdNameSql lu = (IdNameSql) lookup;
-	   										String SQL = lu.getSql();
-	   										oldSQL = lu.getSql();
-	   										oldDefaultSQL = lu.getDefaultSQL();
-	   										String defaultSQL  = lu.getDefaultSQL();
-	   										String formatSelected = null;
-	   										if(ff_src.getFieldType().equals(FormField.FFT_LIST_MULTI) || ff_src.getFieldType().equals(FormField.FFT_CHECK_BOX)) {
-	   											formatSelected = formatSelectedItems(requestValueList, ff.getFieldType());
-	   										}
-	   										else
-	   											formatSelected = requestValueList.size()>0?requestValueList.get(0):"";
-	   										SQL = Utils.replaceInString(SQL, "["+ff_src.getFieldDisplayName()+"]", formatSelected);
-	   										defaultSQL = Utils.replaceInString(defaultSQL, "["+ff_src.getFieldDisplayName()+"]", formatSelected);
-	   										defaultSQL = parseAndFillWithCurrentValues(request, defaultSQL, ff_src);
-	   										defaultSQL = parseAndFillReq_Session_UserValues(request, defaultSQL, userId);
-	   										SQL = parseAndFillReq_Session_UserValues(request, SQL, userId);
-	   										SQL = parseAndFillWithCurrentValues(request, SQL, ff_src);
-	   										lookup = new IdNameSql(-1,SQL,defaultSQL);
-	   										lookupList = lookup;
-	   										try {
-	   											lookup.loadUserData(0, "", ff.getDbInfo(), ff.getUserId());
-	   										} catch (Exception e ){ 
-	   											e.printStackTrace(); //throw new RaptorRuntimeException(e);
-	   										}
-	   								}
-	   								lookup.trimToSize();
-
-	   								
-	   								
-	   								for (lookup.resetNext(); lookup.hasNext();) {
-	   									IdNameValue value = lookup.getNext();
-	   									readOnly = value.isReadOnly();
-//	   									if(nvl(requestValue).length()>0) {
-//	   										if(value.getId().equals(requestValue))
-//	   										 value.setDefaultValue(true);
+//	private void triggerOtherFormFieldsWithThisValue(HttpServletRequest request, String userId, FormField ff_src, ArrayList<String> requestValueList, ArrayList<FormFieldJSON> formFieldJSONList) {
+//		ArrayList<IdNameValue> formFieldValues = new ArrayList<IdNameValue>();
+//		//ArrayList<FormFieldJSON> formFieldJSONList = new ArrayList<FormFieldJSON>();
+//		for (Iterator iter = reportFormFields.iterator(); iter.hasNext();) {
+//			formFieldValues = new ArrayList<IdNameValue>();
+//			FormField ff = (FormField) iter.next();
+//			if(!ff_src.getFieldName().equals(ff.getFieldName())) {
+//				for (Iterator iter1 = formFieldJSONList.iterator(); iter1.hasNext();) {
+//					FormFieldJSON ffJSON = (FormFieldJSON) iter1.next();
+//					if(ffJSON.getFieldId().equals(ff.getFieldName()) && ffJSON.isVisible()) {
+//						if(nvl(ff.getBaseSQL()).length()>0 && ff.getBaseSQL().indexOf("["+ff_src.getFieldDisplayName() +"]")!= -1) {
+//							IdNameList lookup =  null;
+//	     					lookup = ff.getLookupList();
+//	     					String selectedValue = "";
+//	     					String oldSQL = "";
+//	     					String oldDefaultSQL = "";
+//	     					IdNameList lookupList = null;
+//	     					boolean readOnly = false;
+//	   						if(lookup!=null) {
+//	   							try {
+//	   								if(!ff.hasPredefinedList) {
+//	   										IdNameSql lu = (IdNameSql) lookup;
+//	   										String SQL = lu.getSql();
+//	   										oldSQL = lu.getSql();
+//	   										oldDefaultSQL = lu.getDefaultSQL();
+//	   										String defaultSQL  = lu.getDefaultSQL();
+//	   										String formatSelected = null;
+//	   										if(ff_src.getFieldType().equals(FormField.FFT_LIST_MULTI) || ff_src.getFieldType().equals(FormField.FFT_CHECK_BOX)) {
+//	   											formatSelected = formatSelectedItems(requestValueList, ff.getFieldType());
+//	   										}
+//	   										else
+//	   											formatSelected = requestValueList.size()>0?requestValueList.get(0):"";
+//	   										SQL = Utils.replaceInString(SQL, "["+ff_src.getFieldDisplayName()+"]", formatSelected);
+//	   										defaultSQL = Utils.replaceInString(defaultSQL, "["+ff_src.getFieldDisplayName()+"]", formatSelected);
+//	   										defaultSQL = parseAndFillWithCurrentValues(request, defaultSQL, ff_src);
+//	   										defaultSQL = parseAndFillReq_Session_UserValues(request, defaultSQL, userId);
+//	   										SQL = parseAndFillReq_Session_UserValues(request, SQL, userId);
+//	   										SQL = parseAndFillWithCurrentValues(request, SQL, ff_src);
+//	   										lookup = new IdNameSql(-1,SQL,defaultSQL);
+//	   										lookupList = lookup;
+//	   										try {
+//	   											lookup.loadUserData(0, "", ff.getDbInfo(), ff.getUserId());
+//	   										} catch (Exception e ){ 
+//	   											e.printStackTrace(); //throw new RaptorRuntimeException(e);
+//	   										}
+//	   								}
+//	   								lookup.trimToSize();
+//
+//	   								
+//	   								
+//	   								for (lookup.resetNext(); lookup.hasNext();) {
+//	   									IdNameValue value = lookup.getNext();
+//	   									readOnly = value.isReadOnly();
+////	   									if(nvl(requestValue).length()>0) {
+////	   										if(value.getId().equals(requestValue))
+////	   										 value.setDefaultValue(true);
+////	   									}
+//	   									formFieldValues.add(value);
+//	   									//break;
+//	   								} 
+//	   								
+//	   								ffJSON.setFormFieldValues(formFieldValues);
+//	   								
+//	   								if(!ff.hasPredefinedList) {
+//	   									if(oldSQL != null && !oldSQL.equals("")) {
+//	   										((IdNameSql)lookup).setSQL(oldSQL);
 //	   									}
-	   									formFieldValues.add(value);
-	   									//break;
-	   								} 
-	   								
-	   								ffJSON.setFormFieldValues(formFieldValues);
-	   								
-	   								if(!ff.hasPredefinedList) {
-	   									if(oldSQL != null && !oldSQL.equals("")) {
-	   										((IdNameSql)lookup).setSQL(oldSQL);
-	   									}
-	   									if(oldDefaultSQL != null && !oldDefaultSQL.equals("")) {
-	   										((IdNameSql)lookup).setDefaultSQL(oldDefaultSQL);
-	   									}
-	   								}        						
-	   							} catch (Exception ex) {
-	   								ex.printStackTrace();
-	   							}
-	   						}
-	   						
-						} //ff baseSQL
-					}
-				}
-			}
-		}
-				
-	}
+//	   									if(oldDefaultSQL != null && !oldDefaultSQL.equals("")) {
+//	   										((IdNameSql)lookup).setDefaultSQL(oldDefaultSQL);
+//	   									}
+//	   								}        						
+//	   							} catch (Exception ex) {
+//	   								ex.printStackTrace();
+//	   							}
+//	   						}
+//	   						
+//						} //ff baseSQL
+//					}
+//				}
+//			}
+//		}
+//				
+//	}
 	
 	public String formatSelectedItems(List selectedItems, String type) {
 		StringBuffer value = new StringBuffer("");
