@@ -44,6 +44,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ReadListener;
@@ -73,9 +76,27 @@ public class SecurityXssFilter extends OncePerRequestFilter {
 	public class RequestWrapper extends HttpServletRequestWrapper {
 
 		private ByteArrayOutputStream cachedBytes;
+		
+		private Map parameter = new HashMap();
+
+		@SuppressWarnings("unchecked")
 
 		public RequestWrapper(HttpServletRequest request) {
 			super(request);
+			Enumeration<String> parameterNames = request.getParameterNames();
+			while (parameterNames.hasMoreElements()) {
+				String paramName = parameterNames.nextElement();
+				String paramValue = request.getParameter(paramName);
+				parameter.put(paramName,paramValue);
+			}
+		}
+
+		@Override
+		public String getParameter(String name) {
+			if (parameter != null) {
+				return (String) parameter.get(name);
+			}
+			return null;
 		}
 
 		@Override

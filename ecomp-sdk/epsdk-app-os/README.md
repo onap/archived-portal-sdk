@@ -18,6 +18,7 @@ Version 2.1.0
 - PORTAL 160 Refer epsdk-app-common
 - PORTAL 159 Refer epsdk-app-common
 - PORTAL 136 Junits for SDK
+- PORTAL 155 Review security issues: portal
 
 Version 1.4.0
 - PORTAL-19 Rename Java package base to org.onap

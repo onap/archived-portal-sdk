@@ -295,7 +295,7 @@ public class SearchHandler extends org.onap.portalsdk.analytics.RaptorObject {
 		} else {
 			rep_name_sql = " AND UPPER(cr.title) LIKE UPPER('%%') ";
 		}
-		sql = sql.replace("[fReportName]",rep_name_sql);
+		sql = sql.replace("[fReportName]", ESAPI.encoder().canonicalize(rep_name_sql));
 
 		if (menuId.length() > 0){
 			/*sql += "AND INSTR('|'||cr.menu_id||'|', '|'||'" + menuId + "'||'|') > 0 "

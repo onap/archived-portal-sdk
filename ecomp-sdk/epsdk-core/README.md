@@ -7,7 +7,7 @@ which is distributed as epsdk-core-N.N.N.jar.  This library
 requires Hibernate and Spring, and provides many features 
 such as data access, session management, logging, on-boarding 
 and more.  Most of these features are demonstrated in the
-ONAP SDK web application.
+ECOMP SDK web application. 
 
 ## Release Notes
 
