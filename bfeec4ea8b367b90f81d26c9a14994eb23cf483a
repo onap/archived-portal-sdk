@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "75fb0e9c_861854ba",
+        "filename": "ecomp-sdk/epsdk-app-os/ngapp/src/environments/environment.ts",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-04-06T16:31:09Z",
+      "side": 1,
+      "message": "1. this file should not be managed by GIT anymore and its in ngappsrc\n2. has this change been added to environment_prod file",
+      "revId": "bfeec4ea8b367b90f81d26c9a14994eb23cf483a",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
