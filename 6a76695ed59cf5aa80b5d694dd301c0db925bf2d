@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f7b9b884_f72f1624",
+        "filename": "ecomp-sdk/epsdk-app-os/ngappsrc/src/environments/environment.ts",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-04-07T14:53:50Z",
+      "side": 1,
+      "message": "please add this to environment.prod.ts",
+      "revId": "6a76695ed59cf5aa80b5d694dd301c0db925bf2d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
