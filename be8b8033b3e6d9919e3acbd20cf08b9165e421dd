@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "84474852_180500cf",
+        "filename": "ecomp-sdk/epsdk-aaf/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-04-14T15:44:28Z",
+      "side": 1,
+      "message": "It should be snapshot is all places. \n3.3.0-SNAPSHOT",
+      "revId": "be8b8033b3e6d9919e3acbd20cf08b9165e421dd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
