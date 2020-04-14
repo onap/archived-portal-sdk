@@ -16,6 +16,23 @@
       "revId": "be8b8033b3e6d9919e3acbd20cf08b9165e421dd",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4e8da16c_0e0d4987",
+        "filename": "ecomp-sdk/epsdk-app-os/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-04-14T15:53:29Z",
+      "side": 1,
+      "message": "please change this line to re-enable test cases in the compile phase, it has been previously disabled for the release jobs to pass:\n\u003cangularTestPhase\u003enone\u003c/angularTestPhase\u003e\nto\n\u003cangularTestPhase\u003ecompile\u003c/angularTestPhase\u003e",
+      "revId": "be8b8033b3e6d9919e3acbd20cf08b9165e421dd",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
     }
   ]
 }
