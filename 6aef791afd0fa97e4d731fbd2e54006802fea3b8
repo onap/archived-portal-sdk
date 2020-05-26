@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f7963aa6_c696b05b",
+        "filename": "ecomp-sdk/epsdk-app-common/db-scripts/EcompSdkMySql_Upgrade_3_2_to_3_3_Common.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-05-26T19:19:04Z",
+      "side": 1,
+      "message": "1. All of these already seem to be in 2_6 to 3_2 upgrade script, please make sure there are no duplicates",
+      "revId": "6aef791afd0fa97e4d731fbd2e54006802fea3b8",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
