@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6a4b7eaa_2e2cbece",
+        "filename": "ecomp-sdk/epsdk-app-os/src/main/java/org/onap/portalapp/login/LoginStrategyImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-06-01T19:24:22Z",
+      "side": 1,
+      "message": "please change this to contains property. The method needs to be added to the class file.",
+      "revId": "00d2254fb1ff8306af3c888d77552299b9e235dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a8e70d3f_516f1ff7",
+        "filename": "ecomp-sdk/epsdk-core/src/main/java/org/onap/portalsdk/core/service/WebServiceCallServiceImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-06-01T19:24:22Z",
+      "side": 1,
+      "message": "please remove commented sections.",
+      "revId": "00d2254fb1ff8306af3c888d77552299b9e235dc",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
