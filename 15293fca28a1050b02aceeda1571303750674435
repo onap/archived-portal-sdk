@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c710dd66_3f56fd94",
+        "filename": "ecomp-sdk/epsdk-logger/src/main/java/org/onap/portalsdk/core/logging/logic/EELFLoggerDelegate.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-09-14T16:42:19Z",
+      "side": 1,
+      "message": "all the else ifs are repetitions; please refactor",
+      "revId": "15293fca28a1050b02aceeda1571303750674435",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e83f45ac_a2f2a11a",
+        "filename": "ecomp-sdk/epsdk-logger/src/main/java/org/onap/portalsdk/core/logging/logic/EELFLoggerDelegate.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-09-14T16:42:19Z",
+      "side": 1,
+      "message": "Please refactor this duplication;\n\nin the  method public static void logWrite(EELFLogger logger, Level level, String msg, Throwable th, Object... arguments  )\n\ndo something like: if(logger \u003d\u003d errorLogger ) {\n\n// add all the MDC puts for Error logger here and not the individual methods.\n\t\t\t\t\n}",
+      "revId": "15293fca28a1050b02aceeda1571303750674435",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
