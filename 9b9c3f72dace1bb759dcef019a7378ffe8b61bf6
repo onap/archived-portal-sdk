@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d4f3a0cb_4b9a4a71",
+        "filename": "ecomp-sdk/epsdk-core/src/test/java/org/onap/portalsdk/core/logging/logic/EELFLoggerDelegateTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-09-17T19:28:53Z",
+      "side": 1,
+      "message": "please change the name to PortalSDK",
+      "revId": "9b9c3f72dace1bb759dcef019a7378ffe8b61bf6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7fae4bc5_14facec6",
+        "filename": "ecomp-sdk/epsdk-logger/src/main/java/org/onap/portalsdk/core/logging/logic/EELFLoggerDelegate.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-09-17T19:28:53Z",
+      "side": 1,
+      "message": "MDC_CLASS_NAME is being added but it is only getting removed if logger \u003d\u003d errorLogger",
+      "revId": "9b9c3f72dace1bb759dcef019a7378ffe8b61bf6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "063af25c_a65e433b",
+        "filename": "ecomp-sdk/epsdk-logger/src/main/java/org/onap/portalsdk/core/logging/logic/EELFLoggerDelegate.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-09-17T19:28:53Z",
+      "side": 1,
+      "message": "why is this static? please keep it non-static unless it is needed",
+      "revId": "9b9c3f72dace1bb759dcef019a7378ffe8b61bf6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
