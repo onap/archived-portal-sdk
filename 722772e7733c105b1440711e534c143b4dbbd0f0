@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9b81a8dc_19944383",
+        "filename": "ecomp-sdk/epsdk-app-os/src/main/webapp/WEB-INF/conf/system.properties",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-09-25T14:27:23Z",
+      "side": 1,
+      "message": "this is not needed; please remove and change the code to read from logback.xml",
+      "revId": "722772e7733c105b1440711e534c143b4dbbd0f0",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
