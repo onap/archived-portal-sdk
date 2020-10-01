@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "8937a007_91f459f5",
+        "filename": "ecomp-sdk/epsdk-logger/src/main/java/org/onap/portalsdk/core/logging/logic/EELFLoggerDelegate.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 679
+      },
+      "writtenOn": "2020-10-01T14:24:44Z",
+      "side": 1,
+      "message": "can you remove this if check for removal\nrefactor into\ntearDownMDC(...) {\n}",
+      "revId": "93ca098f1086edf39cfc4b222a2f48461db1304e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
